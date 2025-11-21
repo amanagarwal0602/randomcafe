@@ -1,24 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
+import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign } from 'react-icons/fi';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showBill, setShowBill] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const billRef = useRef();
 
   useEffect(() => {
     fetchOrders();
-  }, [filter]);
+  }, [filter, dateFilter]);
 
   const fetchOrders = async () => {
     try {
-      const params = filter !== 'all' ? { status: filter } : {};
+      setLoading(true);
+      const params = {};
+      if (filter !== 'all') params.status = filter;
+      if (dateFilter) params.date = dateFilter;
+      
       const response = await api.get('/admin/orders', { params });
-      setOrders(response.data.data || []);
+      const ordersData = response.data.data || [];
+      
+      // Add daily bill numbers to orders
+      const ordersWithBillNumbers = addDailyBillNumbers(ordersData);
+      setOrders(ordersWithBillNumbers);
     } catch (error) {
+      console.error('Failed to load orders:', error);
       toast.error('Failed to load orders');
       setOrders([]);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Generate daily bill numbers (resets each day)
+  const addDailyBillNumbers = (ordersData) => {
+    const ordersByDate = {};
+    
+    // Sort orders by date
+    const sortedOrders = [...ordersData].sort((a, b) => 
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
+    
+    // Group by date and assign bill numbers
+    return sortedOrders.map(order => {
+      const orderDate = new Date(order.createdAt).toDateString();
+      
+      if (!ordersByDate[orderDate]) {
+        ordersByDate[orderDate] = 0;
+      }
+      
+      ordersByDate[orderDate]++;
+      
+      return {
+        ...order,
+        dailyBillNumber: ordersByDate[orderDate],
+        billDate: orderDate
+      };
+    });
   };
 
   const updateStatus = async (orderId, status) => {
@@ -31,57 +76,324 @@ const AdminOrders = () => {
     }
   };
 
+  const viewBill = (order) => {
+    setSelectedOrder(order);
+    setShowBill(true);
+  };
+
+  const printBill = () => {
+    const printContent = billRef.current;
+    const windowPrint = window.open('', '', 'width=800,height=600');
+    windowPrint.document.write('<html><head><title>Bill #' + selectedOrder.dailyBillNumber + '</title>');
+    windowPrint.document.write('<style>');
+    windowPrint.document.write(`
+      body { font-family: Arial, sans-serif; padding: 20px; }
+      .bill-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+      .bill-header h1 { margin: 0; font-size: 28px; }
+      .bill-info { margin: 20px 0; }
+      .bill-info p { margin: 5px 0; }
+      table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+      th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+      th { background-color: #f5f5f5; font-weight: bold; }
+      .total-row { font-weight: bold; font-size: 18px; border-top: 2px solid #000; }
+      .bill-footer { margin-top: 40px; text-align: center; border-top: 1px dashed #000; padding-top: 20px; }
+      @media print { button { display: none; } }
+    `);
+    windowPrint.document.write('</style></head><body>');
+    windowPrint.document.write(printContent.innerHTML);
+    windowPrint.document.write('</body></html>');
+    windowPrint.document.close();
+    windowPrint.focus();
+    setTimeout(() => {
+      windowPrint.print();
+      windowPrint.close();
+    }, 250);
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      confirmed: 'bg-blue-100 text-blue-800',
+      preparing: 'bg-purple-100 text-purple-800',
+      ready: 'bg-green-100 text-green-800',
+      delivered: 'bg-gray-100 text-gray-800',
+      cancelled: 'bg-red-100 text-red-800'
+    };
+    return colors[status?.toLowerCase()] || 'bg-gray-100 text-gray-800';
+  };
+
+  // Filter orders by search term
+  const filteredOrders = orders.filter(order => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      order.dailyBillNumber?.toString().includes(search) ||
+      order.orderNumber?.toLowerCase().includes(search) ||
+      order.customerName?.toLowerCase().includes(search) ||
+      order.customerEmail?.toLowerCase().includes(search) ||
+      order.userName?.toLowerCase().includes(search) ||
+      order.userEmail?.toLowerCase().includes(search)
+    );
+  });
+
+  // Calculate daily total
+  const dailyTotal = dateFilter 
+    ? filteredOrders.reduce((sum, order) => sum + (order.total || order.totalPrice || 0), 0)
+    : 0;
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container-custom">
-        <h1 className="text-4xl font-serif font-bold mb-8">Order Management</h1>
-        
-        <div className="mb-6 flex gap-2">
-          {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg ${
-                filter === status ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-serif font-bold">Order Management</h1>
+            <p className="text-gray-600 mt-2">{filteredOrders.length} orders</p>
+          </div>
+          {dateFilter && (
+            <div className="bg-white px-6 py-4 rounded-lg shadow">
+              <p className="text-sm text-gray-600">Daily Total</p>
+              <p className="text-3xl font-bold text-primary-600">${dailyTotal.toFixed(2)}</p>
+            </div>
+          )}
         </div>
 
-        <div className="space-y-4">
-          {orders.map(order => (
-            <div key={order._id} className="bg-white p-6 rounded-xl shadow">
-              <div className="flex justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold">Order #{order.orderNumber}</h3>
-                  <p className="text-gray-600 text-sm">{order.user?.name} - {order.user?.email}</p>
+        {/* Filters */}
+        <div className="bg-white p-6 rounded-xl shadow mb-6 space-y-4">
+          <div className="flex gap-2 flex-wrap">
+            <span className="font-semibold text-gray-700 flex items-center">Status:</span>
+            {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded-lg font-medium transition ${
+                  filter === status
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                <FiCalendar /> Filter by Date
+              </label>
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Search Orders</label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by bill #, customer name, email..."
+                className="input-field"
+              />
+            </div>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <p className="mt-4 text-gray-600">Loading orders...</p>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="bg-white p-12 rounded-xl shadow text-center">
+            <p className="text-gray-600 text-lg">No orders found</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredOrders.map(order => (
+              <div key={order._id} className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-bold text-xl">Bill #{order.dailyBillNumber}</h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
+                        {(order.status || 'pending').toUpperCase()}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm">
+                      Order ID: {order.orderNumber || order._id?.slice(-8)}
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      Customer: {order.customerName || order.userName || 'Guest'}
+                    </p>
+                    <p className="text-gray-600 text-sm">
+                      {order.customerEmail || order.userEmail || 'N/A'}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1">
+                      {order.createdAt ? new Date(order.createdAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) : 'Date unknown'}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-primary-600 mb-3">
+                      ${(order.total || order.totalPrice || 0).toFixed(2)}
+                    </p>
+                    <select
+                      value={order.status || 'pending'}
+                      onChange={(e) => updateStatus(order._id, e.target.value)}
+                      className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="preparing">Preparing</option>
+                      <option value="ready">Ready</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => viewBill(order)}
+                        className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                      >
+                        <FiEye /> View Bill
+                      </button>
+                      <button
+                        onClick={() => { setSelectedOrder(order); printBill(); }}
+                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm flex items-center justify-center gap-1"
+                      >
+                        <FiPrinter /> Print
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold">${order.total.toFixed(2)}</p>
-                  <select
-                    value={order.status}
-                    onChange={(e) => updateStatus(order._id, e.target.value)}
-                    className="mt-2 px-3 py-1 border rounded"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="preparing">Preparing</option>
-                    <option value="ready">Ready</option>
-                    <option value="delivered">Delivered</option>
-                  </select>
+
+                {/* Order Items Preview */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="font-semibold mb-3 text-gray-700">Order Items:</h4>
+                  <div className="space-y-2">
+                    {order.items && order.items.length > 0 ? (
+                      order.items.map((item, i) => (
+                        <div key={i} className="flex justify-between text-sm">
+                          <span className="text-gray-700">
+                            {item.name || item.itemName || item.menuItem?.name || 'Unknown Item'} 
+                            <span className="text-gray-500"> x{item.quantity || 1}</span>
+                          </span>
+                          <span className="font-medium">
+                            ${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm">No items</p>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Items:</h4>
-                {order.items.map((item, i) => (
-                  <p key={i} className="text-gray-600">{item.menuItem?.name} x{item.quantity}</p>
-                ))}
+            ))}
+          </div>
+        )}
+
+        {/* Bill Modal */}
+        {showBill && selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+                <h2 className="text-2xl font-bold">Bill #{selectedOrder.dailyBillNumber}</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={printBill}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2"
+                  >
+                    <FiPrinter /> Print Bill
+                  </button>
+                  <button
+                    onClick={() => { setShowBill(false); setSelectedOrder(null); }}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+              </div>
+
+              <div ref={billRef} className="p-8">
+                <div className="bill-header">
+                  <h1>Lumiere Cafe</h1>
+                  <p>Restaurant & Cafe</p>
+                  <p>123 Main Street, City, State 12345</p>
+                  <p>Phone: (123) 456-7890</p>
+                </div>
+
+                <div className="bill-info">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p><strong>Bill Number:</strong> #{selectedOrder.dailyBillNumber}</p>
+                      <p><strong>Order ID:</strong> {selectedOrder.orderNumber || selectedOrder._id?.slice(-8)}</p>
+                      <p><strong>Date:</strong> {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p><strong>Customer:</strong> {selectedOrder.customerName || selectedOrder.userName || 'Guest'}</p>
+                      <p><strong>Email:</strong> {selectedOrder.customerEmail || selectedOrder.userEmail || 'N/A'}</p>
+                      <p><strong>Status:</strong> <span className={`px-2 py-1 rounded text-xs ${getStatusColor(selectedOrder.status)}`}>
+                        {(selectedOrder.status || 'pending').toUpperCase()}
+                      </span></p>
+                    </div>
+                  </div>
+                </div>
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                      selectedOrder.items.map((item, i) => (
+                        <tr key={i}>
+                          <td>{item.name || item.itemName || item.menuItem?.name || 'Unknown Item'}</td>
+                          <td>{item.quantity || 1}</td>
+                          <td>${(item.price || item.itemPrice || 0).toFixed(2)}</td>
+                          <td>${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center text-gray-500">No items</td>
+                      </tr>
+                    )}
+                    <tr className="total-row">
+                      <td colSpan="3" style={{ textAlign: 'right' }}>TOTAL:</td>
+                      <td>${(selectedOrder.total || selectedOrder.totalPrice || 0).toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {selectedOrder.deliveryAddress && (
+                  <div className="bill-info">
+                    <p><strong>Delivery Address:</strong></p>
+                    <p>{selectedOrder.deliveryAddress}</p>
+                  </div>
+                )}
+
+                <div className="bill-footer">
+                  <p><strong>Thank you for your order!</strong></p>
+                  <p>Visit us again at Lumiere Cafe</p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
