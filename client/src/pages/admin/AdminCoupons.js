@@ -28,9 +28,10 @@ const AdminCoupons = () => {
   const fetchCoupons = async () => {
     try {
       const { data } = await api.get('/coupons');
-      setCoupons(data);
+      setCoupons(data.data || []);
     } catch (error) {
       toast.error('Failed to load coupons');
+      setCoupons([]);
     } finally {
       setLoading(false);
     }
@@ -84,6 +85,15 @@ const AdminCoupons = () => {
 
   const handleEdit = (coupon) => {
     setEditingCoupon(coupon);
+    
+    // Helper to safely convert date strings
+    const toDateInputValue = (dateStr) => {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return ''; // Invalid date
+      return date.toISOString().slice(0, 16);
+    };
+    
     setFormData({
       code: coupon.code,
       description: coupon.description,
@@ -91,8 +101,8 @@ const AdminCoupons = () => {
       discountValue: coupon.discountValue,
       minOrderAmount: coupon.minOrderAmount,
       maxDiscountAmount: coupon.maxDiscountAmount || '',
-      validFrom: new Date(coupon.validFrom).toISOString().slice(0, 16),
-      validUntil: new Date(coupon.validUntil).toISOString().slice(0, 16),
+      validFrom: toDateInputValue(coupon.validFrom),
+      validUntil: toDateInputValue(coupon.validUntil),
       usageLimit: coupon.usageLimit || '',
       isActive: coupon.isActive,
       applicableCategories: coupon.applicableCategories || []

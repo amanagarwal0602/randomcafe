@@ -169,12 +169,14 @@ export const getMenuItems = async () => {
     // Parse numeric fields from strings
     return items.map(item => ({
       ...item,
+      _id: item.id,
       price: parseFloat(item.price) || 0,
       preparation_time: parseInt(item.preparation_time) || 0,
       calories: parseInt(item.calories) || 0,
       rating_average: parseFloat(item.rating_average) || 0,
       rating_count: parseInt(item.rating_count) || 0,
       order_count: parseInt(item.order_count) || 0,
+      isAvailable: parseBoolean(item.is_available),
       is_available: parseBoolean(item.is_available),
       is_special: parseBoolean(item.is_special),
       ingredients: typeof item.ingredients === 'string' ? JSON.parse(item.ingredients || '[]') : (item.ingredients || []),
@@ -210,9 +212,31 @@ export const getMenuItemById = async (id) => {
 };
 
 export const updateMenuItem = async (id, itemData) => {
-  itemData.updated_at = getTimestamp();
-  const response = await sheetdb.patch(`/id/${id}`, itemData);
+  const payload = { ...itemData };
+  if ('isAvailable' in payload) {
+    payload.is_available = payload.isAvailable;
+    delete payload.isAvailable;
+  }
+  payload.updated_at = getTimestamp();
+  const response = await sheetdb.patch(`/id/${id}`, payload);
   return response.data;
+};
+
+export const toggleMenuItemAvailability = async (id) => {
+  // Get current menu item using search endpoint
+  const response = await sheetdb.get(`/search?id=${id}`);
+  const currentItem = response.data[0];
+  if (!currentItem) throw new Error('Menu item not found');
+  
+  // Toggle is_available
+  const newStatus = !parseBoolean(currentItem.is_available);
+  const updateData = {
+    is_available: newStatus,
+    updated_at: getTimestamp()
+  };
+  
+  const updateResponse = await sheetdb.patch(`/id/${id}`, updateData);
+  return updateResponse.data;
 };
 
 export const deleteMenuItem = async (id) => {
@@ -353,10 +377,23 @@ export const getReservations = async () => {
   try {
     const response = await sheetdb.get('/search?table_type=reservation');
     const reservations = Array.isArray(response.data) ? response.data : [];
-    // Parse numeric fields from strings
+    // Map fields to match UI expectations
     return reservations.map(res => ({
       ...res,
-      number_of_guests: parseInt(res.number_of_guests) || 1
+      _id: res.id,
+      reservationNumber: res.reservation_number,
+      userId: res.user_id,
+      guestName: res.guest_name,
+      guestEmail: res.guest_email,
+      guestPhone: res.guest_phone,
+      numberOfGuests: parseInt(res.number_of_guests) || 1,
+      number_of_guests: parseInt(res.number_of_guests) || 1,
+      timeSlot: res.time_slot,
+      tableNumber: res.table_number,
+      specialRequests: res.special_requests,
+      confirmedAt: res.confirmed_at,
+      cancelledAt: res.cancelled_at,
+      cancellationReason: res.cancellation_reason
     }));
   } catch (error) {
     console.error('getReservations error:', error.response?.data || error.message);
@@ -400,15 +437,19 @@ export const getCoupons = async () => {
   try {
     const response = await sheetdb.get('/search?table_type=coupon');
     const coupons = Array.isArray(response.data) ? response.data : [];
-    // Parse numeric fields from strings
+    // Parse numeric fields from strings and add _id field, map to camelCase
     return coupons.map(coupon => ({
       ...coupon,
-      discount_value: parseFloat(coupon.discount_value) || 0,
-      min_order_amount: parseFloat(coupon.min_order_amount) || 0,
-      max_discount_amount: parseFloat(coupon.max_discount_amount) || 0,
-      usage_limit: parseInt(coupon.usage_limit) || 0,
-      used_count: parseInt(coupon.used_count) || 0,
-      is_active: parseBoolean(coupon.is_active)
+      _id: coupon.id, // Add _id for frontend compatibility
+      discountValue: parseFloat(coupon.discount_value) || 0,
+      minOrderAmount: parseFloat(coupon.min_order_amount) || 0,
+      maxDiscountAmount: parseFloat(coupon.max_discount_amount) || null,
+      validFrom: coupon.valid_from,
+      validUntil: coupon.valid_until,
+      usageLimit: parseInt(coupon.usage_limit) || null,
+      usedCount: parseInt(coupon.used_count) || 0,
+      isActive: parseBoolean(coupon.is_active),
+      applicableCategories: coupon.applicable_categories ? JSON.parse(coupon.applicable_categories) : []
     }));
   } catch (error) {
     console.error('getCoupons error:', error.response?.data || error.message);
@@ -451,6 +492,23 @@ export const updateCoupon = async (id, couponData) => {
   couponData.updated_at = getTimestamp();
   const response = await sheetdb.patch(`/id/${id}`, couponData);
   return response.data;
+};
+
+export const toggleCouponStatus = async (id) => {
+  // Get current coupon using search endpoint
+  const response = await sheetdb.get(`/search?id=${id}`);
+  const currentCoupon = response.data[0];
+  if (!currentCoupon) throw new Error('Coupon not found');
+  
+  // Toggle is_active
+  const newStatus = !parseBoolean(currentCoupon.is_active);
+  const updateData = {
+    is_active: newStatus,
+    updated_at: getTimestamp()
+  };
+  
+  const updateResponse = await sheetdb.patch(`/id/${id}`, updateData);
+  return updateResponse.data;
 };
 
 export const deleteCoupon = async (id) => {

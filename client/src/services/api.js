@@ -23,6 +23,7 @@ const api = {
       
       if (parts[0] === 'orders') return { data: { data: await sheetdb.getOrders() } };
       if (parts[0] === 'reservations') return { data: { data: await sheetdb.getReservations() } };
+      if (parts[0] === 'admin' && parts[1] === 'reservations') return { data: { data: await sheetdb.getReservations() } };
       if (parts[0] === 'coupons') return { data: { data: await sheetdb.getCoupons() } };
       if (parts[0] === 'gallery') return { data: { data: await sheetdb.getGalleryItems() } };
       if (parts[0] === 'reviews') return { data: { data: await sheetdb.getReviews() } };
@@ -73,6 +74,9 @@ const api = {
       if (parts[0] === 'menu') return { data: { data: await sheetdb.updateMenuItem(id, data) } };
       if (parts[0] === 'orders') return { data: { data: await sheetdb.updateOrder(id, data) } };
       if (parts[0] === 'reservations') return { data: { data: await sheetdb.updateReservation(id, data) } };
+      if (parts[0] === 'admin' && parts[1] === 'reservations' && parts[3] === 'status') {
+        return { data: { data: await sheetdb.updateReservation(parts[2], data) } };
+      }
       if (parts[0] === 'coupons') return { data: { data: await sheetdb.updateCoupon(id, data) } };
       if (parts[0] === 'gallery') return { data: { data: await sheetdb.updateGalleryItem(id, data) } };
       if (parts[0] === 'reviews') return { data: { data: await sheetdb.updateReview(id, data) } };
@@ -93,7 +97,23 @@ const api = {
   },
   
   patch: async (url, data) => {
-    return api.put(url, data);
+    try {
+      const parts = url.replace('/api/', '').split('/').filter(Boolean);
+      const id = parts[parts.length - 2] || parts[parts.length - 1];
+      
+      // Handle special toggle endpoints
+      if (parts[0] === 'coupons' && parts[2] === 'toggle') {
+        return { data: { data: await sheetdb.toggleCouponStatus(id) } };
+      }
+      if (parts[0] === 'menu' && parts[2] === 'toggle') {
+        return { data: { data: await sheetdb.toggleMenuItemAvailability(id) } };
+      }
+      
+      return api.put(url, data);
+    } catch (error) {
+      console.error('API PATCH Error:', url, error);
+      throw error;
+    }
   },
   
   delete: async (url) => {

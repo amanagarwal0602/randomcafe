@@ -42,9 +42,10 @@ const AdminGallery = () => {
   const fetchImages = async () => {
     try {
       const response = await api.get('/gallery');
-      setImages(response.data.data.images);
+      setImages(response.data.data || []);
     } catch (error) {
       toast.error('Failed to load gallery');
+      setImages([]);
     }
   };
 
