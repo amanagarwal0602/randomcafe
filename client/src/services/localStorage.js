@@ -993,31 +993,71 @@ export const createOrder = async (orderData) => {
 
 export const getOrders = async () => {
   const data = getData();
-  return (data.orders || []).map(order => ({
-    ...order,
-    _id: order.id,
-    total: order.total_price || order.total || 0,
-    userId: order.user_id,
-    userName: order.user_name,
-    userEmail: order.user_email,
-    userPhone: order.user_phone,
-    customerName: order.user_name,
-    customerEmail: order.user_email,
-    deliveryFee: order.delivery_fee,
-    couponCode: order.coupon_code,
-    paymentMethod: order.payment_method,
-    paymentStatus: order.payment_status,
-    deliveryType: order.delivery_type,
-    specialInstructions: order.special_instructions,
-    estimatedDelivery: order.estimated_delivery,
-    deliveryAddress: {
-      street: order.delivery_address_street,
-      city: order.delivery_address_city,
-      state: order.delivery_address_state,
-      zipCode: order.delivery_address_zipcode,
-      country: order.delivery_address_country
+  return (data.orders || []).map(order => {
+    // Parse items if stored as JSON string
+    let items = order.items;
+    if (typeof items === 'string') {
+      try {
+        items = JSON.parse(items);
+      } catch (e) {
+        items = [];
+      }
     }
-  }));
+    
+    // Map items to consistent format
+    const mappedItems = (items || []).map(item => ({
+      ...item,
+      name: item.name || item.itemName || item.item_name,
+      itemName: item.name || item.itemName || item.item_name,
+      price: item.price || item.itemPrice || item.item_price || 0,
+      itemPrice: item.price || item.itemPrice || item.item_price || 0,
+      quantity: item.quantity || 1
+    }));
+    
+    // Handle delivery address - can be string or object
+    let deliveryAddress = order.delivery_address;
+    if (typeof deliveryAddress === 'string') {
+      // Keep as string for display
+      deliveryAddress = deliveryAddress;
+    } else if (deliveryAddress) {
+      // If it's an object, format it
+      deliveryAddress = `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}, ${deliveryAddress.state || ''} ${deliveryAddress.zipCode || ''}`.trim();
+    } else {
+      // Build from individual fields if available
+      deliveryAddress = [
+        order.delivery_address_street,
+        order.delivery_address_city,
+        order.delivery_address_state,
+        order.delivery_address_zipcode
+      ].filter(Boolean).join(', ');
+    }
+    
+    return {
+      ...order,
+      _id: order.id,
+      orderNumber: order.order_number || order.orderNumber || order.id,
+      total: order.total_price || order.total || 0,
+      totalPrice: order.total_price || order.total || 0,
+      userId: order.user_id,
+      userName: order.user_name,
+      userEmail: order.user_email,
+      userPhone: order.user_phone,
+      customerName: order.user_name,
+      customerEmail: order.user_email,
+      deliveryAddress: deliveryAddress,
+      deliveryFee: order.delivery_fee,
+      couponCode: order.coupon_code,
+      paymentMethod: order.payment_method,
+      paymentStatus: order.payment_status,
+      deliveryType: order.delivery_type,
+      specialInstructions: order.special_instructions,
+      estimatedDelivery: order.estimated_delivery,
+      items: mappedItems,
+      createdAt: order.created_at || order.createdAt,
+      updatedAt: order.updated_at || order.updatedAt,
+      status: order.status || 'pending'
+    };
+  });
 };
 
 export const updateOrder = async (id, updates) => {
