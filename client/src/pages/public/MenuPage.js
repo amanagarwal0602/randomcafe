@@ -10,6 +10,7 @@ const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [vegOnly, setVegOnly] = useState(false); // single veg-only toggle
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
@@ -56,6 +57,11 @@ const MenuPage = () => {
 
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(item => item.category === selectedCategory);
+    }
+
+    // Veg Only toggle
+    if (vegOnly) {
+      filtered = filtered.filter(item => item.is_veg === true || item.isVeg === true);
     }
 
     return filtered;
@@ -156,8 +162,8 @@ const MenuPage = () => {
       </div>
 
       <div className="container-custom py-12">
-        {/* Search and Filter */}
-        <div className="mb-8 flex flex-col md:flex-row gap-4">
+        {/* Search, Category, Veg Only Toggle */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center">
           <div className="flex-1 relative">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -168,7 +174,6 @@ const MenuPage = () => {
               className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-          
           <div className="flex gap-2 overflow-x-auto pb-2">
             {categories.map(category => (
               <button
@@ -184,6 +189,16 @@ const MenuPage = () => {
               </button>
             ))}
           </div>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={vegOnly}
+              onChange={e => setVegOnly(e.target.checked)}
+              className="form-checkbox h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+            />
+            <span className={`font-medium text-green-700 ${vegOnly ? 'font-bold' : ''}`}>Veg Only</span>
+            {vegOnly && <span className="text-green-600 text-lg">🌱</span>}
+          </label>
         </div>
 
         {/* Menu Display - Section-wise or Grid */}

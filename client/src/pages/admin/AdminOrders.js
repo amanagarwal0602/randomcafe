@@ -83,10 +83,11 @@ const AdminOrders = () => {
     setShowBill(true);
   };
 
-  const printBill = () => {
+  const printBill = (order) => {
+    if (!order) return;
     const printContent = billRef.current;
     const windowPrint = window.open('', '', 'width=800,height=600');
-    windowPrint.document.write('<html><head><title>Bill #' + selectedOrder.dailyBillNumber + '</title>');
+    windowPrint.document.write('<html><head><title>Bill #' + order.dailyBillNumber + '</title>');
     windowPrint.document.write('<style>');
     windowPrint.document.write(`
       body { font-family: Arial, sans-serif; padding: 20px; }
@@ -337,20 +338,12 @@ const AdminOrders = () => {
                                 <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => viewBill(order)}
-                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
-                                >
-                                  <FiEye /> View
-                                </button>
-                                <button
-                                  onClick={() => { setSelectedOrder(order); printBill(); }}
-                                  className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm flex items-center justify-center gap-1"
-                                >
-                                  <FiPrinter /> Print
-                                </button>
-                              </div>
+                              <button
+                                onClick={() => viewBill(order)}
+                                className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                              >
+                                <FiEye /> View Bill
+                              </button>
                             </div>
                           </div>
 
@@ -430,20 +423,12 @@ const AdminOrders = () => {
                       <option value="delivered">Delivered</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => viewBill(order)}
-                        className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
-                      >
-                        <FiEye /> View Bill
-                      </button>
-                      <button
-                        onClick={() => { setSelectedOrder(order); printBill(); }}
-                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm flex items-center justify-center gap-1"
-                      >
-                        <FiPrinter /> Print
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => viewBill(order)}
+                      className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                    >
+                      <FiEye /> View Bill
+                    </button>
                   </div>
                 </div>
 
