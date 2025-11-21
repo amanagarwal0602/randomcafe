@@ -228,7 +228,7 @@ const generateMenuItems = () => {
 // Also ensure every customer has at least $10 in purchases
 const generateOrders = (menuItems, customers) => {
   const orders = [];
-  const statuses = ['pending', 'preparing', 'ready', 'delivered', 'completed', 'cancelled'];
+  const statuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
   const customerOrderMap = {}; // Track total spending per customer
   
   // First, generate regular orders
@@ -261,11 +261,28 @@ const generateOrders = (menuItems, customers) => {
         });
       }
       
-      const status = day === 0 ? statuses[Math.floor(Math.random() * 4)] : 'completed'; // Today's orders varied, past orders completed
+      // Status distribution: today has varied statuses, recent days mostly delivered, old orders all delivered
+      let status;
+      if (day === 0) {
+        // Today: 40% delivered, 20% ready, 20% preparing, 10% confirmed, 10% pending
+        const rand = Math.random();
+        if (rand < 0.4) status = 'delivered';
+        else if (rand < 0.6) status = 'ready';
+        else if (rand < 0.8) status = 'preparing';
+        else if (rand < 0.9) status = 'confirmed';
+        else status = 'pending';
+      } else if (day <= 2) {
+        // Last 2 days: mostly delivered with few ready
+        status = Math.random() < 0.9 ? 'delivered' : 'ready';
+      } else {
+        // Older orders: all delivered with rare cancelled
+        status = Math.random() < 0.98 ? 'delivered' : 'cancelled';
+      }
       
       orders.push({
         id: `order${String(orders.length + 1).padStart(5, '0')}`,
         table_type: 'order',
+        order_number: `ORD-${String(orders.length + 1).padStart(5, '0')}`,
         user_id: customer.id,
         user_name: customer.name,
         user_email: customer.email,
@@ -327,6 +344,7 @@ const generateOrders = (menuItems, customers) => {
       orders.push({
         id: `order${String(orders.length + 1).padStart(5, '0')}`,
         table_type: 'order',
+        order_number: `ORD-${String(orders.length + 1).padStart(5, '0')}`,
         user_id: customer.id,
         user_name: customer.name,
         user_email: customer.email,
@@ -336,7 +354,7 @@ const generateOrders = (menuItems, customers) => {
         delivery_address: `${customer.address_street}, ${customer.address_city}, ${customer.address_state} ${customer.address_zipcode}`,
         payment_method: ['card', 'cash', 'online'][Math.floor(Math.random() * 3)],
         payment_status: 'paid',
-        status: 'completed',
+        status: 'delivered',
         special_instructions: '',
         created_at: orderDate.toISOString(),
         updated_at: orderDate.toISOString()
