@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -80,7 +80,8 @@ function App() {
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
           
           {/* Admin Panel */}
-          <Route path="/admin" element={<ProtectedRoute roles={['admin', 'staff']}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin', 'staff']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute roles={['admin', 'staff']}><AdminOrders /></ProtectedRoute>} />
           <Route path="/admin/reservations" element={<ProtectedRoute roles={['admin', 'staff']}><AdminReservations /></ProtectedRoute>} />
           <Route path="/admin/menu" element={<ProtectedRoute roles={['admin', 'staff']}><AdminMenu /></ProtectedRoute>} />

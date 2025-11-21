@@ -72,7 +72,7 @@
     <div id="summary"></div>
     
     <button class="btn" onclick="showData()">📋 Show Data</button>
-    <button class="btn" onclick="clearAll()">🗑️ CLEAR ALL DATA</button>
+    <button class="btn" onclick="clearAll()">🗑️ Clear Data (Keep Admin)</button>
     
     <div id="message"></div>
   </div>
@@ -132,23 +132,68 @@
     }
 
     function clearAll() {
-      if (!confirm('Are you sure? This will delete ALL data and reload the page!')) {
+      if (!confirm('⚠️ This will clear all data except the admin user. Continue?')) {
         return;
       }
       
       const message = document.getElementById('message');
-      message.innerHTML = '<p>🔄 Clearing all data...</p>';
+      message.innerHTML = '<p>🔄 Clearing data...</p>';
       
-      // Clear everything
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      message.innerHTML = '<p class="success">✅ ALL DATA CLEARED!</p>';
-      message.innerHTML += '<p>Reloading in 2 seconds...</p>';
-      
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 2000);
+      try {
+        // Get existing data
+        const data = localStorage.getItem('cafe_data');
+        
+        if (data) {
+          const parsed = JSON.parse(data);
+          
+          // Keep only admin user
+          const adminUser = parsed.users?.find(u => u.role === 'admin' && u.email === 'admin@lumierecafe.com');
+          
+          if (adminUser) {
+            // Reset data structure with only admin
+            const resetData = {
+              users: [adminUser],
+              menu: [],
+              orders: [],
+              reservations: [],
+              gallery: [],
+              reviews: [],
+              hero: [],
+              about: [],
+              features: [],
+              team: [],
+              contactInfo: [],
+              siteSettings: [],
+              coupons: [],
+              roles: [],
+              permissions: []
+            };
+            
+            localStorage.setItem('cafe_data', JSON.stringify(resetData));
+            message.innerHTML = '<p class="success">✅ Data cleared! Only admin user retained.</p>';
+          } else {
+            // No admin found, clear everything
+            localStorage.clear();
+            message.innerHTML = '<p class="success">✅ ALL DATA CLEARED! (No admin found)</p>';
+          }
+        } else {
+          localStorage.clear();
+          message.innerHTML = '<p class="success">✅ ALL DATA CLEARED!</p>';
+        }
+        
+        // Clear auth tokens
+        localStorage.removeItem('lumiere_auth');
+        localStorage.removeItem('accessToken');
+        sessionStorage.clear();
+        
+        message.innerHTML += '<p>Reloading in 2 seconds...</p>';
+        
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } catch (e) {
+        message.innerHTML = '<p style="color: red;">❌ Error: ' + e.message + '</p>';
+      }
     }
 
     // Check on load

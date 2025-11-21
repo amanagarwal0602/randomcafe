@@ -8,11 +8,14 @@ const AdminMenu = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    category: 'breakfast',
+    category: '',
     image: '',
     isAvailable: true
   });
@@ -36,12 +39,14 @@ const AdminMenu = () => {
         name: '',
         description: '',
         price: '',
-        category: 'breakfast',
+        category: categories.length > 0 ? categories[0] : '',
         image: '',
         isAvailable: true
       });
     }
-  }, [editItem]);
+    setShowNewCategory(false);
+    setNewCategoryName('');
+  }, [editItem, categories]);
 
   const fetchMenuItems = async () => {
     try {
@@ -49,15 +54,22 @@ const AdminMenu = () => {
       const response = await api.get('/menu');
       console.log('Menu API Response:', response.data);
       if (response.data && response.data.data && response.data.data.items) {
-        setMenuItems(response.data.data.items);
+        const items = response.data.data.items;
+        setMenuItems(items);
+        
+        // Extract unique categories from menu items
+        const uniqueCategories = [...new Set(items.map(item => item.category).filter(Boolean))];
+        setCategories(uniqueCategories.sort());
       } else {
         console.error('Unexpected response structure:', response.data);
         setMenuItems([]);
+        setCategories([]);
       }
     } catch (error) {
       console.error('Failed to load menu items:', error);
       toast.error(error.response?.data?.message || 'Failed to load menu items');
       setMenuItems([]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -65,21 +77,30 @@ const AdminMenu = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // If creating new category, add it to the formData
+    const submitData = { ...formData };
+    if (showNewCategory && newCategoryName.trim()) {
+      submitData.category = newCategoryName.trim();
+    }
+    
     try {
-      console.log('Submitting form data:', formData);
+      console.log('Submitting form data:', submitData);
       console.log('Auth token:', localStorage.getItem('accessToken') ? 'Present' : 'Missing');
       
       if (editItem) {
-        const response = await api.put(`/menu/${editItem._id}`, formData);
+        const response = await api.put(`/menu/${editItem._id}`, submitData);
         console.log('Update response:', response.data);
         toast.success('Menu item updated successfully');
       } else {
-        const response = await api.post('/menu', formData);
+        const response = await api.post('/menu', submitData);
         console.log('Create response:', response.data);
         toast.success('Menu item added successfully');
       }
       setShowModal(false);
       setEditItem(null);
+      setShowNewCategory(false);
+      setNewCategoryName('');
       fetchMenuItems();
     } catch (error) {
       console.error('Save error details:', {
@@ -229,19 +250,49 @@ const AdminMenu = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Category *</label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="input-field"
-                      required
-                    >
-                      <option value="breakfast">Breakfast</option>
-                      <option value="lunch">Lunch</option>
-                      <option value="dinner">Dinner</option>
-                      <option value="drinks">Drinks</option>
-                      <option value="desserts">Desserts</option>
-                      <option value="appetizers">Appetizers</option>
-                    </select>
+                    {!showNewCategory ? (
+                      <div className="space-y-2">
+                        <select
+                          value={formData.category}
+                          onChange={(e) => setFormData({...formData, category: e.target.value})}
+                          className="input-field"
+                          required
+                        >
+                          <option value="">Select Category</option>
+                          {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => setShowNewCategory(true)}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          + Create New Category
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          className="input-field"
+                          placeholder="Enter new category name"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowNewCategory(false);
+                            setNewCategoryName('');
+                          }}
+                          className="text-sm text-gray-600 hover:text-gray-700 font-medium"
+                        >
+                          ← Use Existing Category
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div>
