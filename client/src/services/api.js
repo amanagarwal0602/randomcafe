@@ -23,6 +23,7 @@ const api = {
       }
       
       if (parts[0] === 'orders') return { data: { data: await db.getOrders() } };
+      if (parts[0] === 'admin' && parts[1] === 'orders') return { data: { data: await db.getOrders() } };
       if (parts[0] === 'reservations') return { data: { data: await db.getReservations() } };
       if (parts[0] === 'admin' && parts[1] === 'reservations') return { data: { data: await db.getReservations() } };
       if (parts[0] === 'coupons') return { data: { data: await db.getCoupons() } };
