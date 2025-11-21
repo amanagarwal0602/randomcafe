@@ -285,11 +285,25 @@ export const getOrders = async () => {
     // Parse numeric fields from strings
     return orders.map(order => ({
       ...order,
+      _id: order.id,
+      orderNumber: order.order_number,
+      userId: order.user_id,
       subtotal: parseFloat(order.subtotal) || 0,
       tax: parseFloat(order.tax) || 0,
       delivery_fee: parseFloat(order.delivery_fee) || 0,
+      deliveryFee: parseFloat(order.delivery_fee) || 0,
       discount: parseFloat(order.discount) || 0,
-      total: parseFloat(order.total) || 0
+      total: parseFloat(order.total) || 0,
+      couponCode: order.coupon_code,
+      orderType: order.order_type,
+      paymentMethod: order.payment_method,
+      paymentStatus: order.payment_status,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone,
+      specialInstructions: order.special_instructions,
+      estimatedTime: order.estimated_time,
+      completedAt: order.completed_at
     }));
   } catch (error) {
     console.error('getOrders error:', error.response?.data || error.message);
@@ -304,11 +318,25 @@ export const getOrdersByUserId = async (userId) => {
   // Parse numeric fields from strings
   return orders.map(order => ({
     ...order,
+    _id: order.id,
+    orderNumber: order.order_number,
+    userId: order.user_id,
     subtotal: parseFloat(order.subtotal) || 0,
     tax: parseFloat(order.tax) || 0,
     delivery_fee: parseFloat(order.delivery_fee) || 0,
+    deliveryFee: parseFloat(order.delivery_fee) || 0,
     discount: parseFloat(order.discount) || 0,
-    total: parseFloat(order.total) || 0
+    total: parseFloat(order.total) || 0,
+    couponCode: order.coupon_code,
+    orderType: order.order_type,
+    paymentMethod: order.payment_method,
+    paymentStatus: order.payment_status,
+    customerName: order.customer_name,
+    customerEmail: order.customer_email,
+    customerPhone: order.customer_phone,
+    specialInstructions: order.special_instructions,
+    estimatedTime: order.estimated_time,
+    completedAt: order.completed_at
   }));
 };
 
@@ -441,6 +469,7 @@ export const getCoupons = async () => {
     return coupons.map(coupon => ({
       ...coupon,
       _id: coupon.id, // Add _id for frontend compatibility
+      discountType: coupon.discount_type,
       discountValue: parseFloat(coupon.discount_value) || 0,
       minOrderAmount: parseFloat(coupon.min_order_amount) || 0,
       maxDiscountAmount: parseFloat(coupon.max_discount_amount) || null,
@@ -543,8 +572,10 @@ export const getGalleryItems = async () => {
     // Parse numeric and boolean fields
     return items.map(item => ({
       ...item,
+      _id: item.id,
       order: parseInt(item.order) || 0,
       is_published: parseBoolean(item.is_published),
+      isPublished: parseBoolean(item.is_published),
       tags: typeof item.tags === 'string' ? JSON.parse(item.tags || '[]') : (item.tags || [])
     }));
   } catch (error) {
@@ -616,8 +647,10 @@ export const getFeatures = async () => {
     // Parse numeric and boolean fields
     return features.map(feat => ({
       ...feat,
+      _id: feat.id,
       order: parseInt(feat.order) || 0,
-      is_active: parseBoolean(feat.is_active)
+      is_active: parseBoolean(feat.is_active),
+      isActive: parseBoolean(feat.is_active)
     }));
   } catch (error) {
     console.error('getFeatures error:', error.response?.data || error.message);
@@ -660,9 +693,12 @@ export const getTeamMembers = async () => {
     // Parse numeric and boolean fields
     return members.map(member => ({
       ...member,
+      _id: member.id,
       order: parseInt(member.order) || 0,
       is_active: parseBoolean(member.is_active),
-      social_links: typeof member.social_links === 'string' ? JSON.parse(member.social_links || '{}') : (member.social_links || {})
+      isActive: parseBoolean(member.is_active),
+      social_links: typeof member.social_links === 'string' ? JSON.parse(member.social_links || '{}') : (member.social_links || {}),
+      socialLinks: typeof member.social_links === 'string' ? JSON.parse(member.social_links || '{}') : (member.social_links || {})
     }));
   } catch (error) {
     console.error('getTeamMembers error:', error.response?.data || error.message);
@@ -790,10 +826,14 @@ export const getReviews = async () => {
     // Parse numeric and boolean fields
     return reviews.map(review => ({
       ...review,
+      _id: review.id,
       rating: parseInt(review.rating) || 0,
       helpful_count: parseInt(review.helpful_count) || 0,
+      helpfulCount: parseInt(review.helpful_count) || 0,
       is_published: parseBoolean(review.is_published),
+      isPublished: parseBoolean(review.is_published),
       is_verified_purchase: parseBoolean(review.is_verified_purchase),
+      isVerifiedPurchase: parseBoolean(review.is_verified_purchase),
       images: typeof review.images === 'string' ? JSON.parse(review.images || '[]') : (review.images || [])
     }));
   } catch (error) {
