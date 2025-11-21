@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
-import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign } from 'react-icons/fi';
+import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -11,6 +11,8 @@ const AdminOrders = () => {
   const [showBill, setShowBill] = useState(false);
   const [dateFilter, setDateFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'dateWise'
+  const [expandedDates, setExpandedDates] = useState({});
   const billRef = useRef();
 
   useEffect(() => {
@@ -136,6 +138,26 @@ const AdminOrders = () => {
     );
   });
 
+  // Group orders by date
+  const ordersByDate = filteredOrders.reduce((acc, order) => {
+    const date = order.createdAt ? new Date(order.createdAt).toDateString() : 'Unknown Date';
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(order);
+    return acc;
+  }, {});
+
+  // Sort dates descending (newest first)
+  const sortedDates = Object.keys(ordersByDate).sort((a, b) => new Date(b) - new Date(a));
+
+  const toggleDateExpansion = (date) => {
+    setExpandedDates(prev => ({
+      ...prev,
+      [date]: !prev[date]
+    }));
+  };
+
   // Calculate daily total
   const dailyTotal = dateFilter 
     ? filteredOrders.reduce((sum, order) => sum + (order.total || order.totalPrice || 0), 0)
@@ -159,21 +181,46 @@ const AdminOrders = () => {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-xl shadow mb-6 space-y-4">
-          <div className="flex gap-2 flex-wrap">
-            <span className="font-semibold text-gray-700 flex items-center">Status:</span>
-            {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex gap-2 flex-wrap">
+              <span className="font-semibold text-gray-700 flex items-center">Status:</span>
+              {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    filter === status
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex gap-2">
               <button
-                key={status}
-                onClick={() => setFilter(status)}
+                onClick={() => setViewMode('list')}
                 className={`px-4 py-2 rounded-lg font-medium transition ${
-                  filter === status
+                  viewMode === 'list'
                     ? 'bg-primary-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+                List View
               </button>
-            ))}
+              <button
+                onClick={() => setViewMode('dateWise')}
+                className={`px-4 py-2 rounded-lg font-medium transition ${
+                  viewMode === 'dateWise'
+                    ? 'bg-primary-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Date-wise View
+              </button>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -209,6 +256,131 @@ const AdminOrders = () => {
         ) : filteredOrders.length === 0 ? (
           <div className="bg-white p-12 rounded-xl shadow text-center">
             <p className="text-gray-600 text-lg">No orders found</p>
+          </div>
+        ) : viewMode === 'dateWise' ? (
+          <div className="space-y-4">
+            {sortedDates.map(date => {
+              const dateOrders = ordersByDate[date];
+              const isExpanded = expandedDates[date];
+              const dateTotal = dateOrders.reduce((sum, order) => sum + (order.total || order.totalPrice || 0), 0);
+              
+              return (
+                <div key={date} className="bg-white rounded-xl shadow overflow-hidden">
+                  <div 
+                    className="p-6 bg-gradient-to-r from-primary-50 to-primary-100 cursor-pointer hover:from-primary-100 hover:to-primary-200 transition"
+                    onClick={() => toggleDateExpansion(date)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-4">
+                        <FiCalendar size={24} className="text-primary-600" />
+                        <div>
+                          <h3 className="font-bold text-xl text-gray-800">
+                            {new Date(date).toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </h3>
+                          <p className="text-sm text-gray-600">{dateOrders.length} orders</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">Daily Total</p>
+                          <p className="text-2xl font-bold text-primary-600">${dateTotal.toFixed(2)}</p>
+                        </div>
+                        {isExpanded ? <FiChevronUp size={24} /> : <FiChevronDown size={24} />}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {isExpanded && (
+                    <div className="p-6 space-y-4 border-t">
+                      {dateOrders.map(order => (
+                        <div key={order._id} className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition">
+                          <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
+                            <div className="flex-1 min-w-[200px]">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="font-bold text-lg">Bill #{order.dailyBillNumber}</h3>
+                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
+                                  {(order.status || 'pending').toUpperCase()}
+                                </span>
+                              </div>
+                              <p className="text-gray-600 text-sm">
+                                Customer: {order.customerName || order.userName || 'Guest'}
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {order.customerEmail || order.userEmail || 'N/A'}
+                              </p>
+                              <p className="text-gray-500 text-xs mt-1">
+                                {order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                }) : 'Time unknown'}
+                              </p>
+                            </div>
+
+                            <div className="text-right">
+                              <p className="text-2xl font-bold text-primary-600 mb-3">
+                                ${(order.total || order.totalPrice || 0).toFixed(2)}
+                              </p>
+                              <select
+                                value={order.status || 'pending'}
+                                onChange={(e) => updateStatus(order._id, e.target.value)}
+                                className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="preparing">Preparing</option>
+                                <option value="ready">Ready</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => viewBill(order)}
+                                  className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                                >
+                                  <FiEye /> View
+                                </button>
+                                <button
+                                  onClick={() => { setSelectedOrder(order); printBill(); }}
+                                  className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm flex items-center justify-center gap-1"
+                                >
+                                  <FiPrinter /> Print
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Order Items Preview */}
+                          <div className="border-t pt-3 mt-3">
+                            <div className="space-y-1">
+                              {order.items && order.items.length > 0 ? (
+                                order.items.map((item, i) => (
+                                  <div key={i} className="flex justify-between text-sm">
+                                    <span className="text-gray-700">
+                                      {item.name || item.itemName || item.menuItem?.name || 'Unknown Item'} 
+                                      <span className="text-gray-500"> x{item.quantity || 1}</span>
+                                    </span>
+                                    <span className="font-medium">
+                                      ${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-gray-500 text-sm">No items</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="space-y-4">
