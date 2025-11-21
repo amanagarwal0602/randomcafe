@@ -44,6 +44,7 @@ import AdminTeam from './pages/admin/AdminTeam';
 import AdminContactInfo from './pages/admin/AdminContactInfo';
 import AdminSiteSettings from './pages/admin/AdminSiteSettings';
 import AdminCoupons from './pages/admin/AdminCoupons';
+import AdminRoles from './pages/admin/AdminRoles';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
@@ -94,6 +95,7 @@ function App() {
           <Route path="/admin/contact-info" element={<ProtectedRoute roles={['admin']}><AdminContactInfo /></ProtectedRoute>} />
           <Route path="/admin/site-settings" element={<ProtectedRoute roles={['admin']}><AdminSiteSettings /></ProtectedRoute>} />
           <Route path="/admin/coupons" element={<ProtectedRoute roles={['admin']}><AdminCoupons /></ProtectedRoute>} />
+          <Route path="/admin/roles" element={<ProtectedRoute roles={['admin']}><AdminRoles /></ProtectedRoute>} />
         </Routes>
       </main>
       

@@ -1,15 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiShoppingCart, FiUser, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import api from '../../services/api';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [siteName, setSiteName] = useState('Lumière');
   const { user, logout, isAdmin, isStaff } = useAuth();
   const { getItemCount } = useCart();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchSiteName();
+  }, []);
+
+  const fetchSiteName = async () => {
+    try {
+      const response = await api.get('/about');
+      const title = response.data?.title || 'Lumière';
+      setSiteName(title.replace(' Café', '').replace(' Cafe', ''));
+    } catch (error) {
+      console.error('Failed to load site name:', error);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -31,7 +47,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-3xl font-serif font-bold text-primary-500">Lumière</span>
+            <span className="text-3xl font-serif font-bold text-primary-500">{siteName}</span>
             <span className="text-sm text-gray-600 hidden sm:block">CAFÉ</span>
           </Link>
 

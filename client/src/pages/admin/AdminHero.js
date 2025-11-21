@@ -24,7 +24,20 @@ const AdminHero = () => {
   const fetchHero = async () => {
     try {
       const { data } = await api.get('/hero');
-      setFormData(data);
+      console.log('Hero data received:', data);
+      
+      // Map the data to formData structure
+      setFormData({
+        title: data.title || '',
+        subtitle: data.subtitle || '',
+        description: data.description || '',
+        backgroundImage: data.backgroundImage || '',
+        primaryButtonText: data.primaryButtonText || '',
+        primaryButtonLink: data.primaryButtonLink || '',
+        secondaryButtonText: data.secondaryButtonText || '',
+        secondaryButtonLink: data.secondaryButtonLink || '',
+        isActive: data.isActive !== false
+      });
     } catch (error) {
       console.error('Fetch hero error:', error);
       toast.error('Failed to load hero section');

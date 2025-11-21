@@ -16,13 +16,13 @@ const MenuPage = () => {
   useEffect(() => {
     fetchMenuItems();
     fetchCategories();
-  }, [selectedCategory]);
+  }, []);
 
   const fetchMenuItems = async () => {
     try {
-      const params = selectedCategory !== 'all' ? { category: selectedCategory } : {};
-      const response = await api.get('/menu', { params });
-      setMenuItems(response.data.data.items);
+      const response = await api.get('/menu');
+      const items = response.data.data?.items || response.data.data || response.data || [];
+      setMenuItems(items);
     } catch (error) {
       toast.error('Failed to load menu items');
     } finally {
@@ -32,10 +32,13 @@ const MenuPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get('/menu/categories/list');
-      setCategories(['all', ...response.data.data.map(c => c.category)]);
+      const response = await api.get('/menu');
+      const items = response.data.data?.items || response.data.data || response.data || [];
+      const uniqueCategories = [...new Set(items.map(item => item.category))].filter(Boolean);
+      setCategories(['all', ...uniqueCategories]);
     } catch (error) {
       console.error('Failed to load categories');
+      setCategories(['all']);
     }
   };
 
@@ -44,14 +47,100 @@ const MenuPage = () => {
     toast.success(`${item.name} added to cart!`);
   };
 
-  const filteredItems = menuItems.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter by search and category
+  const getFilteredItems = () => {
+    let filtered = menuItems.filter(item =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(item => item.category === selectedCategory);
+    }
+
+    return filtered;
+  };
+
+  // Group items by category for "All" view
+  const getGroupedItems = () => {
+    const filtered = getFilteredItems();
+    const grouped = {};
+    
+    filtered.forEach(item => {
+      const category = item.category || 'Other';
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(item);
+    });
+    
+    return grouped;
+  };
+
+  const filteredItems = getFilteredItems();
+  const groupedItems = selectedCategory === 'all' ? getGroupedItems() : null;
+
+  const renderMenuItem = (item, index) => (
+    <motion.div
+      key={item.id || item._id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className="card hover:shadow-xl transition-shadow"
+    >
+      <div className="h-48 overflow-hidden rounded-t-lg bg-gray-200">
+        <img
+          src={item.image || item.imageUrl || item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop'}
+          alt={item.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop';
+          }}
+        />
+      </div>
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold">{item.name}</h3>
+            <span className="text-xs text-gray-500 uppercase">{item.category}</span>
+          </div>
+          <span className="text-xl font-bold text-primary-600">${parseFloat(item.price).toFixed(2)}</span>
+        </div>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
+        
+        {(item.is_veg || item.isVeg) && (
+          <div className="flex gap-2 mb-4">
+            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+              🌱 Vegetarian
+            </span>
+          </div>
+        )}
+        
+        {item.rating && (
+          <div className="flex items-center gap-1 mb-3 text-sm text-gray-600">
+            <span className="text-yellow-500">★</span>
+            <span>{parseFloat(item.rating).toFixed(1)}</span>
+            {item.rating_count && <span className="text-gray-400">({item.rating_count})</span>}
+          </div>
+        )}
+        
+        <button
+          onClick={() => handleAddToCart(item)}
+          disabled={item.is_available === false || item.isAvailable === false}
+          className={`w-full btn-primary ${
+            (item.is_available === false || item.isAvailable === false) ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          {(item.is_available !== false && item.isAvailable !== false) ? 'Add to Cart' : 'Not Available'}
+        </button>
+      </div>
+    </motion.div>
   );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="spinner"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -59,7 +148,7 @@ const MenuPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-brown-500 text-white py-16">
+      <div className="bg-gradient-to-r from-brown-600 to-brown-500 text-white py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Our Menu</h1>
           <p className="text-xl text-gray-200">Discover our carefully curated selection</p>
@@ -76,7 +165,7 @@ const MenuPage = () => {
               placeholder="Search menu..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 input-field"
+              className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           
@@ -85,70 +174,62 @@ const MenuPage = () => {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap ${
+                className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
                   selectedCategory === category
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-primary-50'
+                    ? 'bg-primary-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-primary-50 border border-gray-200'
                 }`}
               >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {category === 'all' ? '🍽️ All Items' : category.charAt(0).toUpperCase() + category.slice(1)}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item, index) => (
-            <motion.div
-              key={item._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="card hover:shadow-xl transition-shadow"
-            >
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={item.image || 'https://via.placeholder.com/400x300'}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
+        {/* Menu Display - Section-wise or Grid */}
+        {selectedCategory === 'all' ? (
+          // Section-wise display for "All"
+          <div className="space-y-12">
+            {Object.keys(groupedItems).length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No items found</p>
               </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold">{item.name}</h3>
-                  <span className="text-xl font-bold text-primary-600">${item.price.toFixed(2)}</span>
-                </div>
-                <p className="text-gray-600 text-sm mb-4">{item.description}</p>
-                
-                {item.dietaryInfo && item.dietaryInfo.length > 0 && (
-                  <div className="flex gap-2 mb-4">
-                    {item.dietaryInfo.map(info => (
-                      <span key={info} className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        {info}
-                      </span>
-                    ))}
+            ) : (
+              Object.entries(groupedItems).map(([category, items]) => (
+                <div key={category} className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-3xl font-serif font-bold text-gray-800">{category}</h2>
+                    <div className="flex-1 h-px bg-gray-300"></div>
+                    <span className="text-gray-500 text-sm">{items.length} items</span>
                   </div>
-                )}
-                
-                <button
-                  onClick={() => handleAddToCart(item)}
-                  disabled={!item.isAvailable}
-                  className={`w-full btn-primary ${
-                    !item.isAvailable ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {item.isAvailable ? 'Add to Cart' : 'Not Available'}
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No items found</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {items.map((item, index) => renderMenuItem(item, index))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
+        ) : (
+          // Regular grid for specific category
+          <>
+            <div className="mb-6">
+              <h2 className="text-3xl font-serif font-bold text-gray-800">
+                {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+              </h2>
+              <p className="text-gray-600">{filteredItems.length} items available</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredItems.map((item, index) => renderMenuItem(item, index))}
+            </div>
+
+            {filteredItems.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No items found</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

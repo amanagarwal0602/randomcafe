@@ -43,8 +43,39 @@ const AdminContactInfo = () => {
   const fetchContactInfo = async () => {
     try {
       const { data } = await api.get('/contact-info');
-      setFormData(data);
+      console.log('Contact info data:', data);
+      setFormData({
+        businessName: data.businessName || 'Lumiere Cafe',
+        tagline: data.tagline || '',
+        email: data.email || data.addressEmail || '',
+        phone: data.phone || '',
+        address: {
+          street: data.addressStreet || data.address?.street || '',
+          city: data.addressCity || data.address?.city || '',
+          state: data.addressState || data.address?.state || '',
+          zipCode: data.addressZipcode || data.address?.zipCode || '',
+          country: data.addressCountry || data.address?.country || ''
+        },
+        hours: data.openingHours || data.hours || {
+          monday: '',
+          tuesday: '',
+          wednesday: '',
+          thursday: '',
+          friday: '',
+          saturday: '',
+          sunday: ''
+        },
+        socialMedia: {
+          facebook: data.socialFacebook || data.socialMedia?.facebook || '',
+          instagram: data.socialInstagram || data.socialMedia?.instagram || '',
+          twitter: data.socialTwitter || data.socialMedia?.twitter || '',
+          linkedin: data.socialLinkedin || data.socialMedia?.linkedin || '',
+          youtube: data.socialMedia?.youtube || ''
+        },
+        mapEmbedUrl: data.mapEmbedUrl || ''
+      });
     } catch (error) {
+      console.error('Contact info error:', error);
       toast.error('Failed to load contact info');
     } finally {
       setLoading(false);
@@ -55,9 +86,27 @@ const AdminContactInfo = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.put('/contact-info', formData);
+      const payload = {
+        businessName: formData.businessName,
+        tagline: formData.tagline,
+        email: formData.email,
+        phone: formData.phone,
+        addressStreet: formData.address.street,
+        addressCity: formData.address.city,
+        addressState: formData.address.state,
+        addressZipcode: formData.address.zipCode,
+        addressCountry: formData.address.country,
+        openingHours: formData.hours,
+        socialFacebook: formData.socialMedia.facebook,
+        socialInstagram: formData.socialMedia.instagram,
+        socialTwitter: formData.socialMedia.twitter,
+        socialLinkedin: formData.socialMedia.linkedin,
+        mapEmbedUrl: formData.mapEmbedUrl
+      };
+      await api.put('/contact-info', payload);
       toast.success('Contact information updated!');
     } catch (error) {
+      console.error('Update error:', error);
       toast.error(error.response?.data?.message || 'Failed to update');
     } finally {
       setSaving(false);

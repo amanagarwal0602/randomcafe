@@ -34,8 +34,30 @@ const AdminSiteSettings = () => {
   const fetchSettings = async () => {
     try {
       const { data } = await api.get('/site-settings');
-      setFormData(data);
+      console.log('Site settings data:', data);
+      setFormData({
+        siteName: data.siteName || 'Lumiere Cafe',
+        logo: data.logo || '',
+        favicon: data.favicon || '',
+        primaryColor: data.primaryColor || '#3b82f6',
+        secondaryColor: data.secondaryColor || '#8b5cf6',
+        accentColor: data.accentColor || '#ec4899',
+        footerText: data.footerText || '© 2024 Lumiere Cafe. All rights reserved.',
+        announcementBar: data.announcementBar || {
+          enabled: false,
+          message: '',
+          backgroundColor: '#3b82f6',
+          textColor: '#ffffff'
+        },
+        maintenanceMode: data.maintenanceMode || {
+          enabled: false,
+          message: 'We are currently under maintenance. Please check back soon.'
+        },
+        googleAnalyticsId: data.googleAnalyticsId || '',
+        facebookPixelId: data.facebookPixelId || ''
+      });
     } catch (error) {
+      console.error('Settings error:', error);
       toast.error('Failed to load settings');
     } finally {
       setLoading(false);

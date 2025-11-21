@@ -67,6 +67,7 @@ export const createUser = async (userData) => {
       address_zipcode: userData.address?.zipCode || '',
       address_country: userData.address?.country || '',
       favorite_items: JSON.stringify(userData.favoriteItems || []),
+      permissions: JSON.stringify(userData.permissions || []),
       refresh_token: '',
       is_active: true,
       email_verified: false,
@@ -92,7 +93,8 @@ export const getUsers = async () => {
     ...user,
     is_active: parseBoolean(user.is_active, true),
     email_verified: parseBoolean(user.email_verified),
-    favorite_items: typeof user.favorite_items === 'string' ? JSON.parse(user.favorite_items || '[]') : (user.favorite_items || [])
+    favorite_items: typeof user.favorite_items === 'string' ? JSON.parse(user.favorite_items || '[]') : (user.favorite_items || []),
+    permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions || '[]') : (user.permissions || [])
   }));
 };
 
@@ -109,7 +111,8 @@ export const getUserByEmail = async (email) => {
       ...user,
       is_active: parseBoolean(user.is_active, true),
       email_verified: parseBoolean(user.email_verified),
-      favorite_items: typeof user.favorite_items === 'string' ? JSON.parse(user.favorite_items || '[]') : (user.favorite_items || [])
+      favorite_items: typeof user.favorite_items === 'string' ? JSON.parse(user.favorite_items || '[]') : (user.favorite_items || []),
+      permissions: typeof user.permissions === 'string' ? JSON.parse(user.permissions || '[]') : (user.permissions || [])
     };
   } catch (error) {
     console.error('getUserByEmail error:', error.response?.data || error.message);

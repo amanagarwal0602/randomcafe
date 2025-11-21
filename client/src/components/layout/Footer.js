@@ -1,9 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiFacebook, FiInstagram, FiTwitter, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import api from '../../services/api';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [about, setAbout] = useState(null);
+  const [contact, setContact] = useState(null);
+
+  useEffect(() => {
+    fetchFooterData();
+  }, []);
+
+  const fetchFooterData = async () => {
+    try {
+      const [aboutRes, contactRes] = await Promise.all([
+        api.get('/about'),
+        api.get('/contact-info')
+      ]);
+      setAbout(aboutRes.data);
+      setContact(contactRes.data);
+    } catch (error) {
+      console.error('Failed to load footer data:', error);
+    }
+  };
+
+  const hours = contact?.openingHours || contact?.hours || {};
 
   return (
     <footer className="bg-brown-500 text-white">
@@ -11,9 +33,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-2xl font-serif font-bold mb-4">Lumière Café</h3>
+            <h3 className="text-2xl font-serif font-bold mb-4">{about?.title || 'Lumière Café'}</h3>
             <p className="text-gray-200 mb-4">
-              Experience the perfect blend of artisan coffee, fresh pastries, and warm hospitality in an elegant atmosphere.
+              {about?.description || 'Experience the perfect blend of artisan coffee, fresh pastries, and warm hospitality in an elegant atmosphere.'}
             </p>
             <div className="flex space-x-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-300">
@@ -44,18 +66,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Opening Hours</h4>
             <ul className="space-y-2 text-gray-200">
-              <li className="flex justify-between">
-                <span>Monday - Friday</span>
-                <span>7AM - 10PM</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Saturday</span>
-                <span>8AM - 11PM</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Sunday</span>
-                <span>8AM - 9PM</span>
-              </li>
+              {Object.entries(hours).map(([day, time]) => (
+                <li key={day} className="flex justify-between">
+                  <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                  <span>{time}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -65,15 +81,15 @@ const Footer = () => {
             <ul className="space-y-3 text-gray-200">
               <li className="flex items-start space-x-2">
                 <FiMapPin className="w-5 h-5 mt-1 flex-shrink-0" />
-                <span>123 Artisan Street, Downtown District, NY 10001</span>
+                <span>{contact?.addressStreet}, {contact?.addressCity}, {contact?.addressState} {contact?.addressZipcode}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <FiPhone className="w-5 h-5 flex-shrink-0" />
-                <span>(555) 123-4567</span>
+                <span>{contact?.phone || '(555) 123-4567'}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <FiMail className="w-5 h-5 flex-shrink-0" />
-                <span>hello@lumierecafe.com</span>
+                <span>{contact?.email || 'hello@lumierecafe.com'}</span>
               </li>
             </ul>
           </div>
@@ -81,7 +97,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-400 mt-8 pt-8 text-center text-gray-200">
-          <p>&copy; {currentYear} Lumière Café. All rights reserved.</p>
+          <p>&copy; {currentYear} {about?.title || 'Lumière Café'}. All rights reserved.</p>
           <p className="mt-2 text-sm">
             Crafted with passion and attention to detail.
           </p>

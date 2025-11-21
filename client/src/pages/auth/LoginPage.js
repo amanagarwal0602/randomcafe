@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
+import { checkPermission, hasRole } from '../../utils/permissions';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -13,9 +14,22 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(formData);
+      const response = await login(formData);
+      const userData = response.data.user;
       toast.success('Login successful!');
-      navigate('/');
+      
+      // Role-based redirection
+      if (userData.role === 'admin' || checkPermission(userData, 'dashboard.view')) {
+        navigate('/admin/dashboard');
+      } else if (hasRole(userData, 'chef') || checkPermission(userData, 'orders.view')) {
+        navigate('/admin/orders');
+      } else if (hasRole(userData, 'waiter') || checkPermission(userData, 'reservations.view')) {
+        navigate('/admin/reservations');
+      } else if (checkPermission(userData, 'menu.view') || checkPermission(userData, 'gallery.view')) {
+        navigate('/admin/menu');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {

@@ -1,4 +1,5 @@
-import { createUser, getUserByEmail, updateUser } from './sheetdb';
+import { createUser, getUserByEmail, updateUser } from './localStorage';
+// import { createUser, getUserByEmail, updateUser } from './sheetdb'; // Uncomment when SheetDB API key is ready
 
 // Simple client-side auth using SheetDB
 const AUTH_STORAGE_KEY = 'lumiere_auth';

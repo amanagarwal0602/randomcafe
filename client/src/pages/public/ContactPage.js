@@ -1,19 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
+import api from '../../services/api';
 
 const ContactPage = () => {
+  const [contactInfo, setContactInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
 
+  useEffect(() => {
+    fetchContactInfo();
+  }, []);
+
+  const fetchContactInfo = async () => {
+    try {
+      const response = await api.get('/contact-info');
+      setContactInfo(response.data);
+    } catch (error) {
+      console.error('Failed to load contact info:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     toast.success('Message sent successfully!');
     setFormData({ name: '', email: '', message: '' });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  const hours = contactInfo?.openingHours || contactInfo?.hours || {};
 
   return (
     <div className="min-h-screen">
@@ -63,32 +91,37 @@ const ContactPage = () => {
               <FiMapPin className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Address</h3>
-                <p className="text-gray-600">123 Artisan Street<br />Downtown District, NY 10001</p>
+                <p className="text-gray-600">
+                  {contactInfo?.addressStreet}<br />
+                  {contactInfo?.addressCity}, {contactInfo?.addressState} {contactInfo?.addressZipcode}
+                </p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <FiPhone className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Phone</h3>
-                <p className="text-gray-600">(555) 123-4567</p>
+                <p className="text-gray-600">{contactInfo?.phone || '(555) 123-4567'}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <FiMail className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Email</h3>
-                <p className="text-gray-600">hello@lumierecafe.com</p>
+                <p className="text-gray-600">{contactInfo?.email || 'hello@lumierecafe.com'}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <FiClock className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Hours</h3>
-                <p className="text-gray-600">
-                  Mon-Fri: 7AM - 10PM<br />
-                  Sat: 8AM - 11PM<br />
-                  Sun: 8AM - 9PM
-                </p>
+                <div className="text-gray-600">
+                  {Object.entries(hours).map(([day, time]) => (
+                    <div key={day}>
+                      {day.charAt(0).toUpperCase() + day.slice(1)}: {time}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
