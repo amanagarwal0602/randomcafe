@@ -47,44 +47,22 @@ const AdminOrders = () => {
       const response = await api.get('/orders');
       const ordersData = response.data.data || response.data || [];
       
-      // Add daily bill numbers to orders
-      const ordersWithBillNumbers = addDailyBillNumbers(ordersData);
-      setOrders(ordersWithBillNumbers);
+      // Orders already have daily_order_number from localStorage
+      // Just add bill date for display
+      const ordersWithBillDate = ordersData.map(order => ({
+        ...order,
+        dailyBillNumber: order.dailyOrderNumber || order.daily_order_number || 0,
+        billDate: new Date(order.createdAt).toDateString()
+      }));
+      
+      setOrders(ordersWithBillDate);
     } catch (error) {
-      console.error('Failed to load orders:', error);
       setError('Failed to load orders');
       setTimeout(() => setError(''), 5000);
       setOrders([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  // Generate daily bill numbers (resets each day)
-  const addDailyBillNumbers = (ordersData) => {
-    const ordersByDate = {};
-    
-    // Sort orders by date
-    const sortedOrders = [...ordersData].sort((a, b) => 
-      new Date(a.createdAt) - new Date(b.createdAt)
-    );
-    
-    // Group by date and assign bill numbers
-    return sortedOrders.map(order => {
-      const orderDate = new Date(order.createdAt).toDateString();
-      
-      if (!ordersByDate[orderDate]) {
-        ordersByDate[orderDate] = 0;
-      }
-      
-      ordersByDate[orderDate]++;
-      
-      return {
-        ...order,
-        dailyBillNumber: ordersByDate[orderDate],
-        billDate: orderDate
-      };
-    });
   };
 
   const updateStatus = async (orderId, status) => {
@@ -107,8 +85,9 @@ const AdminOrders = () => {
   const printBill = (order) => {
     if (!order) return;
     const printContent = billRef.current;
+    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const windowPrint = window.open('', '', 'width=800,height=600');
-    windowPrint.document.write('<html><head><title>Bill #' + order.dailyBillNumber + '</title>');
+    windowPrint.document.write('<html><head><title>Order #' + order.dailyBillNumber + ' - ' + orderDate + '</title>');
     windowPrint.document.write('<style>');
     windowPrint.document.write(`
       body { font-family: Arial, sans-serif; padding: 20px; }
@@ -172,6 +151,18 @@ const AdminOrders = () => {
       order.userName?.toLowerCase().includes(search) ||
       order.userEmail?.toLowerCase().includes(search)
     );
+  }).sort((a, b) => {
+    // For pending orders: sort by creation time (oldest first - first come, first serve)
+    if (filter === 'pending') {
+      const createdA = new Date(a.createdAt);
+      const createdB = new Date(b.createdAt);
+      return createdA - createdB; // Ascending (oldest first)
+    }
+    
+    // For all other statuses: sort by when they were confirmed/updated (newest first)
+    const updatedA = new Date(a.updated_at || a.updatedAt || a.createdAt);
+    const updatedB = new Date(b.updated_at || b.updatedAt || b.createdAt);
+    return updatedB - updatedA; // Descending (most recently confirmed/updated first)
   });
 
   // Group orders by date
@@ -232,7 +223,7 @@ const AdminOrders = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-2 flex-wrap">
               <span className="font-semibold text-gray-700 dark:text-gray-300 flex items-center">Status:</span>
-              {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
+              {['all', 'pending', 'confirmed', 'preparing', 'ready', 'cancelled'].map(status => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
@@ -350,7 +341,9 @@ const AdminOrders = () => {
                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                             <div className="flex-1 min-w-[200px]">
                               <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-bold text-lg">Bill #{order.dailyBillNumber}</h3>
+                                <h3 className="font-bold text-lg">
+                                  Order #{order.dailyBillNumber} - {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </h3>
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
                                   {(order.status || 'pending').toUpperCase()}
                                 </span>
@@ -382,12 +375,11 @@ const AdminOrders = () => {
                                 <option value="confirmed">Confirmed</option>
                                 <option value="preparing">Preparing</option>
                                 <option value="ready">Ready</option>
-                                <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
                               <button
                                 onClick={() => viewBill(order)}
-                                className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                                className="w-full px-3 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm flex items-center justify-center gap-1"
                               >
                                 <FiEye /> View Bill
                               </button>
@@ -429,14 +421,13 @@ const AdminOrders = () => {
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                   <div className="flex-1 min-w-[200px]">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-bold text-xl">Bill #{order.dailyBillNumber}</h3>
+                      <h3 className="font-bold text-xl">
+                        Order #{order.dailyBillNumber} - {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </h3>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
                         {(order.status || 'pending').toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Order ID: {order.orderNumber || order._id?.slice(-8)}
-                    </p>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">
                       Customer: {order.customerName || order.userName || 'Guest'}
                     </p>
@@ -467,12 +458,11 @@ const AdminOrders = () => {
                       <option value="confirmed">Confirmed</option>
                       <option value="preparing">Preparing</option>
                       <option value="ready">Ready</option>
-                      <option value="delivered">Delivered</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
                     <button
                       onClick={() => viewBill(order)}
-                      className="w-full px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm flex items-center justify-center gap-1"
+                      className="w-full px-3 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm flex items-center justify-center gap-1"
                     >
                       <FiEye /> View Bill
                     </button>
@@ -499,7 +489,7 @@ const AdminOrders = () => {
                       <p className="text-gray-500 text-sm">No items</p>
                     )}
                   </div>
-                  
+
                   {/* Show reservation details if order includes reservation */}
                   {(order.hasReservation || order.reservationDate) && (
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -540,7 +530,9 @@ const AdminOrders = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
-                <h2 className="text-2xl font-bold">Bill #{selectedOrder.dailyBillNumber}</h2>
+                <h2 className="text-2xl font-bold">
+                  Order #{selectedOrder.dailyBillNumber} - {new Date(selectedOrder.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </h2>
                 <div className="flex gap-2">
                   <button
                     onClick={printBill}
@@ -568,9 +560,9 @@ const AdminOrders = () => {
                 <div className="bill-info">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p><strong>Bill Number:</strong> #{selectedOrder.dailyBillNumber}</p>
+                      <p><strong>Order Number:</strong> #{selectedOrder.dailyBillNumber}</p>
+                      <p><strong>Date:</strong> {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}</p>
                       <p><strong>Order ID:</strong> {selectedOrder.orderNumber || selectedOrder._id?.slice(-8)}</p>
-                      <p><strong>Date:</strong> {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</p>
                     </div>
                     <div>
                       <p><strong>Customer:</strong> {selectedOrder.customerName || selectedOrder.userName || 'Guest'}</p>
@@ -612,13 +604,6 @@ const AdminOrders = () => {
                     </tr>
                   </tbody>
                 </table>
-
-                {selectedOrder.deliveryAddress && (
-                  <div className="bill-info">
-                    <p><strong>Delivery Address:</strong></p>
-                    <p>{selectedOrder.deliveryAddress}</p>
-                  </div>
-                )}
 
                 <div className="bill-footer">
                   <p><strong>Thank you for your order!</strong></p>

@@ -160,78 +160,81 @@ const AdminCoupons = () => {
       {loading ? (
         <div className="text-center py-12">Loading...</div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gradient-to-r from-slate-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valid Until</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usage</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Code</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Discount</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Valid Until</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Usage</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
               {coupons.map((coupon) => (
-                <tr key={coupon._id} className={isExpired(coupon.validUntil) ? 'bg-gray-50 dark:bg-gray-800 opacity-60' : ''}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="font-mono font-bold text-blue-600">{coupon.code}</span>
-                    </div>
+                <tr key={coupon._id} className={`transition-colors ${isExpired(coupon.validUntil) ? 'opacity-60' : 'hover:bg-gray-50 dark:hover:bg-gray-750'}`}>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="font-mono font-bold text-slate-700 dark:text-slate-200 text-sm bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700">{coupon.code}</span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">{coupon.description}</div>
+                  <td className="px-4 py-3">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">{coupon.description}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm font-bold border border-green-200 shadow-sm">
                       {coupon.discountType === 'percentage' 
                         ? `${coupon.discountValue}%` 
                         : `₹${coupon.discountValue}`}
-                    </div>
+                    </span>
                     {coupon.minOrderAmount > 0 && (
-                      <div className="text-xs text-gray-500">Min: ₹{coupon.minOrderAmount}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">Min: ₹{coupon.minOrderAmount}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
                       {new Date(coupon.validUntil).toLocaleDateString()}
                     </div>
                     {isExpired(coupon.validUntil) && (
-                      <span className="text-xs text-red-600 font-semibold">Expired</span>
+                      <span className="inline-flex items-center px-2 py-0.5 text-xs font-bold bg-red-100 text-red-700 rounded mt-1">Expired</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-200 shadow-sm">
                       {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ''}
-                    </div>
+                    </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <button
                       onClick={() => handleToggleStatus(coupon._id)}
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      className={`inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg shadow-sm ${
                         coupon.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
+                          : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
                       }`}
                     >
+                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                        coupon.isActive ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                      }`}></span>
                       {coupon.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => handleEdit(coupon)}
-                      className="text-blue-600 hover:text-blue-800 mr-3"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(coupon._id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      Delete
-                    </button>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(coupon)}
+                        className="inline-flex items-center px-2.5 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs font-semibold shadow-sm hover:shadow-md transition-all"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(coupon._id)}
+                        className="inline-flex items-center px-2.5 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs font-semibold shadow-sm hover:shadow-md transition-all"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -179,7 +179,7 @@ const AdminTeam = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(member)}
-                    className="flex-1 px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+                    className="flex-1 px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     Edit
                   </button>

@@ -3,51 +3,48 @@ const mongoose = require('mongoose');
 const contactInfoSchema = new mongoose.Schema({
   businessName: {
     type: String,
-    required: true,
-    default: 'Lumière Café'
+    required: true
   },
   tagline: {
     type: String,
-    default: 'Premium Coffee & Dining Experience'
+    default: ''
   },
   email: {
     type: String,
-    required: true,
-    default: 'info@lumierecafe.com'
+    required: true
   },
   phone: {
     type: String,
-    required: true,
-    default: '+1 (555) 123-4567'
+    required: true
   },
   address: {
     street: {
       type: String,
-      default: '123 Main Street'
+      default: ''
     },
     city: {
       type: String,
-      default: 'New York'
+      default: ''
     },
     state: {
       type: String,
-      default: 'NY'
+      default: ''
     },
     zipCode: {
       type: String,
-      default: '10001'
+      default: ''
     },
     country: {
       type: String,
-      default: 'USA'
+      default: ''
     }
   },
   hours: {
-    monday: { type: String, default: '8:00 AM - 9:00 PM' },
-    tuesday: { type: String, default: '8:00 AM - 9:00 PM' },
-    wednesday: { type: String, default: '8:00 AM - 9:00 PM' },
-    thursday: { type: String, default: '8:00 AM - 9:00 PM' },
-    friday: { type: String, default: '8:00 AM - 10:00 PM' },
+    monday: { type: String, default: '' },
+    tuesday: { type: String, default: '' },
+    wednesday: { type: String, default: '' },
+    thursday: { type: String, default: '' },
+    friday: { type: String, default: '' },
     saturday: { type: String, default: '9:00 AM - 10:00 PM' },
     sunday: { type: String, default: '9:00 AM - 8:00 PM' }
   },

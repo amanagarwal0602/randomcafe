@@ -3,23 +3,19 @@ const mongoose = require('mongoose');
 const aboutSectionSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
-    default: 'About Us'
+    required: true
   },
   heading: {
     type: String,
-    required: true,
-    default: 'Our Story'
+    required: true
   },
   description: {
     type: String,
-    required: true,
-    default: 'Founded in 2020, Lumière Café has been serving exceptional coffee and cuisine to our community.'
+    required: true
   },
   content: {
     type: String,
-    required: true,
-    default: 'We believe in quality ingredients, expert preparation, and warm hospitality. Every dish is crafted with care, every coffee brewed to perfection.'
+    required: true
   },
   image: {
     type: String,
@@ -27,27 +23,27 @@ const aboutSectionSchema = new mongoose.Schema({
   },
   missionTitle: {
     type: String,
-    default: 'Our Mission'
+    default: ''
   },
   missionText: {
     type: String,
-    default: 'To create memorable dining experiences through quality, creativity, and exceptional service.'
+    default: ''
   },
   visionTitle: {
     type: String,
-    default: 'Our Vision'
+    default: ''
   },
   visionText: {
     type: String,
-    default: 'To be the community\'s favorite gathering place for coffee, food, and connection.'
+    default: ''
   },
   yearsInBusiness: {
     type: Number,
-    default: 4
+    default: 0
   },
   happyCustomers: {
     type: Number,
-    default: 10000
+    default: 0
   },
   menuItems: {
     type: Number,

@@ -10,6 +10,13 @@ const AdminRoles = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [permissions, setPermissions] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateName, setTemplateName] = useState('');
+  const [templatePermissions, setTemplatePermissions] = useState({});
+  const [customTemplates, setCustomTemplates] = useState({});
 
   // Define all available permissions
   const availablePermissions = {
@@ -130,7 +137,20 @@ const AdminRoles = () => {
 
   useEffect(() => {
     fetchUsers();
+    loadCustomTemplates();
   }, []);
+
+  const loadCustomTemplates = () => {
+    const saved = localStorage.getItem('customRoleTemplates');
+    if (saved) {
+      setCustomTemplates(JSON.parse(saved));
+    }
+  };
+
+  const saveCustomTemplates = (templates) => {
+    localStorage.setItem('customRoleTemplates', JSON.stringify(templates));
+    setCustomTemplates(templates);
+  };
 
   const fetchUsers = async () => {
     try {
@@ -167,12 +187,92 @@ const AdminRoles = () => {
   };
 
   const handleApplyTemplate = (templateKey) => {
-    const template = roleTemplates[templateKey];
+    const template = roleTemplates[templateKey] || customTemplates[templateKey];
     const newPerms = {};
     template.permissions.forEach(perm => {
       newPerms[perm] = true;
     });
     setPermissions(newPerms);
+  };
+
+  const handleCreateTemplate = () => {
+    setEditingTemplate(null);
+    setTemplateName('');
+    setTemplatePermissions({});
+    setShowTemplateModal(true);
+  };
+
+  const handleEditTemplate = (key, template) => {
+    setEditingTemplate(key);
+    setTemplateName(template.name);
+    const perms = {};
+    template.permissions.forEach(perm => {
+      perms[perm] = true;
+    });
+    setTemplatePermissions(perms);
+    setShowTemplateModal(true);
+  };
+
+  const handleDeleteTemplate = (key) => {
+    if (window.confirm(`Delete template "${customTemplates[key].name}"?`)) {
+      const updated = { ...customTemplates };
+      delete updated[key];
+      saveCustomTemplates(updated);
+      setSuccess('Template deleted successfully!');
+      setTimeout(() => setSuccess(''), 3000);
+    }
+  };
+
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) {
+      alert('Please enter a template name');
+      return;
+    }
+
+    const selectedPerms = Object.keys(templatePermissions).filter(key => templatePermissions[key]);
+    if (selectedPerms.length === 0) {
+      alert('Please select at least one permission');
+      return;
+    }
+
+    // If editing a built-in template, create a new custom template with a modified key
+    let templateKey;
+    if (editingTemplate && !customTemplates[editingTemplate]) {
+      // Editing built-in template - create as custom
+      templateKey = 'custom_' + editingTemplate + '_' + Date.now();
+    } else {
+      // Creating new or editing existing custom
+      templateKey = editingTemplate || templateName.toLowerCase().replace(/\s+/g, '_');
+    }
+
+    const updated = {
+      ...customTemplates,
+      [templateKey]: {
+        name: templateName,
+        permissions: selectedPerms,
+        custom: true
+      }
+    };
+
+    saveCustomTemplates(updated);
+    setShowTemplateModal(false);
+    setSuccess(editingTemplate && !customTemplates[editingTemplate] 
+      ? 'Template saved as custom template!' 
+      : editingTemplate 
+        ? 'Template updated successfully!' 
+        : 'Template created successfully!');
+    setTimeout(() => setSuccess(''), 5000);
+  };
+
+  const handleTemplatePermissionToggle = (permId) => {
+    setTemplatePermissions(prev => ({
+      ...prev,
+      [permId]: !prev[permId]
+    }));
+  };
+
+  const getAllTemplates = () => {
+    return { ...roleTemplates, ...customTemplates };
   };
 
   const handleSavePermissions = async () => {
@@ -212,6 +312,27 @@ const AdminRoles = () => {
     return Array.isArray(perms) ? perms.length : 0;
   };
 
+  const getFilteredUsers = () => {
+    let filtered = users;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(user => 
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply role filter
+    if (roleFilter !== 'all') {
+      filtered = filtered.filter(user => user.role === roleFilter);
+    }
+
+    return filtered;
+  };
+
+  const filteredUsers = getFilteredUsers();
+
   if (loading) {
     return <div className="text-center py-12">Loading...</div>;
   }
@@ -226,55 +347,155 @@ const AdminRoles = () => {
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage user access rights and assign specific permissions</p>
       </div>
 
-      {/* Role Templates Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <h3 className="font-semibold text-blue-900 mb-2">Quick Role Templates:</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 text-sm">
-          {Object.entries(roleTemplates).map(([key, template]) => (
-            <div key={key} className="bg-white dark:bg-gray-800 rounded px-3 py-2 border border-blue-300">
-              <span className="font-medium text-blue-700">{template.name}</span>
-              <span className="text-gray-500 ml-1">({template.permissions.length})</span>
-            </div>
-          ))}
+      {/* Search and Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Search */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Search Users
+            </label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name or email..."
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+            />
+          </div>
+
+          {/* Role Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Filter by Role
+            </label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="all">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+              <option value="chef">Chef</option>
+              <option value="waiter">Waiter</option>
+              <option value="content_editor">Content Editor</option>
+              <option value="customer">Customer</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          Showing {filteredUsers.length} of {users.length} users
         </div>
       </div>
 
+      {/* Role Templates Info */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-blue-900">Quick Role Templates:</h3>
+          <button
+            onClick={handleCreateTemplate}
+            className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-1"
+          >
+            <span>+</span> Create Template
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          {Object.entries(getAllTemplates()).map(([key, template]) => (
+            <div 
+              key={key} 
+              className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 border-2 border-blue-300 hover:border-blue-400 transition-all shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-blue-700 text-sm truncate">
+                    {template.name}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {template.permissions.length} permissions
+                  </div>
+                </div>
+                <div className="flex gap-1 flex-shrink-0">
+                  <button
+                    onClick={() => handleEditTemplate(key, template)}
+                    className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                    title="Edit template"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  {template.custom && (
+                    <button
+                      onClick={() => handleDeleteTemplate(key)}
+                      className="p-1 text-red-600 hover:bg-red-100 rounded transition-colors"
+                      title="Delete template"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-600 mt-3">
+          💡 Click edit to customize any template. Built-in templates will be saved as custom templates when edited.
+        </p>
+      </div>
+
       {/* Users Table - Desktop */}
-      <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gradient-to-r from-slate-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Role</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Permissions</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">User</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Role</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Permissions</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
-            {users.map((user) => (
-              <tr key={user.id}>
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+            {filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                  <div className="flex flex-col items-center justify-center">
+                    <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <p className="text-lg font-medium">{searchTerm || roleFilter !== 'all' ? 'No users found matching your filters' : 'No users available'}</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              filteredUsers.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-gray-600 dark:text-gray-400 font-semibold">
+                    <div className="h-11 w-11 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-md">
+                      <span className="text-white font-bold text-lg">
                         {user.name?.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{user.name}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                  {user.email}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{user.email}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <select
                     value={user.role}
                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    className="px-3 py-1 border rounded text-sm"
+                    className="px-4 py-2 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm hover:border-gray-400"
                     disabled={user.role === 'admin' && user.email === 'admin@lumierecafe.com'}
                   >
                     <option value="customer">Customer</option>
@@ -286,63 +507,86 @@ const AdminRoles = () => {
                     <option value="viewer">Viewer</option>
                   </select>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-full text-xs font-semibold border border-blue-200 shadow-sm">
+                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                    </svg>
                     {getPermissionCount(user)} permissions
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  <span className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm ${
+                    user.is_active 
+                      ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
+                      : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
                   }`}>
+                    <span className={`w-2 h-2 rounded-full mr-2 ${
+                      user.is_active ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                    }`}></span>
                     {user.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <button
                     onClick={() => handleEditPermissions(user)}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 font-semibold shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                   >
-                    Manage Permissions
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    Manage
                   </button>
                 </td>
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
-
-        {users.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            No users found
-          </div>
-        )}
       </div>
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
-        {users.map((user) => (
-          <div key={user.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="flex items-center mb-3">
-              <div className="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="text-gray-600 dark:text-gray-400 font-semibold text-lg">
+        {filteredUsers.length === 0 ? (
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200">
+            <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <p className="text-gray-500 dark:text-gray-400 font-medium">
+              {searchTerm || roleFilter !== 'all' ? 'No users found matching your filters' : 'No users available'}
+            </p>
+          </div>
+        ) : (
+          filteredUsers.map((user) => (
+          <div key={user.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-xl transition-shadow">
+            <div className="flex items-center mb-4">
+              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-md">
+                <span className="text-white font-bold text-xl">
                   {user.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div className="ml-3 flex-1">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{user.email}</div>
+              <div className="ml-4 flex-1">
+                <div className="font-bold text-gray-900 dark:text-gray-100 text-lg">{user.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{user.email}</div>
               </div>
-              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+              <span className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg shadow-sm ${
+                user.is_active 
+                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
+                  : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
+              }`}>
+                <span className={`w-2 h-2 rounded-full mr-1.5 ${
+                  user.is_active ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                }`}></span>
                 {user.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-gray-500 uppercase">Role</label>
+                <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Role</label>
                 <select
                   value={user.role}
                   onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  className="w-full px-3 py-2 border rounded mt-1"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
                   disabled={user.role === 'admin' && user.email === 'admin@lumierecafe.com'}
                 >
                   <option value="customer">Customer</option>
@@ -354,26 +598,26 @@ const AdminRoles = () => {
                   <option value="viewer">Viewer</option>
                 </select>
               </div>
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
-                    {getPermissionCount(user)} permissions
-                  </span>
+              <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-full text-xs font-semibold border border-blue-200 shadow-sm">
+                  <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                  {getPermissionCount(user)} permissions
                 </span>
                 <button
                   onClick={() => handleEditPermissions(user)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
                   Manage
                 </button>
               </div>
             </div>
           </div>
-        ))}
-        {users.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            No users found
-          </div>
+          ))
         )}
       </div>
 
@@ -391,13 +635,13 @@ const AdminRoles = () => {
               <div className="mt-4">
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Apply Role Template:</p>
                 <div className="flex flex-wrap gap-2">
-                  {Object.entries(roleTemplates).map(([key, template]) => (
+                  {Object.entries(getAllTemplates()).map(([key, template]) => (
                     <button
                       key={key}
                       onClick={() => handleApplyTemplate(key)}
                       className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm"
                     >
-                      {template.name}
+                      {template.name} ({template.permissions.length})
                     </button>
                   ))}
                 </div>
@@ -459,6 +703,90 @@ const AdminRoles = () => {
                   className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
                 >
                   Save Permissions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create/Edit Template Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b p-6 z-10">
+              <h2 className="text-2xl font-bold">
+                {editingTemplate ? 'Edit Template' : 'Create New Template'}
+              </h2>
+              
+              {/* Template Name */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Template Name
+                </label>
+                <input
+                  type="text"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="e.g., Kitchen Staff, Delivery Driver"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                />
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Select permissions for this role template:
+              </p>
+              
+              {/* Permissions by Category */}
+              {Object.entries(availablePermissions).map(([category, perms]) => (
+                <div key={category} className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
+                    {category}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {perms.map((perm) => (
+                      <label
+                        key={perm.id}
+                        className="flex items-start p-3 border rounded-lg hover:bg-gray-50 dark:bg-gray-800 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={templatePermissions[perm.id] || false}
+                          onChange={() => handleTemplatePermissionToggle(perm.id)}
+                          className="mt-1 mr-3 flex-shrink-0 h-4 w-4"
+                        />
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-gray-100">{perm.name}</div>
+                          <div className="text-sm text-gray-500">{perm.description}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-800 px-4 sm:px-6 py-4 border-t flex justify-between">
+              <button
+                onClick={() => setShowTemplateModal(false)}
+                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setTemplatePermissions({})}
+                  className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                >
+                  Clear All
+                </button>
+                <button
+                  onClick={handleSaveTemplate}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                >
+                  {editingTemplate ? 'Update Template' : 'Create Template'}
                 </button>
               </div>
             </div>

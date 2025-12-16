@@ -51,9 +51,22 @@ const AdminReservations = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const filteredReservations = filter === 'all'
+  const filteredReservations = (filter === 'all'
     ? reservations
-    : reservations.filter(res => res.status === filter);
+    : reservations.filter(res => res.status === filter)
+  ).sort((a, b) => {
+    // For pending reservations: sort by creation time (oldest first - first come, first serve)
+    if (filter === 'pending') {
+      const createdA = new Date(a.createdAt || a.created_at);
+      const createdB = new Date(b.createdAt || b.created_at);
+      return createdA - createdB; // Ascending (oldest first)
+    }
+    
+    // For all other statuses: sort by when they were confirmed/updated (newest first)
+    const updatedA = new Date(a.updatedAt || a.updated_at || a.createdAt || a.created_at);
+    const updatedB = new Date(b.updatedAt || b.updated_at || b.createdAt || b.created_at);
+    return updatedB - updatedA; // Descending (most recently updated first)
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 md:py-12">
@@ -129,11 +142,11 @@ const AdminReservations = () => {
                       </div>
                       <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                         <FiClock size={16} className="text-gray-400" />
-                        <span className="text-sm">{res.timeSlot || res.time_slot || 'Time TBD'}</span>
+                        <span className="text-sm">{res.time || res.timeSlot || res.time_slot || 'Time TBD'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                         <FiUsers size={16} className="text-gray-400" />
-                        <span className="text-sm">{res.numberOfGuests || res.number_of_guests || 0} guests</span>
+                        <span className="text-sm">{res.guests || res.numberOfGuests || res.number_of_guests || 0} guests</span>
                       </div>
                     </div>
                     

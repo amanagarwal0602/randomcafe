@@ -73,6 +73,13 @@ const api = {
   put: async (url, data) => {
     try {
       const parts = url.replace('/api/', '').split('/').filter(Boolean);
+      
+      // Handle orders with status endpoint: /orders/:id/status
+      if (parts[0] === 'orders' && parts[2] === 'status') {
+        const id = parts[1];
+        return { data: { data: await db.updateOrder(id, data) } };
+      }
+      
       const id = parts[parts.length - 1];
       
       if (parts[0] === 'menu') return { data: { data: await db.updateMenuItem(id, data) } };

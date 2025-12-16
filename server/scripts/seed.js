@@ -78,12 +78,9 @@ const seedDatabase = async () => {
     await SEO.insertMany(seoPages);
     console.log('Created SEO settings');
 
-    // Create CMS content
-    await HeroSection.create({});
-    console.log('Created hero section');
-
-    await AboutSection.create({});
-    console.log('Created about section');
+    // Create CMS content - empty, will be populated from sampleDataFull.json or admin panel
+    // Hero and About sections will be created when admin adds content
+    console.log('CMS content structure ready (will be populated from sample data)');
 
     const features = [
       { icon: '☕', title: 'Premium Coffee', description: 'Artisan coffee beans sourced from the finest farms worldwide', order: 1, isActive: true },
@@ -102,11 +99,8 @@ const seedDatabase = async () => {
     await TeamMember.insertMany(teamMembers);
     console.log('Created team members');
 
-    await ContactInfo.create({});
-    console.log('Created contact info');
-
-    await SiteSettings.create({});
-    console.log('Created site settings');
+    // Contact Info and Site Settings will be created when admin configures them
+    console.log('Contact Info and Site Settings ready for admin configuration');
 
     // Create sample coupons
     const coupons = [

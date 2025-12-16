@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const siteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
-    required: true,
-    default: 'Lumière Café'
+    required: true
   },
   logo: {
     type: String,
@@ -28,7 +27,7 @@ const siteSettingsSchema = new mongoose.Schema({
   },
   footerText: {
     type: String,
-    default: '© 2024 Lumière Café. All rights reserved.'
+    default: ''
   },
   announcementBar: {
     enabled: {

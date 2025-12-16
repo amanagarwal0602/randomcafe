@@ -157,15 +157,18 @@ const OrdersPage = () => {
           ) : (
             <div className="space-y-4">
             {filteredOrders.map(order => (
-              <div key={order._id} className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+              <div key={order._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg flex items-center gap-2">
-                        {getStatusIcon(order.status)}
-                        Order #{order.orderNumber || order._id?.slice(-6)}
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-xl flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                        <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
+                          {getStatusIcon(order.status)}
+                        </div>
+                        Order #{order.dailyOrderNumber || order.orderNumber || order._id?.slice(-6)}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 flex items-center gap-1.5">
+                        <FiClock className="w-4 h-4" />
                         {order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -175,29 +178,57 @@ const OrdersPage = () => {
                         }) : 'Date unknown'}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
+                    <div className="flex flex-col items-start md:items-end gap-3">
+                      <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold shadow-sm ${
+                        order.status?.toLowerCase() === 'delivered' || order.status?.toLowerCase() === 'completed'
+                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200'
+                          : order.status?.toLowerCase() === 'cancelled'
+                          ? 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
+                          : order.status?.toLowerCase() === 'processing' || order.status?.toLowerCase() === 'preparing'
+                          ? 'bg-gradient-to-r from-yellow-50 to-amber-50 text-yellow-700 border border-yellow-200'
+                          : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full mr-2 ${
+                          order.status?.toLowerCase() === 'delivered' || order.status?.toLowerCase() === 'completed'
+                            ? 'bg-green-500 animate-pulse'
+                            : order.status?.toLowerCase() === 'cancelled'
+                            ? 'bg-red-500'
+                            : 'bg-blue-500 animate-pulse'
+                        }`}></span>
                         {(order.status || 'pending').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </span>
-                      <p className="mt-2 text-2xl font-bold text-primary-600">
-                        ₹{Math.round(order.total || order.totalPrice || 0)}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Amount</p>
+                        <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                          ₹{Math.round(order.total || order.totalPrice || 0).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Order Items */}
                   {order.items && order.items.length > 0 && (
-                    <div className="border-t pt-4 mt-4">
-                      <h4 className="font-semibold mb-3 text-gray-700 dark:text-gray-300">Order Items</h4>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                      <h4 className="font-bold mb-3 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <FiPackage className="text-primary-600" />
+                        Order Items
+                      </h4>
                       <div className="space-y-2">
                         {order.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                          <div key={idx} className="flex justify-between items-center py-3 px-4 bg-white dark:bg-gray-800 rounded-lg hover:shadow-md transition-all">
                             <div className="flex-1">
-                              <p className="font-medium">{item.name || item.itemName || 'Unknown Item'}</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">Quantity: {item.quantity || 1}</p>
+                              <p className="font-semibold text-gray-900 dark:text-gray-100">{item.name || item.itemName || 'Unknown Item'}</p>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded text-xs font-bold border border-purple-200">
+                                  Qty: {item.quantity || 1}
+                                </span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                  @ ₹{Math.round(item.price || item.itemPrice || 0)}
+                                </span>
+                              </div>
                             </div>
-                            <p className="font-semibold text-gray-700 dark:text-gray-300">
-                              ₹{Math.round((item.price || item.itemPrice || 0) * (item.quantity || 1))}
+                            <p className="font-bold text-lg bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                              ₹{Math.round((item.price || item.itemPrice || 0) * (item.quantity || 1)).toLocaleString()}
                             </p>
                           </div>
                         ))}
@@ -207,9 +238,12 @@ const OrdersPage = () => {
 
                   {/* Delivery Info */}
                   {order.deliveryAddress && (
-                    <div className="border-t pt-4 mt-4">
-                      <h4 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">Delivery Address</h4>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">{order.deliveryAddress}</p>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                      <h4 className="font-bold mb-2 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <FiTruck className="text-primary-600" />
+                        Delivery Address
+                      </h4>
+                      <p className="text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">{order.deliveryAddress}</p>
                     </div>
                   )}
                 </div>
@@ -227,15 +261,18 @@ const OrdersPage = () => {
           ) : (
             <div className="space-y-4">
               {reservations.map(reservation => (
-                <div key={reservation._id} className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                <div key={reservation._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-gray-200 dark:border-gray-700">
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="font-bold text-lg flex items-center gap-2">
-                          <FiCalendar className="text-primary-600" />
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-xl flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                          <div className="p-2 bg-gradient-to-br from-primary-50 to-indigo-50 rounded-lg">
+                            <FiCalendar className="text-primary-600" size={24} />
+                          </div>
                           Reservation #{reservation._id?.slice(-6)}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 flex items-center gap-1.5">
+                          <FiClock className="w-4 h-4" />
                           Created: {reservation.createdAt ? new Date(reservation.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -243,32 +280,49 @@ const OrdersPage = () => {
                           }) : 'Date unknown'}
                         </p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                        reservation.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
+                      <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold shadow-sm ${
+                        reservation.status === 'confirmed' 
+                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
+                          : reservation.status === 'pending' 
+                          ? 'bg-gradient-to-r from-yellow-50 to-amber-50 text-yellow-700 border border-yellow-200'
+                          : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
                       }`}>
+                        <span className={`w-2 h-2 rounded-full mr-2 ${
+                          reservation.status === 'confirmed' 
+                            ? 'bg-green-500 animate-pulse' 
+                            : reservation.status === 'pending'
+                            ? 'bg-yellow-500 animate-pulse'
+                            : 'bg-red-500'
+                        }`}></span>
                         {(reservation.status || 'pending').charAt(0).toUpperCase() + (reservation.status || 'pending').slice(1)}
                       </span>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4 mt-4 pt-4 border-t">
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Date & Time</p>
-                        <p className="font-semibold text-gray-800">
-                          {reservation.date} at {reservation.time}
+                    <div className="grid md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Date & Time</p>
+                        <p className="font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                          <FiCalendar className="text-blue-600" />
+                          {reservation.date}
+                        </p>
+                        <p className="font-semibold text-gray-700 dark:text-gray-300 mt-1 flex items-center gap-2">
+                          <FiClock className="text-blue-600" />
+                          {reservation.time}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Number of Guests</p>
-                        <p className="font-semibold text-gray-800">
-                          {reservation.guests || reservation.numberOfGuests || 'N/A'} {(reservation.guests || reservation.numberOfGuests) === 1 ? 'guest' : 'guests'}
+                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1">Number of Guests</p>
+                        <p className="font-bold text-3xl text-gray-900 dark:text-gray-100">
+                          {reservation.guests || reservation.numberOfGuests || 'N/A'}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {(reservation.guests || reservation.numberOfGuests) === 1 ? 'guest' : 'guests'}
                         </p>
                       </div>
                       {reservation.specialRequests && (
-                        <div className="md:col-span-2">
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Special Requests</p>
-                          <p className="text-gray-800">{reservation.specialRequests}</p>
+                        <div className="md:col-span-2 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Special Requests</p>
+                          <p className="text-gray-800 dark:text-gray-200 font-medium">{reservation.specialRequests}</p>
                         </div>
                       )}
                     </div>

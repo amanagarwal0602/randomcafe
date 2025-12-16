@@ -4,12 +4,14 @@ import { FiCheck, FiCopy, FiDownload } from 'react-icons/fi';
 import QRCode from 'qrcode';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 import Alert from '../../components/common/Alert';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { settings } = useSiteSettings();
   const [qrCode, setQrCode] = useState('');
   const [utrNumber, setUtrNumber] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +23,7 @@ const PaymentPage = () => {
   const totalAmount = location.state?.totalAmount || 0;
 
   const UPI_ID = 'amanagarwal0602-3@oksbi';
-  const MERCHANT_NAME = 'Lumiere Cafe';
+  const MERCHANT_NAME = settings?.siteName || 'Cafe';
 
   useEffect(() => {
     if (!orderDetails || !totalAmount) {
@@ -35,7 +37,7 @@ const PaymentPage = () => {
   const generateQRCode = async () => {
     try {
       // UPI Payment URL format
-      const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${totalAmount.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`Order Payment - ${orderDetails?.orderId || 'New Order'}`)}`;
+      const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${Math.round(totalAmount)}&cu=INR&tn=${encodeURIComponent(`Order Payment - ${orderDetails?.orderId || 'New Order'}`)}`;
       
       const qrDataUrl = await QRCode.toDataURL(upiUrl, {
         width: 300,
@@ -48,7 +50,6 @@ const PaymentPage = () => {
       
       setQrCode(qrDataUrl);
     } catch (error) {
-      console.error('Error generating QR code:', error);
       setError('Failed to generate QR code. Please refresh the page.');
     }
   };
@@ -77,8 +78,10 @@ const PaymentPage = () => {
     setError('');
     setSuccess('');
     
-    if (!utrNumber || utrNumber.length < 12) {
-      setError('Please enter a valid UTR number (minimum 12 digits)');
+    // Validate UTR number format (12 digits alphanumeric)
+    const cleanedUtr = utrNumber.trim();
+    if (!cleanedUtr || cleanedUtr.length < 12) {
+      setError('Please enter a valid UTR/Transaction ID (minimum 12 characters)');
       return;
     }
 
@@ -89,7 +92,7 @@ const PaymentPage = () => {
         ...orderDetails,
         paymentMethod: 'UPI',
         paymentStatus: 'pending',
-        utrNumber: utrNumber,
+        utrNumber: cleanedUtr,
         amount: totalAmount,
         customerName: user?.name,
         customerEmail: user?.email,

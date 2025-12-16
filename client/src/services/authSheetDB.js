@@ -89,8 +89,6 @@ export const register = async (name, email, password, username = '') => {
 // Login user
 export const login = async (emailOrUsername, password) => {
   try {
-    console.log('Login attempt for:', emailOrUsername);
-    
     // Hardcoded demo accounts - support both username and email
     if ((emailOrUsername === 'demo' || emailOrUsername === 'demo@lumierecafe.com') && password === 'demo') {
       const demoUser = {
@@ -173,23 +171,11 @@ export const login = async (emailOrUsername, password) => {
     }
     
     if (!user) {
-      console.log('User not found');
       throw new Error('Invalid username/email or password');
     }
 
-    console.log('User found:', { 
-      email: user.email, 
-      username: user.username,
-      role: user.role, 
-      hasPassword: !!user.password, 
-      isActive: user.is_active, 
-      type: typeof user.is_active 
-    });
-
     // Verify password (plain text comparison)
     const isValidPassword = password === user.password;
-    
-    console.log('Password validation result:', isValidPassword);
     
     if (!isValidPassword) {
       throw new Error('Invalid username/email or password');
@@ -197,7 +183,6 @@ export const login = async (emailOrUsername, password) => {
 
     // Treat blank/missing values as active, only block when explicitly inactive
     if (isExplicitlyInactive(user.is_active)) {
-      console.log('Account flagged inactive with value:', user.is_active);
       throw new Error('Account is inactive');
     }
 
@@ -226,15 +211,12 @@ export const login = async (emailOrUsername, password) => {
 
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
 
-    console.log('Login successful');
-
     return {
       success: true,
       token,
       user: authData.user
     };
   } catch (error) {
-    console.error('Login error:', error.message);
     throw new Error(error.message || 'Login failed');
   }
 };

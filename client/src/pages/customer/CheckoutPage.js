@@ -38,6 +38,29 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Validate phone number (10 digits)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(formData.contactPhone.replace(/[^0-9]/g, ''))) {
+      setError('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+
+    // Validate reservation details if selected
+    if (formData.hasReservation) {
+      if (!formData.reservationDate || !formData.reservationTime) {
+        setError('Please select both date and time for your reservation.');
+        return;
+      }
+      
+      const selectedDate = new Date(formData.reservationDate + 'T' + formData.reservationTime);
+      const now = new Date();
+      
+      if (selectedDate < now) {
+        setError('Reservation time must be in the future.');
+        return;
+      }
+    }
+
     const totalAmount = getCartTotal();
     
     // Prepare order details
@@ -67,11 +90,6 @@ const CheckoutPage = () => {
       deliveryType: formData.orderType
     };
 
-    // Add delivery address if order type is delivery
-    if (formData.orderType === 'delivery') {
-      orderDetails.deliveryAddress = formData.deliveryAddress;
-    }
-
     // If payment method is UPI, redirect to payment page
     if (formData.paymentMethod === 'upi') {
       navigate('/payment', { 
@@ -90,7 +108,6 @@ const CheckoutPage = () => {
       setSuccess('Order placed successfully! Redirecting to your orders...');
       setTimeout(() => navigate('/customer/orders'), 1500);
     } catch (error) {
-      console.error('Order error:', error);
       const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Failed to place order. Please try again.';
       setError(errorMsg);
     }
@@ -130,50 +147,9 @@ const CheckoutPage = () => {
                   className="input-field"
                 >
                   <option value="dine-in">Dine In</option>
-                  <option value="takeout">Takeout</option>
-                  <option value="delivery">Delivery</option>
+                  <option value="takeout">Take Away</option>
                 </select>
               </div>
-
-              {formData.orderType === 'delivery' && (
-                <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-semibold">Delivery Address</h3>
-                  <input
-                    type="text"
-                    placeholder="Street Address"
-                    value={formData.deliveryAddress.street}
-                    onChange={(e) => setFormData({...formData, deliveryAddress: {...formData.deliveryAddress, street: e.target.value}})}
-                    className="input-field"
-                    required
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="City"
-                      value={formData.deliveryAddress.city}
-                      onChange={(e) => setFormData({...formData, deliveryAddress: {...formData.deliveryAddress, city: e.target.value}})}
-                      className="input-field"
-                      required
-                    />
-                    <input
-                      type="text"
-                      placeholder="State"
-                      value={formData.deliveryAddress.state}
-                      onChange={(e) => setFormData({...formData, deliveryAddress: {...formData.deliveryAddress, state: e.target.value}})}
-                      className="input-field"
-                      required
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="PIN Code"
-                    value={formData.deliveryAddress.zipCode}
-                    onChange={(e) => setFormData({...formData, deliveryAddress: {...formData.deliveryAddress, zipCode: e.target.value}})}
-                    className="input-field"
-                    required
-                  />
-                </div>
-              )}
 
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Phone</label>
@@ -181,26 +157,27 @@ const CheckoutPage = () => {
                   type="tel"
                   value={formData.contactPhone}
                   onChange={(e) => setFormData({...formData, contactPhone: e.target.value})}
+                  placeholder={user?.phone || 'Enter phone number'}
                   className="input-field"
                   required
                 />
               </div>
 
-              {/* Reservation Option */}
+              {/* Reservation Option - Available for both dine-in and takeaway */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.hasReservation}
-                    onChange={(e) => setFormData({...formData, hasReservation: e.target.checked})}
-                    className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="font-medium text-gray-900">Include Table Reservation</span>
-                </label>
-                <p className="text-xs text-gray-600 mt-1 ml-8">
-                  Reserve a table for dining when you arrive
-                </p>
-              </div>
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.hasReservation}
+                      onChange={(e) => setFormData({...formData, hasReservation: e.target.checked})}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="font-medium text-gray-900">Include Table Reservation</span>
+                  </label>
+                  <p className="text-xs text-gray-600 mt-1 ml-8">
+                    Reserve a table for dining when you arrive
+                  </p>
+                </div>
 
               {formData.hasReservation && (
                 <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -266,8 +243,7 @@ const CheckoutPage = () => {
                   className="input-field"
                 >
                   <option value="upi">UPI Payment (Recommended)</option>
-                  <option value="cash">Cash on Delivery</option>
-                  <option value="card">Card Payment</option>
+                  <option value="cash">Pay on Store</option>
                 </select>
                 {formData.paymentMethod === 'upi' && (
                   <p className="mt-2 text-sm text-green-600 flex items-center gap-2">
@@ -300,7 +276,7 @@ const CheckoutPage = () => {
               ))}
               <div className="border-t pt-2 mt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>₹{getCartTotal().toFixed(2)}</span>
+                <span>₹{Math.round(getCartTotal())}</span>
               </div>
             </div>
           </div>

@@ -3,17 +3,15 @@ const mongoose = require('mongoose');
 const heroSectionSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
-    default: 'Welcome to Lumière Café'
+    required: true
   },
   subtitle: {
     type: String,
-    required: true,
-    default: 'Experience the art of coffee and cuisine'
+    required: true
   },
   description: {
     type: String,
-    default: 'Where every cup tells a story and every meal is a masterpiece'
+    default: ''
   },
   backgroundImage: {
     type: String,

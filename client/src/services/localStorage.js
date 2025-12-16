@@ -32,6 +32,8 @@ const initializeData = () => {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
+    // Minimal default data - only essential demo/admin users
+    // All other data (menu, gallery, reviews, etc.) comes from sampleDataFull.json
     const defaultData = {
       users: [
         {
@@ -79,177 +81,18 @@ const initializeData = () => {
           email_verified: true,
           created_at: now,
           updated_at: now
-        },
-        {
-          id: 'admin001',
-          table_type: 'user',
-          name: 'Admin User',
-          email: 'admin@lumierecafe.com',
-          password: 'Admin@123',
-          phone: '+1-555-0100',
-          role: 'admin',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
-          address_street: '123 Admin Ave',
-          address_city: 'New York',
-          address_state: 'NY',
-          address_zipcode: '10001',
-          address_country: 'USA',
-          favorite_items: [],
-          permissions: ['all'],
-          refresh_token: '',
-          is_active: true,
-          email_verified: true,
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'chef001',
-          table_type: 'user',
-          name: 'Chef Marco',
-          email: 'chef@lumierecafe.com',
-          password: 'Chef@123',
-          phone: '+1-555-0101',
-          role: 'chef',
-          avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=100',
-          address_street: '456 Kitchen Blvd',
-          address_city: 'New York',
-          address_state: 'NY',
-          address_zipcode: '10002',
-          address_country: 'USA',
-          favorite_items: [],
-          permissions: ['orders.view', 'orders.edit', 'menu.view'],
-          refresh_token: '',
-          is_active: true,
-          email_verified: true,
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'waiter001',
-          table_type: 'user',
-          name: 'Alex Server',
-          email: 'waiter@lumierecafe.com',
-          password: 'Waiter@123',
-          phone: '+1-555-0102',
-          role: 'waiter',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
-          address_street: '789 Service St',
-          address_city: 'New York',
-          address_state: 'NY',
-          address_zipcode: '10003',
-          address_country: 'USA',
-          favorite_items: [],
-          permissions: ['orders.view', 'orders.create', 'reservations.view', 'reservations.edit'],
-          refresh_token: '',
-          is_active: true,
-          email_verified: true,
-          created_at: now,
-          updated_at: now
         }
       ],
       menu: [],
       orders: [],
       reservations: [],
-      coupons: [
-        {
-          id: 'coupon001',
-          table_type: 'coupon',
-          code: 'WELCOME10',
-          description: '10% off for new customers',
-          discount_type: 'percentage',
-          discount_value: 10,
-          min_order_value: 20,
-          max_discount: 10,
-          usage_limit: 100,
-          usage_count: 15,
-          is_active: true,
-          valid_from: new Date('2024-01-01').toISOString(),
-          valid_until: new Date('2025-12-31').toISOString(),
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'coupon002',
-          table_type: 'coupon',
-          code: 'SAVE5',
-          description: '$5 off on orders above $30',
-          discount_type: 'fixed',
-          discount_value: 5,
-          min_order_value: 30,
-          max_discount: 5,
-          usage_limit: 50,
-          usage_count: 8,
-          is_active: true,
-          valid_from: new Date('2024-06-01').toISOString(),
-          valid_until: new Date('2025-06-30').toISOString(),
-          created_at: new Date('2024-06-01').toISOString(),
-          updated_at: now
-        }
-      ],
+      coupons: [],
       gallery: [],
       reviews: [],
       features: [],
       team: [],
-      about: [
-        {
-          id: 'about001',
-          table_type: 'about',
-          title: 'Lumière',
-          heading: 'Our Story',
-          description: 'Our story, passion, and commitment to excellence',
-          content: 'Founded in 2015, Lumière Café was born from a simple vision: to create a space where exceptional coffee meets culinary artistry. Our journey began with a small roastery and a passion for bringing people together over great food and drink.\n\nToday, we\'re proud to serve our community with ethically sourced, expertly crafted beverages and meals made from the finest local ingredients. Every cup, every plate tells a story of dedication, quality, and love for the craft.\n\nWe believe in sustainability, supporting local farmers, and creating memorable experiences for every guest who walks through our doors.',
-          image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800',
-          mission_title: 'Our Mission',
-          mission_text: 'To provide an exceptional dining experience through quality food, outstanding service, and a welcoming atmosphere',
-          vision_title: 'Our Vision',
-          vision_text: 'To be the most beloved cafe in the community, known for our culinary excellence and warm hospitality',
-          years_in_business: 10,
-          happy_customers: 50000,
-          menu_items: 150,
-          awards: 5,
-          hero_title: 'Welcome to Lumière',
-          hero_subtitle: 'Where every cup tells a story and every bite is a journey to culinary excellence',
-          hero_description: 'Experience the perfect blend of tradition and innovation',
-          hero_background_image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200',
-          hero_primary_button_text: 'Explore Menu',
-          hero_primary_button_link: '/menu',
-          hero_secondary_button_text: 'Reserve a Table',
-          hero_secondary_button_link: '/reservations',
-          hero_is_active: true,
-          created_at: now,
-          updated_at: now
-        }
-      ],
-      contact: [
-        {
-          id: 'contact001',
-          table_type: 'contact',
-          address_street: '123 Artisan Street',
-          address_city: 'Downtown District',
-          address_state: 'NY',
-          address_zipcode: '10001',
-          address_country: 'USA',
-          phone: '(555) 123-4567',
-          email: 'hello@lumierecafe.com',
-          opening_hours: JSON.stringify({
-            monday: '7:00 AM - 10:00 PM',
-            tuesday: '7:00 AM - 10:00 PM',
-            wednesday: '7:00 AM - 10:00 PM',
-            thursday: '7:00 AM - 10:00 PM',
-            friday: '7:00 AM - 10:00 PM',
-            saturday: '8:00 AM - 11:00 PM',
-            sunday: '8:00 AM - 9:00 PM'
-          }),
-          map_latitude: 40.7128,
-          map_longitude: -74.0060,
-          social_facebook: 'https://facebook.com/lumierecafe',
-          social_instagram: 'https://instagram.com/lumierecafe',
-          social_twitter: 'https://twitter.com/lumierecafe',
-          social_linkedin: '',
-          created_at: now,
-          updated_at: now
-        }
-      ],
+      about: [],
+      contact: [],
       version: '2.2' // Data version for tracking updates
     };
     localStorage.setItem('cafe_data', JSON.stringify(defaultData));
@@ -295,7 +138,7 @@ export const createUser = async (userData) => {
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
-  data.users.push(user);
+  data.users.unshift(user); // Add to beginning
   saveData(data);
   return user;
 };
@@ -374,7 +217,7 @@ export const createMenuItem = async (itemData) => {
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
-  menuArray.push(item);
+  menuArray.unshift(item); // Add to beginning
   saveData(data);
   return item;
 };
@@ -438,9 +281,19 @@ export const deleteMenuItem = async (id) => {
 export const createOrder = async (orderData) => {
   const data = getData();
   const orderId = generateId();
+  
+  // Calculate daily order number (day-wise reset)
+  const today = new Date().toDateString();
+  const todaysOrders = (data.orders || []).filter(order => {
+    const orderDate = new Date(order.created_at).toDateString();
+    return orderDate === today;
+  });
+  const dailyOrderNumber = todaysOrders.length + 1;
+  
   const order = {
     id: orderId,
     table_type: 'order',
+    daily_order_number: dailyOrderNumber, // Day-wise order number
     user_id: orderData.userId,
     user_name: orderData.userName || '',
     user_email: orderData.userEmail || '',
@@ -470,7 +323,7 @@ export const createOrder = async (orderData) => {
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
-  data.orders.push(order);
+  data.orders.unshift(order); // Add to beginning
   
   // If order includes a reservation, create a separate reservation entry
   if (orderData.hasReservation && orderData.reservationDate && orderData.reservationTime) {
@@ -484,16 +337,18 @@ export const createOrder = async (orderData) => {
       guest_phone: orderData.userPhone || orderData.contactPhone || '',
       date: orderData.reservationDate,
       time: orderData.reservationTime,
+      time_slot: orderData.reservationTime,
       guests: parseInt(orderData.numberOfGuests) || 2,
       numberOfGuests: parseInt(orderData.numberOfGuests) || 2,
+      number_of_guests: parseInt(orderData.numberOfGuests) || 2,
       table_number: '',
-      status: 'confirmed',
-      special_requests: `Created from order #${orderId}`,
+      status: 'pending',
+      special_requests: orderData.specialInstructions ? `Order: ${orderData.specialInstructions}` : `Reservation from order #${orderId}`,
       order_id: orderId,
       created_at: getTimestamp(),
       updated_at: getTimestamp()
     };
-    data.reservations.push(reservation);
+    data.reservations.unshift(reservation); // Add to beginning
   }
   
   saveData(data);
@@ -544,6 +399,7 @@ export const getOrders = async () => {
     return {
       ...order,
       _id: order.id,
+      dailyOrderNumber: order.daily_order_number,
       orderNumber: order.order_number || order.orderNumber || order.id,
       total: order.total_price || order.total || 0,
       totalPrice: order.total_price || order.total || 0,
@@ -579,6 +435,7 @@ export const updateOrder = async (id, updates) => {
   if (index !== -1) {
     data.orders[index] = {
       ...data.orders[index],
+      ...updates,
       status: updates.status || data.orders[index].status,
       payment_status: updates.paymentStatus || data.orders[index].payment_status,
       updated_at: getTimestamp()
@@ -617,7 +474,7 @@ export const createReservation = async (resData) => {
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
-  data.reservations.push(reservation);
+  data.reservations.unshift(reservation); // Add to beginning
   saveData(data);
   return reservation;
 };
@@ -631,7 +488,8 @@ export const getReservations = async () => {
     guestName: res.guest_name,
     guestEmail: res.guest_email,
     guestPhone: res.guest_phone,
-    numberOfGuests: parseInt(res.numberOfGuests || res.guests) || 0,
+    guests: parseInt(res.guests || res.numberOfGuests || res.number_of_guests) || 0,
+    numberOfGuests: parseInt(res.guests || res.numberOfGuests || res.number_of_guests) || 0,
     tableNumber: res.table_number,
     specialRequests: res.special_requests,
     order_id: res.order_id
@@ -1089,13 +947,13 @@ export const getSiteSettings = async () => {
   const data = getData();
   const settings = data.siteSettings || {};
   return {
-    siteName: settings.siteName || 'Lumiere Cafe',
+    siteName: settings.siteName || '',
     logo: settings.logo || '',
     favicon: settings.favicon || '',
     primaryColor: settings.primaryColor || '#3b82f6',
     secondaryColor: settings.secondaryColor || '#8b5cf6',
     accentColor: settings.accentColor || '#ec4899',
-    footerText: settings.footerText || '© 2024 Lumiere Cafe. All rights reserved.',
+    footerText: settings.footerText || '',
     announcementBar: settings.announcementBar || {
       enabled: false,
       message: '',
@@ -1134,48 +992,7 @@ export const updateSiteSettings = async (settings) => {
 // Today's Offers Functions
 export const getTodaysOffers = async () => {
   const data = getData();
-  return data.todaysOffers || [
-    {
-      id: 'offer1',
-      title: 'Breakfast Special',
-      description: 'Get 20% off on all breakfast items before 11 AM',
-      discount: '20% OFF',
-      image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400',
-      validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      created_at: getTimestamp()
-    },
-    {
-      id: 'offer2',
-      title: 'Combo Meal Deal',
-      description: 'Order any main course + drink + dessert and save ₹100',
-      discount: '₹100 OFF',
-      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400',
-      validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      created_at: getTimestamp()
-    },
-    {
-      id: 'offer3',
-      title: 'Coffee Lover Special',
-      description: 'Buy 2 coffees, get 1 free on all premium blends',
-      discount: 'Buy 2 Get 1',
-      image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400',
-      validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      created_at: getTimestamp()
-    },
-    {
-      id: 'offer4',
-      title: 'Weekend Brunch',
-      description: 'Special weekend brunch menu with complimentary juice',
-      discount: 'Free Juice',
-      image: 'https://images.unsplash.com/photo-1495214783159-3503fd1b572d?w=400',
-      validUntil: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      created_at: getTimestamp()
-    }
-  ];
+  return data.todaysOffers || [];
 };
 
 export const createTodaysOffer = async (offerData) => {

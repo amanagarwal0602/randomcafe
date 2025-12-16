@@ -60,6 +60,7 @@ const ReservationPage = () => {
                   type="text"
                   value={formData.guestName}
                   onChange={(e) => setFormData({...formData, guestName: e.target.value})}
+                  placeholder={user?.name || 'Enter your name'}
                   className="input-field"
                   required
                   aria-label="Guest Name"
@@ -73,6 +74,7 @@ const ReservationPage = () => {
                   type="email"
                   value={formData.guestEmail}
                   onChange={(e) => setFormData({...formData, guestEmail: e.target.value})}
+                  placeholder={user?.email || 'Enter your email'}
                   className="input-field"
                   required
                   aria-label="Guest Email"
@@ -89,12 +91,11 @@ const ReservationPage = () => {
                   type="tel"
                   value={formData.guestPhone}
                   onChange={(e) => setFormData({...formData, guestPhone: e.target.value})}
+                  placeholder={user?.phone || 'Enter phone number'}
                   className="input-field"
                   required
                   aria-label="Guest Phone"
                   tabIndex={0}
-                  className="input-field"
-                  required
                 />
               </div>
               <div>

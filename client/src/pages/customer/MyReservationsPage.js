@@ -87,10 +87,10 @@ const MyReservationsPage = () => {
                       <span className="font-medium">Date:</span> {new Date(res.date).toLocaleDateString()}
                     </p>
                     <p className="text-gray-600 dark:text-gray-400">
-                      <span className="font-medium">Time:</span> {res.timeSlot || res.time_slot}
+                      <span className="font-medium">Time:</span> {res.timeSlot || res.time_slot || res.time}
                     </p>
                     <p className="text-gray-600 dark:text-gray-400">
-                      <span className="font-medium">Guests:</span> {res.numberOfGuests || res.number_of_guests}
+                      <span className="font-medium">Guests:</span> {res.guests || res.numberOfGuests || res.number_of_guests}
                     </p>
                     {res.specialRequests && (
                       <p className="text-gray-600 dark:text-gray-400 mt-2">
