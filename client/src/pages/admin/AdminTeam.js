@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 
 const AdminTeam = () => {
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,7 +30,8 @@ const AdminTeam = () => {
       const { data } = await api.get('/team/all');
       setMembers(data);
     } catch (error) {
-      toast.error('Failed to load team members');
+      setError('Failed to load team members');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -39,16 +42,19 @@ const AdminTeam = () => {
     try {
       if (editingMember) {
         await api.put(`/team/${editingMember._id}`, formData);
-        toast.success('Team member updated!');
+        setSuccess('Team member updated!');
+        setTimeout(() => setSuccess(''), 5000);
       } else {
         await api.post('/team', formData);
-        toast.success('Team member added!');
+        setSuccess('Team member added!');
+        setTimeout(() => setSuccess(''), 5000);
       }
       setShowModal(false);
       resetForm();
       fetchMembers();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Operation failed');
+      setError(error.response?.data?.message || 'Operation failed');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -56,10 +62,12 @@ const AdminTeam = () => {
     if (window.confirm('Remove this team member?')) {
       try {
         await api.delete(`/team/${id}`);
-        toast.success('Team member removed!');
+        setSuccess('Team member removed!');
+        setTimeout(() => setSuccess(''), 5000);
         fetchMembers();
       } catch (error) {
-        toast.error('Failed to delete');
+        setError('Failed to delete');
+        setTimeout(() => setError(''), 5000);
       }
     }
   };
@@ -70,10 +78,12 @@ const AdminTeam = () => {
         ...member,
         is_active: !member.is_active
       });
-      toast.success(`Team member ${!member.is_active ? 'shown' : 'hidden'} on website`);
+      setSuccess(`Team member ${!member.is_active ? 'shown' : 'hidden'} on website`);
+      setTimeout(() => setSuccess(''), 5000);
       fetchMembers();
     } catch (error) {
-      toast.error('Failed to update visibility');
+      setError('Failed to update visibility');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -110,6 +120,9 @@ const AdminTeam = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Team Members</h1>

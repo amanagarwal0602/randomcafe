@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { checkPermission, hasRole } from '../../utils/permissions';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import Alert from '../../components/common/Alert';
+import api from '../../services/api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,20 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+
+  useEffect(() => {
+    checkMaintenanceMode();
+  }, []);
+
+  const checkMaintenanceMode = async () => {
+    try {
+      const { data } = await api.get('/site-settings');
+      setMaintenanceMode(data.maintenanceMode?.enabled || false);
+    } catch (error) {
+      console.error('Failed to check maintenance mode:', error);
+    }
+  };
 
   const handleResetData = () => {
     if (window.confirm('This will reset all data including demo/admin users. Continue?')) {
@@ -30,6 +45,20 @@ const LoginPage = () => {
     try {
       const response = await login(formData);
       const userData = response.data.user;
+      
+      // Check if customer is trying to login during maintenance
+      if (maintenanceMode && userData.role === 'customer') {
+        setError('Site is under maintenance. Please wait until we are back online.');
+        setLoading(false);
+        return;
+      }
+      
+      // Clear announcement dismissal on successful login so it shows again
+      sessionStorage.removeItem('announcementDismissed');
+      
+      // Dispatch custom event for EditModeContext
+      window.dispatchEvent(new Event('userLoggedIn'));
+      
       setSuccess('Login successful! Redirecting...');
       
       // Role-based redirection

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 import InfoTooltip from '../../components/InfoTooltip';
 
 const AdminHero = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
@@ -41,7 +43,8 @@ const AdminHero = () => {
       });
     } catch (error) {
       console.error('Fetch hero error:', error);
-      toast.error('Failed to load hero section');
+      setError('Failed to load hero section');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -52,10 +55,12 @@ const AdminHero = () => {
     setSaving(true);
     try {
       await api.put('/hero', formData);
-      toast.success('Hero section updated successfully!');
+      setSuccess('Hero section updated successfully!');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
       console.error('Update hero error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update hero section');
+      setError(error.response?.data?.message || 'Failed to update hero section');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setSaving(false);
     }
@@ -79,6 +84,9 @@ const AdminHero = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <h1 className="text-3xl font-bold text-gray-800">Hero Section</h1>

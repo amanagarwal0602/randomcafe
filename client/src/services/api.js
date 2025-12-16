@@ -36,6 +36,7 @@ const api = {
       if (parts[0] === 'about') return { data: await db.getAboutContent() };
       if (parts[0] === 'contact-info') return { data: await db.getContactInfo() };
       if (parts[0] === 'site-settings') return { data: await db.getSiteSettings() };
+      if (parts[0] === 'todays-offers') return { data: { data: await db.getTodaysOffers() } };
       if (parts[0] === 'seo') return { data: {} };
       
       return { data: { data: [] } };
@@ -60,6 +61,7 @@ const api = {
       if (parts[0] === 'reviews') return { data: { data: await db.createReview(data) } };
       if (parts[0] === 'features') return { data: { data: await db.createFeature(data) } };
       if (parts[0] === 'team') return { data: { data: await db.createTeamMember(data) } };
+      if (parts[0] === 'todays-offers') return { data: { data: await db.createTodaysOffer(data) } };
       
       return { data: { data: {} } };
     } catch (error) {
@@ -89,6 +91,7 @@ const api = {
       if (parts[0] === 'about') return { data: { data: await db.updateAboutContent(data) } };
       if (parts[0] === 'contact-info') return { data: { data: await db.updateContactInfo(data) } };
       if (parts[0] === 'site-settings') return { data: { data: await db.updateSiteSettings(data) } };
+      if (parts[0] === 'todays-offers') return { data: { data: await db.updateTodaysOffer(id, data) } };
       if (parts[0] === 'seo') return { data: { data: {} } };
       
       return { data: { data: {} } };
@@ -134,6 +137,7 @@ api.delete = async (url) => {
     if (parts[0] === 'users') return { data: await db.deleteUser(id) };
     if (parts[0] === 'features') return { data: { data: await db.deleteFeature(id) } };
     if (parts[0] === 'team') return { data: { data: await db.deleteTeamMember(id) } };
+    if (parts[0] === 'todays-offers') return { data: { data: await db.deleteTodaysOffer(id) } };
     
     return { data: { data: {} } };
   } catch (error) {

@@ -75,8 +75,9 @@ const authService = {
       // Create token
       const token = btoa(JSON.stringify({ userId: user.id, email: user.email }));
       localStorage.setItem('accessToken', token);
+      localStorage.setItem('user', JSON.stringify(user)); // Store user data for EditMode
 
-      console.log('AuthService: Login successful');
+      console.log('AuthService: Login successful, user stored:', user.name, user.role);
       return {
         data: {
           user: user,
@@ -94,6 +95,7 @@ const authService = {
   logout: async () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user'); // Also remove user data
   },
 
   // Get current user

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 
 const AdminMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -70,7 +72,8 @@ const AdminMenu = () => {
       }
     } catch (error) {
       console.error('Failed to load menu items:', error);
-      toast.error(error.response?.data?.message || 'Failed to load menu items');
+      setError(error.response?.data?.message || 'Failed to load menu items');
+      setTimeout(() => setError(''), 5000);
       setMenuItems([]);
       setCategories([]);
     } finally {
@@ -94,11 +97,13 @@ const AdminMenu = () => {
       if (editItem) {
         const response = await api.put(`/menu/${editItem._id}`, submitData);
         console.log('Update response:', response.data);
-        toast.success('Menu item updated successfully');
+        setSuccess('Menu item updated successfully');
+        setTimeout(() => setSuccess(''), 5000);
       } else {
         const response = await api.post('/menu', submitData);
         console.log('Create response:', response.data);
-        toast.success('Menu item added successfully');
+        setSuccess('Menu item added successfully');
+        setTimeout(() => setSuccess(''), 5000);
       }
       setShowModal(false);
       setEditItem(null);
@@ -125,7 +130,8 @@ const AdminMenu = () => {
         errorMsg = 'You do not have permission to perform this action.';
       }
       
-      toast.error(errorMsg);
+      setError(errorMsg);
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -133,10 +139,12 @@ const AdminMenu = () => {
     if (window.confirm('Are you sure you want to delete this menu item?')) {
       try {
         await api.delete(`/menu/${id}`);
-        toast.success('Item deleted successfully');
+        setSuccess('Item deleted successfully');
+        setTimeout(() => setSuccess(''), 5000);
         fetchMenuItems();
       } catch (error) {
-        toast.error('Failed to delete item');
+        setError('Failed to delete item');
+        setTimeout(() => setError(''), 5000);
       }
     }
   };
@@ -144,16 +152,21 @@ const AdminMenu = () => {
   const toggleAvailability = async (item) => {
     try {
       await api.put(`/menu/${item._id}`, { isAvailable: !item.isAvailable });
-      toast.success('Availability updated');
+      setSuccess('Availability updated');
+      setTimeout(() => setSuccess(''), 5000);
       fetchMenuItems();
     } catch (error) {
-      toast.error('Failed to update availability');
+      setError('Failed to update availability');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-serif font-bold">Menu Management</h1>
@@ -295,7 +308,7 @@ const AdminMenu = () => {
                             setShowNewCategory(false);
                             setNewCategoryName('');
                           }}
-                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 font-medium"
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium"
                         >
                           ← Use Existing Category
                         </button>

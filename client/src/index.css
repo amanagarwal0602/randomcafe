@@ -5,6 +5,45 @@
 /* Import Google Fonts for UK Cafe Style */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+/* CSS Variables for Dynamic Brand Colors - Default values (will be overridden by admin settings) */
+:root {
+  /* Primary Color Shades (Default: Blue #3b82f6) */
+  --color-primary-50: 239 246 255;
+  --color-primary-100: 219 234 254;
+  --color-primary-200: 191 219 254;
+  --color-primary-300: 147 197 253;
+  --color-primary-400: 96 165 250;
+  --color-primary-500: 59 130 246;
+  --color-primary-600: 37 99 235;
+  --color-primary-700: 29 78 216;
+  --color-primary-800: 30 64 175;
+  --color-primary-900: 30 58 138;
+
+  /* Secondary Color Shades (Default: Purple #8b5cf6) */
+  --color-secondary-50: 250 245 255;
+  --color-secondary-100: 243 232 255;
+  --color-secondary-200: 233 213 255;
+  --color-secondary-300: 216 180 254;
+  --color-secondary-400: 192 132 252;
+  --color-secondary-500: 168 85 247;
+  --color-secondary-600: 147 51 234;
+  --color-secondary-700: 126 34 206;
+  --color-secondary-800: 107 33 168;
+  --color-secondary-900: 88 28 135;
+
+  /* Accent Color Shades (Default: Pink #ec4899) */
+  --color-accent-50: 253 242 248;
+  --color-accent-100: 252 231 243;
+  --color-accent-200: 251 207 232;
+  --color-accent-300: 249 168 212;
+  --color-accent-400: 244 114 182;
+  --color-accent-500: 236 72 153;
+  --color-accent-600: 219 39 119;
+  --color-accent-700: 190 24 93;
+  --color-accent-800: 157 23 77;
+  --color-accent-900: 131 24 67;
+}
+
 @layer base {
   body {
     @apply font-sans text-gray-900 dark:text-gray-100 antialiased bg-neutral-50 dark:bg-gray-900;
@@ -491,4 +530,39 @@ a {
 
 .animate-slide-in-right {
   animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Scrollbar Styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-primary-300 {
+  scrollbar-color: rgb(var(--color-primary-300)) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary-300));
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-primary-400));
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary-600));
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-primary-500));
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { FiFilter, FiSearch, FiPlus, FiMinus } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
+import EditableWrapper from '../../components/EditableWrapper';
+import EditModal from '../../components/EditModal';
 
 const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -12,6 +14,9 @@ const MenuPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [vegOnly, setVegOnly] = useState(false); // single veg-only toggle
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [editModal, setEditModal] = useState({ isOpen: false, type: '', data: null });
   const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
 
   useEffect(() => {
@@ -25,7 +30,8 @@ const MenuPage = () => {
       const items = response.data.data?.items || response.data.data || response.data || [];
       setMenuItems(items);
     } catch (error) {
-      toast.error('Failed to load menu items');
+      setError('Failed to load menu items');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -108,7 +114,19 @@ const MenuPage = () => {
   const filteredItems = getFilteredItems();
   const groupedItems = selectedCategory === 'all' ? getGroupedItems() : null;
 
+  const handleEdit = (type, data) => {
+    setEditModal({ isOpen: true, type, data });
+  };
+
+  const handleSave = () => {
+    fetchMenuItems(); // Refresh menu items after edit
+  };
+
   const renderMenuItem = (item, index) => (
+    <EditableWrapper 
+      onEdit={() => handleEdit('menu-item', item)} 
+      type="menu-item"
+    >
     <motion.div
       key={item.id || item._id}
       initial={{ opacity: 0, y: 20 }}
@@ -184,6 +202,7 @@ const MenuPage = () => {
         )}
       </div>
     </motion.div>
+    </EditableWrapper>
   );
 
   if (loading) {
@@ -196,6 +215,9 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-brown-600 to-brown-500 dark:from-gray-800 dark:to-gray-700 text-white py-16">
         <div className="container-custom text-center">
@@ -267,7 +289,11 @@ const MenuPage = () => {
                     <span className="text-gray-500 text-sm">{items.length} items</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {items.map((item, index) => renderMenuItem(item, index))}
+                    {items.map((item, index) => (
+                      <div key={item.id || item._id}>
+                        {renderMenuItem(item, index)}
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))
@@ -283,7 +309,11 @@ const MenuPage = () => {
               <p className="text-gray-600">{filteredItems.length} items available</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredItems.map((item, index) => renderMenuItem(item, index))}
+              {filteredItems.map((item, index) => (
+                <div key={item.id || item._id}>
+                  {renderMenuItem(item, index)}
+                </div>
+              ))}
             </div>
             {filteredItems.length === 0 && (
               <div className="text-center py-12">
@@ -293,6 +323,15 @@ const MenuPage = () => {
           </>
         )}
       </div>
+
+      {/* Edit Modal */}
+      <EditModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, type: '', data: null })}
+        type={editModal.type}
+        data={editModal.data}
+        onSave={handleSave}
+      />
     </div>
   );
 };

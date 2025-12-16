@@ -11,6 +11,9 @@ const rateLimit = require('express-rate-limit');
 // Load environment variables
 dotenv.config();
 
+// Import database config
+const dbConfig = require('./config/database.config');
+
 // Import routes
 const authRoutes = require('./routes/auth.routes');
 const menuRoutes = require('./routes/menu.routes');
@@ -28,6 +31,7 @@ const teamRoutes = require('./routes/team.routes');
 const contactInfoRoutes = require('./routes/contactInfo.routes');
 const siteSettingsRoutes = require('./routes/siteSettings.routes');
 const couponRoutes = require('./routes/coupon.routes');
+const todaysOfferRoutes = require('./routes/todaysOffer.routes');
 
 const app = express();
 
@@ -63,12 +67,22 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+// Priority: 1. database.config.js, 2. Environment variable, 3. Default
+const MONGODB_URI = dbConfig.MONGODB_URI || process.env.MONGODB_URI;
+
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI, {
+    ...dbConfig.options,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('✅ MongoDB connected successfully'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
+} else {
+  console.log('⚠️  No MongoDB connection string found.');
+  console.log('📝 Using sample data (localStorage on client-side)');
+  console.log('💡 To connect MongoDB: Edit server/config/database.config.js');
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -87,6 +101,7 @@ app.use('/api/team', teamRoutes);
 app.use('/api/contact-info', contactInfoRoutes);
 app.use('/api/site-settings', siteSettingsRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/todays-offers', todaysOfferRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

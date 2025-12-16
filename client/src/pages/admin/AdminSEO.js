@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 import InfoTooltip from '../../components/InfoTooltip';
 
 const AdminSEO = () => {
   const [page, setPage] = useState('home');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [seoData, setSeoData] = useState({
     title: '',
     description: '',
@@ -14,15 +16,20 @@ const AdminSEO = () => {
   const handleSave = async () => {
     try {
       await api.put(`/seo/${page}`, seoData);
-      toast.success('SEO settings updated');
+      setSuccess('SEO settings updated');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
-      toast.error('Failed to update SEO settings');
+      setError('Failed to update SEO settings');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-4xl font-serif font-bold">SEO Management</h1>

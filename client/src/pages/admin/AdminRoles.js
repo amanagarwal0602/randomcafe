@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 
 const AdminRoles = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [permissions, setPermissions] = useState({});
@@ -136,7 +138,8 @@ const AdminRoles = () => {
       const response = await api.get('/users');
       setUsers(response.data || []);
     } catch (error) {
-      toast.error('Failed to load users');
+      setError('Failed to load users');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -181,21 +184,25 @@ const AdminRoles = () => {
         role: selectedUser.role
       });
 
-      toast.success('Permissions updated successfully!');
+      setSuccess('Permissions updated successfully!');
+      setTimeout(() => setSuccess(''), 5000);
       setShowModal(false);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to update permissions');
+      setError('Failed to update permissions');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   const handleRoleChange = async (userId, newRole) => {
     try {
       await api.put(`/users/${userId}`, { role: newRole });
-      toast.success('Role updated successfully!');
+      setSuccess('Role updated successfully!');
+      setTimeout(() => setSuccess(''), 5000);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to update role');
+      setError('Failed to update role');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -211,6 +218,9 @@ const AdminRoles = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">User Roles & Permissions</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage user access rights and assign specific permissions</p>

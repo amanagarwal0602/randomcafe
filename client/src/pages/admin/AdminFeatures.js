@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 
 const AdminFeatures = () => {
   const [loading, setLoading] = useState(true);
   const [features, setFeatures] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingFeature, setEditingFeature] = useState(null);
   const [formData, setFormData] = useState({
@@ -24,7 +26,8 @@ const AdminFeatures = () => {
       const { data } = await api.get('/features/all');
       setFeatures(data);
     } catch (error) {
-      toast.error('Failed to load features');
+      setError('Failed to load features');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -35,16 +38,19 @@ const AdminFeatures = () => {
     try {
       if (editingFeature) {
         await api.put(`/features/${editingFeature._id}`, formData);
-        toast.success('Feature updated!');
+        setSuccess('Feature updated!');
+        setTimeout(() => setSuccess(''), 5000);
       } else {
         await api.post('/features', formData);
-        toast.success('Feature created!');
+        setSuccess('Feature created!');
+        setTimeout(() => setSuccess(''), 5000);
       }
       setShowModal(false);
       resetForm();
       fetchFeatures();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Operation failed');
+      setError(error.response?.data?.message || 'Operation failed');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -52,10 +58,12 @@ const AdminFeatures = () => {
     if (window.confirm('Delete this feature?')) {
       try {
         await api.delete(`/features/${id}`);
-        toast.success('Feature deleted!');
+        setSuccess('Feature deleted!');
+        setTimeout(() => setSuccess(''), 5000);
         fetchFeatures();
       } catch (error) {
-        toast.error('Failed to delete feature');
+        setError('Failed to delete feature');
+        setTimeout(() => setError(''), 5000);
       }
     }
   };
@@ -87,6 +95,9 @@ const AdminFeatures = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Features</h1>

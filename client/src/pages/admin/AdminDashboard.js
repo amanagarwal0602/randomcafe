@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [dateFilter, setDateFilter] = useState({
@@ -29,7 +31,8 @@ const AdminDashboard = () => {
       setMenuItems(menuRes.data.data?.items || menuRes.data.data || []);
     } catch (error) {
       console.error('Dashboard error:', error);
-      toast.error('Failed to load dashboard data');
+      setError('Failed to load dashboard data');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -174,6 +177,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Sales Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Complete overview of your restaurant sales and analytics</p>
@@ -186,7 +192,7 @@ const AdminDashboard = () => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Today's Sales</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">₹{Math.round(todaySales.total)}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{todaySales.count} orders</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{todaySales.count} orders</p>
             </div>
             <div className="bg-blue-100 dark:bg-blue-900 rounded-full p-3">
               <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,6 +305,7 @@ const AdminDashboard = () => {
                   { title: 'Orders', path: '/admin/orders', color: 'bg-blue-500', desc: 'Manage customer orders' },
                   { title: 'Reservations', path: '/admin/reservations', color: 'bg-purple-500', desc: 'Table bookings' },
                   { title: 'Menu', path: '/admin/menu', color: 'bg-green-500', desc: 'Food & drinks' },
+                  { title: "Today's Offers", path: '/admin/todays-offers', color: 'bg-red-500', desc: 'Special deals' },
                   { title: 'Gallery', path: '/admin/gallery', color: 'bg-yellow-500', desc: 'Photo management' },
                   { title: 'Users', path: '/admin/users', color: 'bg-orange-500', desc: 'User accounts' },
                   { title: 'Reviews', path: '/admin/reviews', color: 'bg-pink-500', desc: 'Customer feedback' },
@@ -321,6 +328,7 @@ const AdminDashboard = () => {
                   { title: 'Team Members', path: '/admin/team', color: 'bg-rose-500', desc: 'Staff profiles' },
                   { title: 'Contact Info', path: '/admin/contact-info', color: 'bg-amber-500', desc: 'Address & hours' },
                   { title: 'Site Settings', path: '/admin/site-settings', color: 'bg-slate-500', desc: 'Branding & colors' },
+                  { title: 'Storage Config', path: '/admin/storage-config', color: 'bg-emerald-500', desc: 'Database setup' },
                   { title: 'SEO Settings', path: '/admin/seo', color: 'bg-violet-500', desc: 'Meta tags & keywords' },
                 ].map((link, i) => (
                   <Link key={i} to={link.path} className={`${link.color} text-white p-5 rounded-lg shadow hover:opacity-90 transition`}>

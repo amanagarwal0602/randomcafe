@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -48,7 +50,8 @@ const AdminUsers = () => {
       const response = await api.get('/users');
       setUsers(response.data);
     } catch (error) {
-      toast.error('Failed to load users');
+      setError('Failed to load users');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -111,10 +114,12 @@ const AdminUsers = () => {
     try {
       const user = users.find(u => u.id === userId);
       await api.put(`/users/${userId}`, { is_active: !user.is_active });
-      toast.success('User status updated');
+      setSuccess('User status updated');
+      setTimeout(() => setSuccess(''), 5000);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to update user');
+      setError('Failed to update user');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -129,25 +134,29 @@ const AdminUsers = () => {
     e.preventDefault();
 
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      setError('Password must be at least 6 characters');
+      setTimeout(() => setError(''), 5000);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
+      setError('Passwords do not match');
+      setTimeout(() => setError(''), 5000);
       return;
     }
 
     try {
       // Use plain text password for simplicity
       await api.put(`/users/${selectedUser.id}`, { password: newPassword });
-      toast.success('Password updated successfully');
+      setSuccess('Password updated successfully');
+      setTimeout(() => setSuccess(''), 5000);
       setShowPasswordModal(false);
       setSelectedUser(null);
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      toast.error('Failed to update password');
+      setError('Failed to update password');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -179,11 +188,13 @@ const AdminUsers = () => {
       await api.put(`/users/${selectedUser.id}`, { 
         permissions: selectedUser.permissions 
       });
-      toast.success('Permissions updated successfully');
+      setSuccess('Permissions updated successfully');
+      setTimeout(() => setSuccess(''), 5000);
       setShowPermissionsModal(false);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to update permissions');
+      setError('Failed to update permissions');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -196,8 +207,10 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
         <h1 className="text-4xl font-serif font-bold mb-8">User Management</h1>
         
         {/* Filters and Search */}

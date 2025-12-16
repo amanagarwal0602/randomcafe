@@ -5,33 +5,32 @@ import { FiMenu, FiX, FiShoppingCart, FiUser, FiLogOut, FiPackage, FiMoon, FiSun
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useDarkMode } from '../../context/DarkModeContext';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 import api from '../../services/api';
+import EditableWrapper from '../EditableWrapper';
+import EditModal from '../EditModal';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [siteName, setSiteName] = useState('Lumière');
   const { user, logout, isAdmin, isStaff } = useAuth();
   const { getItemCount } = useCart();
   const { darkMode, toggleDarkMode } = useDarkMode();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchSiteName();
-  }, []);
-
-  const fetchSiteName = async () => {
-    try {
-      const response = await api.get('/about');
-      const title = response.data?.title || 'Lumière';
-      setSiteName(title.replace(' Café', '').replace(' Cafe', ''));
-    } catch (error) {
-      console.error('Failed to load site name:', error);
-    }
-  };
+  const [editModal, setEditModal] = useState({ isOpen: false, type: '', data: null });
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
+  };
+
+  const handleEdit = (type, data) => {
+    setEditModal({ isOpen: true, type, data });
+  };
+
+  const handleSave = () => {
+    setEditModal({ isOpen: false, type: '', data: null });
+    window.location.reload(); // Reload to fetch updated settings
   };
 
   const navLinks = [
@@ -48,10 +47,26 @@ const Navbar = () => {
       <div className="container-custom">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-3xl font-serif font-bold text-primary-500 dark:text-primary-400">{siteName}</span>
-            <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">CAFÉ</span>
-          </Link>
+          <EditableWrapper
+            onEdit={() => handleEdit('logo', { siteName: settings.siteName, logo: settings.logo })}
+          >
+            <Link to="/" className="flex items-center space-x-3">
+              {settings.logo ? (
+                <img 
+                  src={settings.logo} 
+                  alt={settings.siteName} 
+                  className="h-12 w-auto object-contain"
+                />
+              ) : (
+                <>
+                  <span className="text-3xl font-serif font-bold text-primary-500 dark:text-primary-400">
+                    {settings.siteName.replace(' Café', '').replace(' Cafe', '')}
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">CAFÉ</span>
+                </>
+              )}
+            </Link>
+          </EditableWrapper>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
@@ -208,6 +223,14 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <EditModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, type: '', data: null })}
+        type={editModal.type}
+        data={editModal.data}
+        onSave={handleSave}
+      />
     </nav>
   );
 };

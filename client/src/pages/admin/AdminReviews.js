@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { FiTrash2, FiMessageSquare, FiX } from 'react-icons/fi';
 
 const AdminReviews = () => {
   const [reviews, setReviews] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const [responseText, setResponseText] = useState('');
@@ -19,7 +21,8 @@ const AdminReviews = () => {
       const response = await api.get('/admin/reviews');
       setReviews(response.data.data || []);
     } catch (error) {
-      toast.error('Failed to load reviews');
+      setError('Failed to load reviews');
+      setTimeout(() => setError(''), 5000);
       setReviews([]);
     }
   };
@@ -27,10 +30,12 @@ const AdminReviews = () => {
   const togglePublish = async (reviewId) => {
     try {
       await api.put(`/admin/reviews/${reviewId}/toggle-publish`);
-      toast.success('Review status updated');
+      setSuccess('Review status updated');
+      setTimeout(() => setSuccess(''), 5000);
       fetchReviews();
     } catch (error) {
-      toast.error('Failed to update review');
+      setError('Failed to update review');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -38,28 +43,33 @@ const AdminReviews = () => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       try {
         await api.delete(`/reviews/${reviewId}`);
-        toast.success('Review deleted successfully');
+        setSuccess('Review deleted successfully');
+        setTimeout(() => setSuccess(''), 5000);
         fetchReviews();
       } catch (error) {
-        toast.error('Failed to delete review');
+        setError('Failed to delete review');
+        setTimeout(() => setError(''), 5000);
       }
     }
   };
 
   const handleResponse = async () => {
     if (!responseText.trim()) {
-      toast.error('Please enter a response');
+      setError('Please enter a response');
+      setTimeout(() => setError(''), 5000);
       return;
     }
     try {
       await api.put(`/reviews/${selectedReview._id}/respond`, { response: responseText });
-      toast.success('Response added successfully');
+      setSuccess('Response added successfully');
+      setTimeout(() => setSuccess(''), 5000);
       setShowResponseModal(false);
       setResponseText('');
       setSelectedReview(null);
       fetchReviews();
     } catch (error) {
-      toast.error('Failed to add response');
+      setError('Failed to add response');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -70,8 +80,11 @@ const AdminReviews = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold mb-2">Review Management</h1>
           <p className="text-gray-600 dark:text-gray-400">{reviews.length} total reviews</p>

@@ -1131,5 +1131,90 @@ export const updateSiteSettings = async (settings) => {
   return data.siteSettings;
 };
 
+// Today's Offers Functions
+export const getTodaysOffers = async () => {
+  const data = getData();
+  return data.todaysOffers || [
+    {
+      id: 'offer1',
+      title: 'Breakfast Special',
+      description: 'Get 20% off on all breakfast items before 11 AM',
+      discount: '20% OFF',
+      image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400',
+      validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+      created_at: getTimestamp()
+    },
+    {
+      id: 'offer2',
+      title: 'Combo Meal Deal',
+      description: 'Order any main course + drink + dessert and save ₹100',
+      discount: '₹100 OFF',
+      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400',
+      validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+      created_at: getTimestamp()
+    },
+    {
+      id: 'offer3',
+      title: 'Coffee Lover Special',
+      description: 'Buy 2 coffees, get 1 free on all premium blends',
+      discount: 'Buy 2 Get 1',
+      image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400',
+      validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+      created_at: getTimestamp()
+    },
+    {
+      id: 'offer4',
+      title: 'Weekend Brunch',
+      description: 'Special weekend brunch menu with complimentary juice',
+      discount: 'Free Juice',
+      image: 'https://images.unsplash.com/photo-1495214783159-3503fd1b572d?w=400',
+      validUntil: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+      isActive: true,
+      created_at: getTimestamp()
+    }
+  ];
+};
+
+export const createTodaysOffer = async (offerData) => {
+  const data = getData();
+  const newOffer = {
+    id: generateId(),
+    ...offerData,
+    created_at: getTimestamp(),
+    updated_at: getTimestamp()
+  };
+  data.todaysOffers = data.todaysOffers || [];
+  data.todaysOffers.push(newOffer);
+  saveData(data);
+  return newOffer;
+};
+
+export const updateTodaysOffer = async (id, offerData) => {
+  const data = getData();
+  data.todaysOffers = data.todaysOffers || [];
+  const index = data.todaysOffers.findIndex(o => o.id === id);
+  if (index !== -1) {
+    data.todaysOffers[index] = {
+      ...data.todaysOffers[index],
+      ...offerData,
+      updated_at: getTimestamp()
+    };
+    saveData(data);
+    return data.todaysOffers[index];
+  }
+  throw new Error('Offer not found');
+};
+
+export const deleteTodaysOffer = async (id) => {
+  const data = getData();
+  data.todaysOffers = data.todaysOffers || [];
+  data.todaysOffers = data.todaysOffers.filter(o => o.id !== id);
+  saveData(data);
+  return { message: 'Offer deleted successfully' };
+};
+
 // Initialize on module load
 initializeData();

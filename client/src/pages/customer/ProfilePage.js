@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 const ProfilePage = () => {
   const { user, updateUser } = useAuth();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -16,15 +18,20 @@ const ProfilePage = () => {
     try {
       const response = await api.put('/users/profile', formData);
       updateUser(response.data.data);
-      toast.success('Profile updated successfully!');
+      setSuccess('Profile updated successfully!');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
-      toast.error('Failed to update profile');
+      setError('Failed to update profile');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-2xl">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <h1 className="text-4xl font-serif font-bold mb-8">My Profile</h1>
         <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">

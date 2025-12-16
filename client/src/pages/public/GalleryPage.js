@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import EditableWrapper from '../../components/EditableWrapper';
+import EditModal from '../../components/EditModal';
 
 const GalleryPage = () => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [editModal, setEditModal] = useState({ isOpen: false, type: '', data: null });
 
   useEffect(() => {
     fetchImages();
@@ -19,6 +22,14 @@ const GalleryPage = () => {
     }
   };
 
+  const handleEdit = (type, data) => {
+    setEditModal({ isOpen: true, type, data });
+  };
+
+  const handleSave = () => {
+    fetchImages(); // Refresh images after edit
+  };
+
   return (
     <div className="min-h-screen dark:bg-gray-900">
       <div className="bg-brown-500 dark:bg-gray-800 text-white dark:text-gray-200 py-16">
@@ -31,8 +42,12 @@ const GalleryPage = () => {
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((image) => (
-            <div
+            <EditableWrapper 
               key={image._id}
+              onEdit={() => handleEdit('gallery-item', image)} 
+              type="gallery-item"
+            >
+            <div
               onClick={() => setSelectedImage(image)}
               className="aspect-square overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition"
             >
@@ -42,6 +57,7 @@ const GalleryPage = () => {
                 className="w-full h-full object-cover"
               />
             </div>
+            </EditableWrapper>
           ))}
         </div>
       </div>
@@ -58,6 +74,15 @@ const GalleryPage = () => {
           />
         </div>
       )}
+
+      {/* Edit Modal */}
+      <EditModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, type: '', data: null })}
+        type={editModal.type}
+        data={editModal.data}
+        onSave={handleSave}
+      />
     </div>
   );
 };

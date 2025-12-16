@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const AdminOrders = () => {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    
     // Export orders as CSV
     const handleExportCSV = () => {
       if (!orders || orders.length === 0) return;
@@ -49,7 +52,8 @@ const AdminOrders = () => {
       setOrders(ordersWithBillNumbers);
     } catch (error) {
       console.error('Failed to load orders:', error);
-      toast.error('Failed to load orders');
+      setError('Failed to load orders');
+      setTimeout(() => setError(''), 5000);
       setOrders([]);
     } finally {
       setLoading(false);
@@ -86,10 +90,12 @@ const AdminOrders = () => {
   const updateStatus = async (orderId, status) => {
     try {
       await api.put(`/orders/${orderId}/status`, { status });
-      toast.success('Order status updated');
+      setSuccess('Order status updated');
+      setTimeout(() => setSuccess(''), 3000);
       fetchOrders();
     } catch (error) {
-      toast.error('Failed to update order');
+      setError('Failed to update order');
+      setTimeout(() => setError(''), 3000);
     }
   };
 
@@ -194,8 +200,11 @@ const AdminOrders = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <div className="flex justify-between items-center mb-8">
           <div className="flex gap-2">
             <button

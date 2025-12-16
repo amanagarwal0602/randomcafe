@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const ReservationPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     guestName: user?.name || '',
     guestEmail: user?.email || '',
@@ -27,15 +29,19 @@ const ReservationPage = () => {
     e.preventDefault();
     try {
       await api.post('/reservations', formData);
-      toast.success('Reservation created successfully!');
-      navigate('/customer/reservations');
+      setSuccess('Reservation created successfully!');
+      setTimeout(() => navigate('/customer/reservations'), 1500);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to create reservation');
+      setError(error.response?.data?.message || 'Failed to create reservation');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="bg-brown-500 dark:bg-gray-800 text-white py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Reserve a Table</h1>

@@ -50,7 +50,7 @@ const MyReservationsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <h1 className="text-4xl font-serif font-bold mb-8 dark:text-gray-100">My Reservations</h1>
         

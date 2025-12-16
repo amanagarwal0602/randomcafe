@@ -5,6 +5,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Hooks
+import { useSiteSettings } from './hooks/useSiteSettings';
+import { EditModeProvider } from './contexts/EditModeContext';
+
 // Layout
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -13,6 +17,9 @@ import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import NotificationPopup from './components/NotificationPopup';
+import MaintenanceMode from './components/MaintenanceMode';
+import AnnouncementBar from './components/AnnouncementBar';
+import EditModeToggle from './components/EditModeToggle';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -53,9 +60,14 @@ import AdminContactInfo from './pages/admin/AdminContactInfo';
 import AdminSiteSettings from './pages/admin/AdminSiteSettings';
 import AdminCoupons from './pages/admin/AdminCoupons';
 import AdminRoles from './pages/admin/AdminRoles';
+import AdminTodaysOffers from './pages/admin/AdminTodaysOffers';
+import StorageConfigPage from './pages/admin/StorageConfigPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
+  // Initialize site settings (favicon, title, colors, analytics)
+  useSiteSettings();
+  
   // Load data from sampleDataFull.json only on first load
   useEffect(() => {
     const initializeData = async () => {
@@ -192,10 +204,14 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
-        <ScrollToTop />
-        <Navbar />
-        <main className="flex-grow bg-gray-50 dark:bg-gray-800">
+      <EditModeProvider>
+        <MaintenanceMode>
+          <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+            <ScrollToTop />
+            <AnnouncementBar />
+            <Navbar />
+            <EditModeToggle />
+          <main className="flex-grow bg-gray-50 dark:bg-gray-800">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
@@ -232,8 +248,10 @@ function App() {
             <Route path="/admin/team" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_team"]}><AdminTeam /></ProtectedRoute>} />
             <Route path="/admin/contact-info" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_contact"]}><AdminContactInfo /></ProtectedRoute>} />
             <Route path="/admin/site-settings" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_settings"]}><AdminSiteSettings /></ProtectedRoute>} />
+            <Route path="/admin/storage-config" element={<ProtectedRoute roles={["admin"]}><StorageConfigPage /></ProtectedRoute>} />
             <Route path="/admin/coupons" element={<ProtectedRoute roles={["admin"]} permissions={["view_coupons", "add_coupons", "edit_coupons", "delete_coupons"]}><AdminCoupons /></ProtectedRoute>} />
             <Route path="/admin/roles" element={<ProtectedRoute roles={["admin"]} permissions={["manage_roles"]}><AdminRoles /></ProtectedRoute>} />
+            <Route path="/admin/todays-offers" element={<ProtectedRoute roles={["admin", "staff"]} permissions={["view_menu", "add_menu", "edit_menu"]}><AdminTodaysOffers /></ProtectedRoute>} />
             {/* 404 Route */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
@@ -250,10 +268,11 @@ function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-        />
-      </div>
+          />
+        </div>
+      </MaintenanceMode>
+      </EditModeProvider>
     </ErrorBoundary>
   );
 }
-
 export default App;

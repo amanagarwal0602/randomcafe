@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import { FiPlus, FiTrash2, FiEdit2, FiX } from 'react-icons/fi';
 
 const AdminGallery = () => {
   const [images, setImages] = useState([]);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editImage, setEditImage] = useState(null);
   const [formData, setFormData] = useState({
@@ -44,7 +46,8 @@ const AdminGallery = () => {
       const response = await api.get('/gallery');
       setImages(response.data.data || []);
     } catch (error) {
-      toast.error('Failed to load gallery');
+      setError('Failed to load gallery');
+      setTimeout(() => setError(''), 5000);
       setImages([]);
     }
   };
@@ -54,16 +57,19 @@ const AdminGallery = () => {
     try {
       if (editImage) {
         await api.put(`/gallery/${editImage._id}`, formData);
-        toast.success('Image updated successfully');
+        setSuccess('Image updated successfully');
+        setTimeout(() => setSuccess(''), 5000);
       } else {
         await api.post('/gallery', formData);
-        toast.success('Image added successfully');
+        setSuccess('Image added successfully');
+        setTimeout(() => setSuccess(''), 5000);
       }
       setShowModal(false);
       setEditImage(null);
       fetchImages();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to save image');
+      setError(error.response?.data?.message || 'Failed to save image');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -71,10 +77,12 @@ const AdminGallery = () => {
     if (window.confirm('Are you sure you want to delete this image?')) {
       try {
         await api.delete(`/gallery/${id}`);
-        toast.success('Image deleted successfully');
+        setSuccess('Image deleted successfully');
+        setTimeout(() => setSuccess(''), 5000);
         fetchImages();
       } catch (error) {
-        toast.error('Failed to delete image');
+        setError('Failed to delete image');
+        setTimeout(() => setError(''), 5000);
       }
     }
   };
@@ -82,16 +90,21 @@ const AdminGallery = () => {
   const togglePublish = async (image) => {
     try {
       await api.put(`/gallery/${image._id}`, { isPublished: !image.isPublished });
-      toast.success('Published status updated');
+      setSuccess('Published status updated');
+      setTimeout(() => setSuccess(''), 5000);
       fetchImages();
     } catch (error) {
-      toast.error('Failed to update status');
+      setError('Failed to update status');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
+        {error && <Alert type="error" message={error} />}
+        {success && <Alert type="success" message={success} />}
+        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-serif font-bold">Gallery Management</h1>

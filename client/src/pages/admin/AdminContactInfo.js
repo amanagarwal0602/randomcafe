@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 
 const AdminContactInfo = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     businessName: '',
     tagline: '',
@@ -76,7 +78,8 @@ const AdminContactInfo = () => {
       });
     } catch (error) {
       console.error('Contact info error:', error);
-      toast.error('Failed to load contact info');
+      setError('Failed to load contact info');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -104,10 +107,12 @@ const AdminContactInfo = () => {
         mapEmbedUrl: formData.mapEmbedUrl
       };
       await api.put('/contact-info', payload);
-      toast.success('Contact information updated!');
+      setSuccess('Contact information updated!');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
       console.error('Update error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update');
+      setError(error.response?.data?.message || 'Failed to update');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setSaving(false);
     }
@@ -131,6 +136,9 @@ const AdminContactInfo = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {error && <Alert type="error" message={error} />}
+      {success && <Alert type="success" message={success} />}
+      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Contact Information</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage all contact details</p>

@@ -96,7 +96,7 @@ const OrdersPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold mb-4">My Orders & Reservations</h1>
