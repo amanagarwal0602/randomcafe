@@ -463,10 +463,39 @@ export const createOrder = async (orderData) => {
     delivery_address_country: orderData.deliveryAddress?.country || '',
     special_instructions: orderData.specialInstructions || '',
     estimated_delivery: orderData.estimatedDelivery || '',
+    has_reservation: orderData.hasReservation || false,
+    reservation_date: orderData.reservationDate || null,
+    reservation_time: orderData.reservationTime || null,
+    number_of_guests: orderData.numberOfGuests || null,
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
   data.orders.push(order);
+  
+  // If order includes a reservation, create a separate reservation entry
+  if (orderData.hasReservation && orderData.reservationDate && orderData.reservationTime) {
+    const resId = generateId();
+    const reservation = {
+      id: resId,
+      table_type: 'reservation',
+      user_id: orderData.userId,
+      guest_name: orderData.userName || '',
+      guest_email: orderData.userEmail || '',
+      guest_phone: orderData.userPhone || orderData.contactPhone || '',
+      date: orderData.reservationDate,
+      time: orderData.reservationTime,
+      guests: parseInt(orderData.numberOfGuests) || 2,
+      numberOfGuests: parseInt(orderData.numberOfGuests) || 2,
+      table_number: '',
+      status: 'confirmed',
+      special_requests: `Created from order #${orderId}`,
+      order_id: orderId,
+      created_at: getTimestamp(),
+      updated_at: getTimestamp()
+    };
+    data.reservations.push(reservation);
+  }
+  
   saveData(data);
   return order;
 };
@@ -532,6 +561,10 @@ export const getOrders = async () => {
       deliveryType: order.delivery_type,
       specialInstructions: order.special_instructions,
       estimatedDelivery: order.estimated_delivery,
+      hasReservation: order.has_reservation || false,
+      reservationDate: order.reservation_date,
+      reservationTime: order.reservation_time,
+      numberOfGuests: order.number_of_guests,
       items: mappedItems,
       createdAt: order.created_at || order.createdAt,
       updatedAt: order.updated_at || order.updatedAt,
@@ -600,7 +633,8 @@ export const getReservations = async () => {
     guestPhone: res.guest_phone,
     numberOfGuests: parseInt(res.numberOfGuests || res.guests) || 0,
     tableNumber: res.table_number,
-    specialRequests: res.special_requests
+    specialRequests: res.special_requests,
+    order_id: res.order_id
   }));
 };
 
@@ -1048,6 +1082,53 @@ export const getContactInfo = async () => {
     socialTwitter: contact.social_twitter || '',
     socialLinkedin: contact.social_linkedin || ''
   };
+};
+
+// ============ SITE SETTINGS ============
+export const getSiteSettings = async () => {
+  const data = getData();
+  const settings = data.siteSettings || {};
+  return {
+    siteName: settings.siteName || 'Lumiere Cafe',
+    logo: settings.logo || '',
+    favicon: settings.favicon || '',
+    primaryColor: settings.primaryColor || '#3b82f6',
+    secondaryColor: settings.secondaryColor || '#8b5cf6',
+    accentColor: settings.accentColor || '#ec4899',
+    footerText: settings.footerText || '© 2024 Lumiere Cafe. All rights reserved.',
+    announcementBar: settings.announcementBar || {
+      enabled: false,
+      message: '',
+      backgroundColor: '#3b82f6',
+      textColor: '#ffffff'
+    },
+    maintenanceMode: settings.maintenanceMode || {
+      enabled: false,
+      message: 'We are currently under maintenance. Please check back soon.'
+    },
+    googleAnalyticsId: settings.googleAnalyticsId || '',
+    facebookPixelId: settings.facebookPixelId || ''
+  };
+};
+
+export const updateSiteSettings = async (settings) => {
+  const data = getData();
+  data.siteSettings = {
+    siteName: settings.siteName,
+    logo: settings.logo,
+    favicon: settings.favicon,
+    primaryColor: settings.primaryColor,
+    secondaryColor: settings.secondaryColor,
+    accentColor: settings.accentColor,
+    footerText: settings.footerText,
+    announcementBar: settings.announcementBar,
+    maintenanceMode: settings.maintenanceMode,
+    googleAnalyticsId: settings.googleAnalyticsId,
+    facebookPixelId: settings.facebookPixelId,
+    updated_at: getTimestamp()
+  };
+  saveData(data);
+  return data.siteSettings;
 };
 
 // Initialize on module load

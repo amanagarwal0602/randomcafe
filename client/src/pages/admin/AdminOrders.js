@@ -490,6 +490,36 @@ const AdminOrders = () => {
                       <p className="text-gray-500 text-sm">No items</p>
                     )}
                   </div>
+                  
+                  {/* Show reservation details if order includes reservation */}
+                  {(order.hasReservation || order.reservationDate) && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                        <FiCalendar className="text-purple-600" />
+                        Table Reservation Included
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {order.reservationDate && (
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Date:</span>
+                            <span className="ml-2 font-medium">{new Date(order.reservationDate).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        {order.reservationTime && (
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Time:</span>
+                            <span className="ml-2 font-medium">{order.reservationTime}</span>
+                          </div>
+                        )}
+                        {order.numberOfGuests && (
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Guests:</span>
+                            <span className="ml-2 font-medium">{order.numberOfGuests}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

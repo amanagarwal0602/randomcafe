@@ -130,9 +130,17 @@ const AdminReservations = () => {
                     </div>
                     
                     {(res.specialRequests || res.special_requests) && (
-                      <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-900">
+                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <p className="text-sm text-blue-900 dark:text-blue-300">
                           <span className="font-semibold">Special Requests:</span> {res.specialRequests || res.special_requests}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {res.order_id && (
+                      <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <p className="text-sm text-purple-900 dark:text-purple-300">
+                          <span className="font-semibold">🛍️ Linked Order:</span> #{res.order_id}
                         </p>
                       </div>
                     )}

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { FiPackage, FiClock, FiCheckCircle, FiTruck, FiCalendar } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
 
 const OrdersPage = () => {
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +26,24 @@ const OrdersPage = () => {
       const ordersData = ordersRes.data.data || [];
       const reservationsData = reservationsRes.data.data || [];
       
-      setOrders(ordersData);
-      setReservations(reservationsData);
+      // Filter orders to show only current user's orders
+      const userOrders = ordersData.filter(order => 
+        order.userId === user?.id || 
+        order.user_id === user?.id ||
+        order.userEmail === user?.email ||
+        order.user_email === user?.email
+      );
+      
+      // Filter reservations to show only current user's reservations
+      const userReservations = reservationsData.filter(res => 
+        res.userId === user?.id || 
+        res.user_id === user?.id ||
+        res.email === user?.email ||
+        res.userEmail === user?.email
+      );
+      
+      setOrders(userOrders);
+      setReservations(userReservations);
     } catch (error) {
       console.error('Failed to load data:', error);
       setOrders([]);

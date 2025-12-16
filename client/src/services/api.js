@@ -35,7 +35,7 @@ const api = {
       if (parts[0] === 'hero') return { data: await db.getAboutContent() };
       if (parts[0] === 'about') return { data: await db.getAboutContent() };
       if (parts[0] === 'contact-info') return { data: await db.getContactInfo() };
-      if (parts[0] === 'site-settings') return { data: {} };
+      if (parts[0] === 'site-settings') return { data: await db.getSiteSettings() };
       if (parts[0] === 'seo') return { data: {} };
       
       return { data: { data: [] } };
@@ -88,7 +88,7 @@ const api = {
       if (parts[0] === 'hero') return { data: { data: await db.updateAboutContent(data) } };
       if (parts[0] === 'about') return { data: { data: await db.updateAboutContent(data) } };
       if (parts[0] === 'contact-info') return { data: { data: await db.updateContactInfo(data) } };
-      if (parts[0] === 'site-settings') return { data: { data: {} } };
+      if (parts[0] === 'site-settings') return { data: { data: await db.updateSiteSettings(data) } };
       if (parts[0] === 'seo') return { data: { data: {} } };
       
       return { data: { data: {} } };

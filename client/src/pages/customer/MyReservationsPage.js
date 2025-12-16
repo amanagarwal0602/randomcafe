@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
+import { useAuth } from '../../context/AuthContext';
 
 const MyReservationsPage = () => {
+  const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -14,7 +16,17 @@ const MyReservationsPage = () => {
   const fetchReservations = async () => {
     try {
       const response = await api.get('/reservations');
-      setReservations(response.data.data || []);
+      const allReservations = response.data.data || [];
+      
+      // Filter to show only current user's reservations
+      const userReservations = allReservations.filter(res => 
+        res.userId === user?.id || 
+        res.user_id === user?.id ||
+        res.email === user?.email ||
+        res.userEmail === user?.email
+      );
+      
+      setReservations(userReservations);
     } catch (error) {
       console.error('Failed to load reservations');
       setReservations([]);
