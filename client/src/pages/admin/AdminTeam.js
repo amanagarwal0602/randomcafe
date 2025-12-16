@@ -64,6 +64,19 @@ const AdminTeam = () => {
     }
   };
 
+  const handleToggleActive = async (member) => {
+    try {
+      await api.put(`/team/${member._id}`, {
+        ...member,
+        is_active: !member.is_active
+      });
+      toast.success(`Team member ${!member.is_active ? 'shown' : 'hidden'} on website`);
+      fetchMembers();
+    } catch (error) {
+      toast.error('Failed to update visibility');
+    }
+  };
+
   const handleEdit = (member) => {
     setEditingMember(member);
     setFormData({
@@ -100,7 +113,7 @@ const AdminTeam = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Team Members</h1>
-          <p className="text-gray-600 mt-2">Manage your team</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your team</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowModal(true); }}
@@ -115,33 +128,55 @@ const AdminTeam = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {members.map(member => (
-            <div key={member._id} className="bg-white rounded-lg shadow p-6">
+            <div key={member._id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <img 
                 src={member.image} 
                 alt={member.name} 
+                loading="lazy"
                 className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
               />
-              <h3 className="text-lg font-semibold text-gray-800 text-center">{member.name}</h3>
-              <p className="text-gray-600 text-sm text-center mb-3">{member.position}</p>
-              {member.bio && <p className="text-gray-600 text-xs mb-3">{member.bio.substring(0, 100)}...</p>}
-              <div className="flex justify-center gap-2 mb-3">
-                <button
-                  onClick={() => handleEdit(member)}
-                  className="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(member._id)}
-                  className="px-3 py-1 text-sm bg-red-100 text-red-600 rounded hover:bg-red-200"
-                >
-                  Delete
-                </button>
-              </div>
-              <div className="text-center text-xs text-gray-500">
-                <span className={member.isActive ? 'text-green-600' : 'text-red-600'}>
-                  {member.isActive ? 'Active' : 'Inactive'}
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 text-center">{member.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-3">{member.position}</p>
+              {member.bio && <p className="text-gray-600 dark:text-gray-400 text-xs mb-3">{member.bio.substring(0, 100)}...</p>}
+              
+              {/* Visibility Status Badge */}
+              <div className="text-center mb-3">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  member.is_active 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
+                }`}>
+                  {member.is_active ? '👁️ Visible on Website' : '🚫 Hidden from Website'}
                 </span>
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                {/* Visibility Toggle Button */}
+                <button
+                  onClick={() => handleToggleActive(member)}
+                  className={`px-3 py-2 text-sm rounded font-medium transition ${
+                    member.is_active 
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' 
+                      : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50'
+                  }`}
+                >
+                  {member.is_active ? 'Hide from Website' : 'Show on Website'}
+                </button>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(member)}
+                    className="flex-1 px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(member._id)}
+                    className="flex-1 px-3 py-1 text-sm bg-red-100 text-red-600 rounded hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -150,14 +185,14 @@ const AdminTeam = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">
               {editingMember ? 'Edit Member' : 'Add Member'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name *</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -168,7 +203,7 @@ const AdminTeam = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Position *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Position *</label>
                   <input
                     type="text"
                     value={formData.position}
@@ -180,7 +215,7 @@ const AdminTeam = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bio</label>
                 <textarea
                   value={formData.bio}
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
@@ -190,7 +225,7 @@ const AdminTeam = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image URL</label>
                 <input
                   type="url"
                   value={formData.image}
@@ -202,7 +237,7 @@ const AdminTeam = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -212,7 +247,7 @@ const AdminTeam = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -227,7 +262,7 @@ const AdminTeam = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {['facebook', 'instagram', 'twitter', 'linkedin'].map(platform => (
                     <div key={platform}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">{platform}</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 capitalize">{platform}</label>
                       <input
                         type="url"
                         value={formData.socialLinks[platform]}
@@ -244,7 +279,7 @@ const AdminTeam = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order</label>
                   <input
                     type="number"
                     value={formData.order}
@@ -260,7 +295,7 @@ const AdminTeam = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                     className="w-4 h-4 text-blue-600"
                   />
-                  <label className="ml-2 text-sm font-medium text-gray-700">Active</label>
+                  <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
                 </div>
               </div>
 
@@ -268,7 +303,7 @@ const AdminTeam = () => {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
@@ -288,3 +323,4 @@ const AdminTeam = () => {
 };
 
 export default AdminTeam;
+

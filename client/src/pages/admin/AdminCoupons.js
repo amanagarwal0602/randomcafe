@@ -134,7 +134,7 @@ const AdminCoupons = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Coupon Codes</h1>
-          <p className="text-gray-600 mt-2">Manage discount coupons for customers</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage discount coupons for customers</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowModal(true); }}
@@ -147,7 +147,7 @@ const AdminCoupons = () => {
       {loading ? (
         <div className="text-center py-12">Loading...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -160,29 +160,29 @@ const AdminCoupons = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
               {coupons.map((coupon) => (
-                <tr key={coupon._id} className={isExpired(coupon.validUntil) ? 'bg-gray-50 opacity-60' : ''}>
+                <tr key={coupon._id} className={isExpired(coupon.validUntil) ? 'bg-gray-50 dark:bg-gray-800 opacity-60' : ''}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <span className="font-mono font-bold text-blue-600">{coupon.code}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">{coupon.description}</div>
+                    <div className="text-sm text-gray-900 dark:text-gray-100">{coupon.description}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {coupon.discountType === 'percentage' 
                         ? `${coupon.discountValue}%` 
-                        : `$${coupon.discountValue}`}
+                        : `₹${coupon.discountValue}`}
                     </div>
                     {coupon.minOrderAmount > 0 && (
-                      <div className="text-xs text-gray-500">Min: ${coupon.minOrderAmount}</div>
+                      <div className="text-xs text-gray-500">Min: ₹{coupon.minOrderAmount}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
                       {new Date(coupon.validUntil).toLocaleDateString()}
                     </div>
                     {isExpired(coupon.validUntil) && (
@@ -190,7 +190,7 @@ const AdminCoupons = () => {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
                       {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ''}
                     </div>
                   </td>
@@ -235,14 +235,14 @@ const AdminCoupons = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">
               {editingCoupon ? 'Edit Coupon' : 'Create Coupon'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Coupon Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coupon Code *</label>
                   <input
                     type="text"
                     value={formData.code}
@@ -254,7 +254,7 @@ const AdminCoupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Discount Type *</label>
                   <select
                     value={formData.discountType}
                     onChange={(e) => setFormData(prev => ({ ...prev, discountType: e.target.value }))}
@@ -267,7 +267,7 @@ const AdminCoupons = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
                 <input
                   type="text"
                   value={formData.description}
@@ -280,7 +280,7 @@ const AdminCoupons = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Discount Value * {formData.discountType === 'percentage' ? '(%)' : '($)'}
                   </label>
                   <input
@@ -295,7 +295,7 @@ const AdminCoupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Min Order ($)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Min Order ($)</label>
                   <input
                     type="number"
                     value={formData.minOrderAmount}
@@ -307,7 +307,7 @@ const AdminCoupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Discount ($)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Max Discount ($)</label>
                   <input
                     type="number"
                     value={formData.maxDiscountAmount}
@@ -322,7 +322,7 @@ const AdminCoupons = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Valid From *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valid From *</label>
                   <input
                     type="datetime-local"
                     value={formData.validFrom}
@@ -333,7 +333,7 @@ const AdminCoupons = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Valid Until *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valid Until *</label>
                   <input
                     type="datetime-local"
                     value={formData.validUntil}
@@ -345,7 +345,7 @@ const AdminCoupons = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Usage Limit</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Usage Limit</label>
                 <input
                   type="number"
                   value={formData.usageLimit}
@@ -363,14 +363,14 @@ const AdminCoupons = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                   className="w-4 h-4 text-blue-600"
                 />
-                <label className="ml-2 text-sm font-medium text-gray-700">Active</label>
+                <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
               </div>
 
               <div className="flex gap-2 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
@@ -390,3 +390,4 @@ const AdminCoupons = () => {
 };
 
 export default AdminCoupons;
+

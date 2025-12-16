@@ -19,16 +19,16 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
         <h1 className="text-4xl font-serif font-bold mb-8">Shopping Cart</h1>
         <div className="space-y-4">
           {cartItems.map(item => (
-            <div key={item._id} className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
-              <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} className="w-24 h-24 object-cover rounded" />
+            <div key={item._id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center gap-4">
+              <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} loading="lazy" className="w-24 h-24 object-cover rounded" />
               <div className="flex-1">
                 <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600">${item.price.toFixed(2)}</p>
+                <p className="text-gray-600">₹{Math.round(item.price)}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="p-2 hover:bg-gray-100 rounded">
@@ -45,10 +45,10 @@ const CartPage = () => {
             </div>
           ))}
         </div>
-        <div className="mt-8 bg-white p-6 rounded-lg shadow">
+        <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
           <div className="flex justify-between text-2xl font-bold mb-6">
             <span>Total:</span>
-            <span>${getCartTotal().toFixed(2)}</span>
+            <span>₹{Math.round(getCartTotal())}</span>
           </div>
           <button onClick={() => navigate('/checkout')} className="btn-primary w-full">
             Proceed to Checkout

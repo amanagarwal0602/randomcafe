@@ -4,7 +4,7 @@ export const checkPermission = (user, permission) => {
   if (!user) return false;
   
   // Super admin always has all permissions
-  if (user.role === 'admin' && user.email === 'admin@lumierecafe.com') {
+  if (user.role === 'admin') {
     return true;
   }
   
@@ -40,16 +40,21 @@ export const isAdmin = (user) => {
 };
 
 export const canAccessPage = (user, page) => {
+  if (!user) return false;
+  
+  // Admin role always has access
+  if (user.role === 'admin') return true;
+  
   const pagePermissions = {
     '/admin': ['view_dashboard'],
-    '/admin/dashboard': ['view_dashboard'],
-    '/admin/orders': ['view_orders'],
-    '/admin/menu': ['view_menu'],
-    '/admin/reservations': ['view_reservations'],
-    '/admin/gallery': ['view_gallery'],
-    '/admin/users': ['view_users'],
-    '/admin/coupons': ['view_coupons'],
-    '/admin/reviews': ['view_reviews'],
+    '/admin/dashboard': ['view_dashboard', 'view_analytics'],
+    '/admin/orders': ['view_orders', 'edit_orders', 'delete_orders'],
+    '/admin/menu': ['view_menu', 'add_menu', 'edit_menu', 'delete_menu', 'toggle_availability'],
+    '/admin/reservations': ['view_reservations', 'edit_reservations', 'delete_reservations'],
+    '/admin/gallery': ['view_gallery', 'add_gallery', 'edit_gallery', 'delete_gallery'],
+    '/admin/users': ['view_users', 'edit_users', 'delete_users', 'manage_roles'],
+    '/admin/coupons': ['view_coupons', 'add_coupons', 'edit_coupons', 'delete_coupons'],
+    '/admin/reviews': ['view_reviews', 'edit_reviews', 'delete_reviews'],
     '/admin/hero': ['view_cms', 'edit_hero'],
     '/admin/about': ['view_cms', 'edit_about'],
     '/admin/features': ['view_cms', 'edit_features'],

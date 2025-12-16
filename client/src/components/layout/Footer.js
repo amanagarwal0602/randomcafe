@@ -28,13 +28,13 @@ const Footer = () => {
   const hours = contact?.openingHours || contact?.hours || {};
 
   return (
-    <footer className="bg-brown-500 text-white">
+    <footer className="bg-brown-500 dark:bg-gray-900 text-white dark:text-gray-200">
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
             <h3 className="text-2xl font-serif font-bold mb-4">{about?.title || 'Lumière Café'}</h3>
-            <p className="text-gray-200 mb-4">
+            <p className="text-gray-200 dark:text-gray-400 mb-4">
               {about?.description || 'Experience the perfect blend of artisan coffee, fresh pastries, and warm hospitality in an elegant atmosphere.'}
             </p>
             <div className="flex space-x-4">
@@ -54,18 +54,18 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li><Link to="/menu" className="text-gray-200 hover:text-primary-300">Menu</Link></li>
-              <li><Link to="/about" className="text-gray-200 hover:text-primary-300">About Us</Link></li>
-              <li><Link to="/gallery" className="text-gray-200 hover:text-primary-300">Gallery</Link></li>
-              <li><Link to="/reservations" className="text-gray-200 hover:text-primary-300">Reservations</Link></li>
-              <li><Link to="/contact" className="text-gray-200 hover:text-primary-300">Contact</Link></li>
+              <li><Link to="/menu" className="text-gray-200 dark:text-gray-400 hover:text-primary-300 dark:hover:text-primary-400">Menu</Link></li>
+              <li><Link to="/about" className="text-gray-200 dark:text-gray-400 hover:text-primary-300 dark:hover:text-primary-400">About Us</Link></li>
+              <li><Link to="/gallery" className="text-gray-200 dark:text-gray-400 hover:text-primary-300 dark:hover:text-primary-400">Gallery</Link></li>
+              <li><Link to="/reservations" className="text-gray-200 dark:text-gray-400 hover:text-primary-300 dark:hover:text-primary-400">Reservations</Link></li>
+              <li><Link to="/contact" className="text-gray-200 dark:text-gray-400 hover:text-primary-300 dark:hover:text-primary-400">Contact</Link></li>
             </ul>
           </div>
 
           {/* Opening Hours */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Opening Hours</h4>
-            <ul className="space-y-2 text-gray-200">
+            <ul className="space-y-2 text-gray-200 dark:text-gray-400">
               {Object.entries(hours).map(([day, time]) => (
                 <li key={day} className="flex justify-between">
                   <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
@@ -78,7 +78,7 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-            <ul className="space-y-3 text-gray-200">
+            <ul className="space-y-3 text-gray-200 dark:text-gray-400">
               <li className="flex items-start space-x-2">
                 <FiMapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <span>{contact?.addressStreet}, {contact?.addressCity}, {contact?.addressState} {contact?.addressZipcode}</span>
@@ -96,7 +96,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-400 mt-8 pt-8 text-center text-gray-200">
+        <div className="border-t border-gray-400 dark:border-gray-700 mt-8 pt-8 text-center text-gray-200 dark:text-gray-400">
           <p>&copy; {currentYear} {about?.title || 'Lumière Café'}. All rights reserved.</p>
           <p className="mt-2 text-sm">
             Crafted with passion and attention to detail.

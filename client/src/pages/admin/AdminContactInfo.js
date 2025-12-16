@@ -133,17 +133,17 @@ const AdminContactInfo = () => {
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Contact Information</h1>
-        <p className="text-gray-600 mt-2">Manage all contact details</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Manage all contact details</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Name *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Name *</label>
               <input
                 type="text"
                 name="businessName"
@@ -155,7 +155,7 @@ const AdminContactInfo = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tagline</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tagline</label>
               <input
                 type="text"
                 name="tagline"
@@ -166,7 +166,7 @@ const AdminContactInfo = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email *</label>
               <input
                 type="email"
                 name="email"
@@ -178,7 +178,7 @@ const AdminContactInfo = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone *</label>
               <input
                 type="tel"
                 name="phone"
@@ -192,11 +192,11 @@ const AdminContactInfo = () => {
         </div>
 
         {/* Address */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Address</h2>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Street</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street</label>
             <input
               type="text"
               name="street"
@@ -208,7 +208,7 @@ const AdminContactInfo = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
               <input
                 type="text"
                 name="city"
@@ -219,7 +219,7 @@ const AdminContactInfo = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
               <input
                 type="text"
                 name="state"
@@ -230,7 +230,7 @@ const AdminContactInfo = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Zip Code</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PIN Code</label>
               <input
                 type="text"
                 name="zipCode"
@@ -242,7 +242,7 @@ const AdminContactInfo = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
             <input
               type="text"
               name="country"
@@ -254,13 +254,13 @@ const AdminContactInfo = () => {
         </div>
 
         {/* Business Hours */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Business Hours</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(day => (
               <div key={day}>
-                <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">{day}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 capitalize">{day}</label>
                 <input
                   type="text"
                   name={day}
@@ -275,13 +275,13 @@ const AdminContactInfo = () => {
         </div>
 
         {/* Social Media */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Social Media</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'].map(platform => (
               <div key={platform}>
-                <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">{platform}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 capitalize">{platform}</label>
                 <input
                   type="url"
                   name={platform}
@@ -296,11 +296,11 @@ const AdminContactInfo = () => {
         </div>
 
         {/* Map Embed */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Google Maps Embed</h2>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Map Embed URL
               <span className="text-xs text-gray-500 ml-2">(From Google Maps Share → Embed)</span>
             </label>
@@ -330,3 +330,4 @@ const AdminContactInfo = () => {
 };
 
 export default AdminContactInfo;
+

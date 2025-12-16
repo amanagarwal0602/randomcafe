@@ -90,12 +90,12 @@ const AdminGallery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-serif font-bold">Gallery Management</h1>
-            <p className="text-gray-600 mt-2">{images.length} images in gallery</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">{images.length} images in gallery</p>
           </div>
           <button onClick={() => { setEditImage(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
             <FiPlus /> Upload Image
@@ -104,19 +104,19 @@ const AdminGallery = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map(img => (
-            <div key={img._id} className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition group">
+            <div key={img._id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition group">
               <div className="relative">
-                <img src={img.image} alt={img.title} className="w-full h-48 object-cover" />
-                <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${img.isPublished ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}>
+                <img src={img.image} alt={img.title} loading="lazy" className="w-full h-48 object-cover" />
+                <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${img.isPublished ? 'bg-green-500 text-white' : 'bg-gray-50 dark:bg-gray-8000 text-white'}`}>
                   {img.isPublished ? 'Published' : 'Draft'}
                 </div>
               </div>
               <div className="p-3">
                 <p className="font-semibold text-sm mb-1">{img.title}</p>
-                <p className="text-xs text-gray-600 mb-2 line-clamp-1">{img.description}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">{img.description}</p>
                 <span className="inline-block px-2 py-1 bg-primary-100 text-primary-600 text-xs rounded mb-3">{img.category}</span>
                 <div className="flex gap-1">
-                  <button onClick={() => togglePublish(img)} className="flex-1 px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs">
+                  <button onClick={() => togglePublish(img)} className="flex-1 px-2 py-1 bg-gray-100 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 text-xs">
                     Toggle
                   </button>
                   <button onClick={() => { setEditImage(img); setShowModal(true); }} className="flex-1 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
@@ -134,10 +134,10 @@ const AdminGallery = () => {
         {/* Add/Edit Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-xl w-full">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-xl w-full">
               <div className="p-6 border-b flex justify-between items-center">
                 <h2 className="text-2xl font-bold">{editImage ? 'Edit Image' : 'Upload New Image'}</h2>
-                <button onClick={() => { setShowModal(false); setEditImage(null); }} className="text-gray-500 hover:text-gray-700">
+                <button onClick={() => { setShowModal(false); setEditImage(null); }} className="text-gray-500 hover:text-gray-700 dark:text-gray-300">
                   <FiX size={24} />
                 </button>
               </div>
@@ -187,7 +187,7 @@ const AdminGallery = () => {
                     required
                   />
                   {formData.image && (
-                    <img src={formData.image} alt="Preview" className="mt-2 w-full h-40 object-cover rounded" />
+                    <img src={formData.image} alt="Preview" loading="lazy" className="mt-2 w-full h-40 object-cover rounded" />
                   )}
                 </div>
                 <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ const AdminGallery = () => {
                   <label htmlFor="isPublished" className="text-sm font-medium">Publish immediately</label>
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => { setShowModal(false); setEditImage(null); }} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                  <button type="button" onClick={() => { setShowModal(false); setEditImage(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50">
                     Cancel
                   </button>
                   <button type="submit" className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
@@ -218,3 +218,4 @@ const AdminGallery = () => {
 };
 
 export default AdminGallery;
+

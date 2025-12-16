@@ -90,7 +90,7 @@ const AdminFeatures = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Features</h1>
-          <p className="text-gray-600 mt-2">Manage features displayed on your website</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Manage features displayed on your website</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowModal(true); }}
@@ -105,7 +105,7 @@ const AdminFeatures = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map(feature => (
-            <div key={feature._id} className="bg-white rounded-lg shadow p-6">
+            <div key={feature._id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex justify-between items-start mb-4">
                 <span className="text-4xl">{feature.icon}</span>
                 <div className="flex gap-2">
@@ -124,7 +124,7 @@ const AdminFeatures = () => {
                 </div>
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{feature.title}</h3>
-              <p className="text-gray-600 text-sm mb-3">{feature.description}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{feature.description}</p>
               <div className="flex justify-between text-xs text-gray-500">
                 <span>Order: {feature.order}</span>
                 <span className={feature.isActive ? 'text-green-600' : 'text-red-600'}>
@@ -138,20 +138,20 @@ const AdminFeatures = () => {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">
               {editingFeature ? 'Edit Feature' : 'Add Feature'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Icon</label>
                 <div className="grid grid-cols-5 gap-2">
                   {iconOptions.map(icon => (
                     <button
                       key={icon}
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, icon }))}
-                      className={`text-2xl p-2 border rounded ${formData.icon === icon ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}`}
+                      className={`text-2xl p-2 border rounded ${formData.icon === icon ? 'border-blue-600 bg-blue-50' : 'border-gray-300 dark:border-gray-600'}`}
                     >
                       {icon}
                     </button>
@@ -160,7 +160,7 @@ const AdminFeatures = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
                 <input
                   type="text"
                   value={formData.title}
@@ -171,7 +171,7 @@ const AdminFeatures = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -182,7 +182,7 @@ const AdminFeatures = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order</label>
                 <input
                   type="number"
                   value={formData.order}
@@ -198,14 +198,14 @@ const AdminFeatures = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                   className="w-4 h-4 text-blue-600"
                 />
-                <label className="ml-2 text-sm font-medium text-gray-700">Active</label>
+                <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
               </div>
 
               <div className="flex gap-2 pt-4">
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
@@ -225,3 +225,4 @@ const AdminFeatures = () => {
 };
 
 export default AdminFeatures;
+

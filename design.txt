@@ -1,0 +1,365 @@
+Design & CSS Reference for Lumière Café CMS
+
+Purpose
+- This file documents the full design system, Tailwind configuration, CSS snippets, and page-by-page layout guidance so you can reuse the design as a canonical reference for other projects (e.g., an internship website).
+- Use this as a style and layout spec for developers and designers working on the project.
+
+Table of Contents
+1. Project Theme & Tokens
+2. Tailwind Configuration (recommended)
+3. Global CSS (`index.css`) snippets
+4. Utility Classes & Custom Components
+5. Page-by-Page Layouts
+   - Home
+   - Menu (Listing)
+   - Menu Item (Details/Modal)
+   - About
+   - Gallery
+   - Contact
+   - Reservations
+   - Customer Dashboard
+   - Admin Dashboard
+   - Auth pages (Login / Signup / Reset)
+   - 404 / Error Fallback
+6. Accessibility & ARIA Guidelines
+7. Responsive Behavior & Breakpoints
+8. Images, Media, Fonts & Assets
+9. Animations & Motion Guidelines
+10. Print Styles (Receipt/Bill)
+11. Dark Mode & Theming
+12. Performance & Lighthouse Tips
+13. Example Markup Snippets
+
+---
+
+1) Project Theme & Tokens
+- Primary intent: warm, welcoming café aesthetic. Use amber/gold accents with calm neutrals.
+
+Color palette (tokens)
+- `--color-bg`: #fff7ed (warm cream) / light background
+- `--color-card`: #fff (cards)
+- `--color-primary`: #b45309 (amber-700) — buttons, accents
+- `--color-accent`: #f59e0b (amber-500)
+- `--color-muted`: #6b7280 (gray-500)
+- `--color-text`: #111827 (neutral-900)
+- `--color-success`: #16a34a (green-600)
+- `--color-danger`: #dc2626 (red-600)
+
+Type scale
+- Base font-size: 16px
+- Scale: `xs:12px`, `sm:14px`, `base:16px`, `lg:18px`, `xl:20px`, `2xl:24px`, `3xl:30px`, `4xl:36px`
+
+Spacing scale
+- Use Tailwind spacing scale (1 => 0.25rem). Prefer multiples: `p-4`, `py-6`, `gap-4`.
+
+Border radius
+- `rounded-sm: 0.125rem`, `rounded: 0.25rem`, `rounded-md: 0.375rem`, `rounded-lg: 0.5rem`.
+
+Shadows
+- Subtle card shadow: `shadow-sm` (0 1px 2px rgba(0,0,0,0.05)).
+- Elevated components: `shadow-md`.
+
+Iconography
+- Use a single icon set (Heroicons or Font Awesome). SVGs preferred for crispness.
+
+---
+
+2) Tailwind Configuration (recommended)
+- Provide a `tailwind.config.js` to centralize tokens.
+
+Example settings (conceptual):
+- `theme.extend.colors` -> map the tokens above to names like `primary`, `accent`, `muted`.
+- `fontFamily`: `heading: ['Cormorant Garamond', 'serif']`, `body: ['Montserrat', 'sans-serif']`.
+- `container`: center and padding config.
+- `screens`: default Tailwind (`sm:640`, `md:768`, `lg:1024`, `xl:1280`). Use `2xl` only if needed.
+
+Key plugins
+- `@tailwindcss/forms` -> consistent form controls.
+- `@tailwindcss/typography` -> prose styling for about pages or blog content.
+
+Example tailwind fragment (for your `tailwind.config.js`):
+- `module.exports = { content: ['./src/**/*.{js,jsx,ts,tsx,html}'], theme: { extend: { colors: { primary: '#b45309', accent: '#f59e0b', muted: '#6b7280' }, fontFamily: { heading: ['Cormorant Garamond', 'serif'], body: ['Montserrat', 'sans-serif'] } } }, plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')] }`
+
+---
+
+3) Global CSS (`index.css`) snippets
+- Reset & base:
+  - Use Tailwind base, components, utilities (already included by default in Tailwind).
+- Example additions (put after `@tailwind` imports):
+
+:root {
+  --color-bg: #fff7ed;
+  --color-primary: #b45309;
+  --color-accent: #f59e0b;
+  --color-muted: #6b7280;
+  --color-text: #111827;
+}
+
+body { background-color: var(--color-bg); color: var(--color-text); font-family: 'Montserrat', sans-serif; }
+
+/* Utility for large hero background overlay */
+.hero-overlay { background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); }
+
+/* Print styles for receipt */
+@media print {
+  body { color: #000; background: #fff !important; }
+  .no-print { display: none !important; }
+  .print-receipt { width: 100%; font-size: 12px; }
+}
+
+Accessibility helpers
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+Focus ring
+:focus { outline: none; box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
+
+Dark mode (prefers-color-scheme)
+@media (prefers-color-scheme: dark) {
+  :root { --color-bg: #0f172a; --color-card: #0b1220; --color-text: #e6eef8; }
+}
+
+---
+
+4) Utility Classes & Custom Components
+- Buttons
+  - Primary: `btn btn-primary` -> `px-4 py-2 rounded-md text-white bg-primary hover:bg-accent transition`.
+  - Secondary: `btn-secondary` -> `border border-muted text-muted bg-transparent`.
+  - Disabled state: `opacity-50 cursor-not-allowed`.
+
+- Cards
+  - `card` -> `bg-card p-4 rounded-lg shadow-sm border border-transparent hover:shadow-md transition`.
+  - Elevation variant: `card-elevated` -> `shadow-lg`.
+
+- Input fields
+  - `input` -> `block w-full rounded-md border-gray-200 p-2 focus:border-primary focus:ring-0`.
+
+- Badge
+  - `badge` -> `inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary`.
+
+- Avatar
+  - `avatar` -> `w-10 h-10 rounded-full object-cover border`.
+
+- Grid systems
+  - Use Tailwind grid utilities: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6` for cards.
+
+- Responsive container
+  - `container mx-auto px-4 sm:px-6 lg:px-8`.
+
+---
+
+5) Page-by-Page Layouts (structure + class suggestions + details)
+- Each page description includes: header, hero/lead component, content sections, CTAs, footer.
+
+A) Home
+- Intent: introduce the café, highlight specials and CTAs for reservations and ordering.
+- Layout sections:
+  - `TopNav` -> sticky, `bg-white/50 backdrop-blur` on scroll, logo left, actions right (search, cart, profile).
+  - `Hero` -> full-width `min-h-[60vh]` with background image, overlay, headline (`text-4xl sm:text-5xl font-heading`), subtitle, CTA buttons (`btn-primary`, `btn-secondary`).
+  - `Features Grid` -> 3-4 columns, icons + short text (`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6`).
+  - `Popular Menu` -> horizontal scroll on mobile, grid on desktop, each item as `card` with image, name, price, favourite action.
+  - `Reviews` -> carousel or grid of `card` blocks.
+  - `Footer` -> site nav, contact info, small form for newsletter.
+
+Accessibility & UX notes
+- Hero uses `h1` for main heading. CTA buttons have `aria-label`.
+- Ensure keyboard access to carousel items.
+
+B) Menu (Listing)
+- Intent: browse categories and filter items.
+- Layout:
+  - `Sidebar` (desktop) -> category list, filters (veg toggle, price range), sticky.
+  - `Main` -> search bar (`input`), sort controls, grid of `menu-card`.
+  - `menu-card` -> `card` containing lazy-loaded image on top, title, description (truncate to 2 lines), price, add-to-cart button.
+- Classes: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`.
+- Behavior: add-to-cart opens small inline drawer or toast; quantity control in cart.
+
+C) Menu Item (Details) / Modal
+- Intent: show full description, ingredients, nutrition, images and reviews.
+- Layout:
+  - `two-column` on medium+: image gallery left (`w-1/2`), details right (`w-1/2`). On mobile stack vertically.
+  - `image gallery` -> main image + thumbnails (use `object-cover rounded-lg`).
+  - `details` -> title `text-2xl font-heading`, descriptions, price, addons, quantity, CTA `Add to cart`.
+- Accessibility: images have `alt` text; thumbnails focusable.
+
+D) About
+- Intent: brand story and team.
+- Layout:
+  - `Hero small` -> headline + mission line.
+  - `Two-column story` -> text + supportive image.
+  - `Team grid` -> `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6` each team member `card` with photo, role, socials.
+- Use Tailwind `prose` classes for story content.
+
+E) Gallery
+- Intent: visual showcase.
+- Layout: masonry-like grid (`grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3`), lightbox on click.
+- Lazy-load thumbnails; load high-res on lightbox open.
+
+F) Contact
+- Intent: contact CTA and map.
+- Layout: two-column `md:grid-cols-2` -> left: contact form, right: map + contact info + hours.
+- Form elements: name, email, message; include success/error feedback and client-side validation.
+
+G) Reservations
+- Intent: book a table.
+- Layout:
+  - Booking widget: datepicker, time slots, guest count, notes.
+  - Booking calendar/list view for admin staff to manage.
+- Mobile UX: single-column flow with progressive disclosure.
+
+H) Customer Dashboard
+- Intent: personal area for orders, reservations, favorites.
+- Layout:
+  - `Sidebar` (collapsible) with nav links (Profile, Orders, Reservations, Favorites)
+  - `Main` -> summary widgets at top (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4`), list of recent orders below in responsive table or card list.
+- Orders: use status badges with clear colors.
+
+I) Admin Dashboard
+- Intent: comprehensive management and reporting.
+- Layout:
+  - `Left Sidebar` (vertical, collapsible) with clear visual hierarchy.
+  - `Topbar` -> quick actions (new menu item, new coupon) and search.
+  - `Main Grid` -> KPIs at top, charts area, lists below.
+  - `Wider panels` for detailed tables: orders table, reservations table, users table.
+- Tables: responsive design with stacked rows on small screens or show a simplified card view.
+- Use `sticky` column headers for long tables and pagination controls.
+
+J) Auth pages (Login / Signup / Reset)
+- Lightweight centered cards: `max-w-md mx-auto py-12`.
+- Include social login buttons (optional) and password strength meter.
+
+K) 404 / Error Fallback
+- Friendly 404 page with search input and CTAs to homepage or contact support.
+- ErrorBoundary fallback: small card with an apology, a reload button and a link to report a bug.
+
+---
+
+6) Accessibility & ARIA Guidelines
+- Landmark roles: ensure `header`, `main`, `nav`, `footer` elements are used.
+- Skip link: top-level `a.skip-link` to `#main` for keyboard users.
+- Focus visible: custom focus styles (`box-shadow` ring) but maintain OS default for clarity.
+- Buttons/links: include `aria-label` when text is not descriptive (e.g., icon-only buttons).
+- Forms: each input with associated `label` using `for` + `id`. For complex widgets, include `aria-describedby`.
+- Alerts/toasts: use `role="status"` for non-critical notifications and `role="alert"` for errors; ensure they are reachable by screen readers.
+- Modals: trap focus inside modal, return focus to trigger element on close, and mark background inert when modal open (use `aria-hidden` on background content).
+- Tables: provide descriptive `caption` and `aria-label` when necessary. Use row headers with `th scope="row"`.
+
+---
+
+7) Responsive Behavior & Breakpoints
+- Default breakpoints: `sm(640)`, `md(768)`, `lg(1024)`, `xl(1280)`.
+- Layout patterns:
+  - Mobile-first single-column stacking.
+  - At `md` convert to two-column for content-rich pages.
+  - At `lg` convert to multi-column grids for galleries, dashboards.
+- Navigation:
+  - Mobile: hamburger -> slide-in menu or full-screen menu.
+  - Desktop: top nav with inline links and dropdowns for account/menus.
+- Admin tables: collapse into cards at `sm`/`md` thresholds for better readability on small devices.
+
+---
+
+8) Images, Media, Fonts & Assets
+- Image formats: use `webp` where possible, fallback to `jpg/png`.
+- Sizes: serve responsive images with `srcset` or use `<picture>` for art direction.
+- Lazy loading: add `loading="lazy"` on images off-screen.
+- Avatar: use 48px / 64px sizes depending on context; use `object-cover`.
+- Fonts: load from local or Google Fonts with `display=swap`.
+- Preconnect to font host: `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`.
+- Assets folder: `/public/assets/menus/`, `/public/assets/gallery/`.
+
+---
+
+9) Animations & Motion Guidelines
+- Keep motion subtle and purposeful.
+- Use `transition` for hover states: `transition transform opacity` with `duration-150`.
+- Use `framer-motion` for entrance/exit animations of large components (e.g., route transitions, modals).
+- Motion reduction: respect `prefers-reduced-motion` media query to disable non-essential animations.
+
+Example subtle hover for cards:
+- `transform-gpu hover:-translate-y-1 hover:shadow-lg`.
+
+---
+
+10) Print Styles (Receipt / Bill)
+- Create `.print-receipt` class used for receipts page; print stylesheet includes `@media print` rules.
+- Hide navigation and interactive elements via `.no-print`.
+- Use compact fonts and layout, single-column receipt width (e.g., 80mm equivalent in px), ensure `page-break-inside: avoid;` for critical blocks.
+
+Receipt header example
+- Business name (bold), address, date/time, order number, items list, subtotal, tax, total (bold), thank you note.
+
+---
+
+11) Dark Mode & Theming
+- Two approaches:
+  - `prefers-color-scheme` automatic dark adjustments.
+  - Manual toggle (persist choice in `localStorage` and apply `class="dark"` to `html` or `body`).
+- Tailwind: enable `darkMode: 'class'` and define `dark:` variants for colors.
+- Example: `.bg-card` -> `bg-white dark:bg-[#0b1220]`.
+
+---
+
+12) Performance & Lighthouse Tips
+- Use image optimization (WebP, responsive images).
+- Avoid large JS bundles: split vendor and route-level bundles.
+- Use lazy loading for routes and images.
+- Minimize fonts: choose 1-2 families and limit weights.
+- Enable caching headers and service worker for offline PWA behavior.
+
+---
+
+13) Example Markup Snippets
+- Keep these as starting points; adapt to your React components.
+
+A) Hero (Home) snippet
+<div class="relative bg-cover bg-center min-h-[60vh]" style="background-image: url('/assets/hero.jpg')">
+  <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-white/80"></div>
+  <div class="container relative z-10 py-24">
+    <h1 class="text-4xl sm:text-5xl font-heading">Welcome to Lumière Café</h1>
+    <p class="mt-4 text-lg text-muted">Hand-brewed coffee and artisan pastries.</p>
+    <div class="mt-6 flex gap-3">
+      <button class="btn btn-primary">Order Now</button>
+      <button class="btn btn-secondary">Reserve a Table</button>
+    </div>
+  </div>
+</div>
+
+B) Menu Card
+<div class="card flex flex-col">
+  <img class="w-full h-40 object-cover rounded-md" src="/assets/menu/latte.webp" alt="Latte" loading="lazy" />
+  <div class="p-4 flex-1 flex flex-col">
+    <h3 class="font-semibold">Caffe Latte</h3>
+    <p class="text-sm text-muted line-clamp-2">Smooth espresso with steamed milk.</p>
+    <div class="mt-auto flex items-center justify-between">
+      <span class="font-bold">$3.50</span>
+      <button class="btn btn-primary btn-sm">Add</button>
+    </div>
+  </div>
+</div>
+
+C) Admin Table (responsive card fallback)
+<table class="min-w-full divide-y divide-gray-200 hidden md:table">
+  <thead class="bg-gray-50"><tr><th>Order#</th><th>Customer</th><th>Status</th><th>Total</th><th>Action</th></tr></thead>
+  <tbody>{/* rows here */}</tbody>
+</table>
+
+/* Mobile fallback */
+<div class="md:hidden grid gap-4">
+  <!-- map table rows to cards -->
+</div>
+
+---
+
+Final notes & Handoff
+- The `design.txt` should be the single source of truth for layout/style decisions.
+- When creating components, prefer composition: small presentational components that accept data and className overrides.
+- Keep accessibility first: label all controls, provide keyboard patterns for interactive widgets, and test with Lighthouse and screen readers.
+
+If you want, I can now:
+- Add a short `design-readme.md` that extracts the most critical tokens and gets designers started; or
+- Convert these guidelines into a small `styles/` folder with `index.css`, `tailwind.config.js` and a small sample component file to demonstrate the theme in practice.
+
+---
+
+Generated on: 2025-11-24
+Reference: `details.txt` (for technical feature coverage)

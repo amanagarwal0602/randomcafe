@@ -213,7 +213,7 @@ const AdminRoles = () => {
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">User Roles & Permissions</h1>
-        <p className="text-gray-600 mt-2">Manage user access rights and assign specific permissions</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Manage user access rights and assign specific permissions</p>
       </div>
 
       {/* Role Templates Info */}
@@ -221,7 +221,7 @@ const AdminRoles = () => {
         <h3 className="font-semibold text-blue-900 mb-2">Quick Role Templates:</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 text-sm">
           {Object.entries(roleTemplates).map(([key, template]) => (
-            <div key={key} className="bg-white rounded px-3 py-2 border border-blue-300">
+            <div key={key} className="bg-white dark:bg-gray-800 rounded px-3 py-2 border border-blue-300">
               <span className="font-medium text-blue-700">{template.name}</span>
               <span className="text-gray-500 ml-1">({template.permissions.length})</span>
             </div>
@@ -229,8 +229,8 @@ const AdminRoles = () => {
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Users Table - Desktop */}
+      <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -242,22 +242,22 @@ const AdminRoles = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
             {users.map((user) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-gray-600 font-semibold">
+                      <span className="text-gray-600 dark:text-gray-400 font-semibold">
                         {user.name?.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {user.email}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -276,7 +276,7 @@ const AdminRoles = () => {
                     <option value="viewer">Viewer</option>
                   </select>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                   <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
                     {getPermissionCount(user)} permissions
                   </span>
@@ -308,19 +308,78 @@ const AdminRoles = () => {
         )}
       </div>
 
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {users.map((user) => (
+          <div key={user.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="flex items-center mb-3">
+              <div className="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
+                <span className="text-gray-600 dark:text-gray-400 font-semibold text-lg">
+                  {user.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="ml-3 flex-1">
+                <div className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{user.email}</div>
+              </div>
+              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {user.is_active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <label className="text-xs font-medium text-gray-500 uppercase">Role</label>
+                <select
+                  value={user.role}
+                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                  className="w-full px-3 py-2 border rounded mt-1"
+                  disabled={user.role === 'admin' && user.email === 'admin@lumierecafe.com'}
+                >
+                  <option value="customer">Customer</option>
+                  <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="chef">Chef</option>
+                  <option value="waiter">Waiter</option>
+                  <option value="content_editor">Content Editor</option>
+                  <option value="viewer">Viewer</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                    {getPermissionCount(user)} permissions
+                  </span>
+                </span>
+                <button
+                  onClick={() => handleEditPermissions(user)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                >
+                  Manage
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {users.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No users found
+          </div>
+        )}
+      </div>
+
       {/* Edit Permissions Modal */}
       {showModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b p-6 z-10">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-screen overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b p-6 z-10">
               <h2 className="text-2xl font-bold">
                 Manage Permissions: {selectedUser.name}
               </h2>
-              <p className="text-gray-600 text-sm mt-1">{selectedUser.email}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{selectedUser.email}</p>
               
               {/* Role Templates */}
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Quick Apply Role Template:</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Apply Role Template:</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(roleTemplates).map(([key, template]) => (
                     <button
@@ -342,20 +401,20 @@ const AdminRoles = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">
                     {category}
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {perms.map((perm) => (
                       <label
                         key={perm.id}
-                        className="flex items-start p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        className="flex items-start p-3 border rounded-lg hover:bg-gray-50 dark:bg-gray-800 cursor-pointer"
                       >
                         <input
                           type="checkbox"
                           checked={permissions[perm.id] || false}
                           onChange={() => handlePermissionToggle(perm.id)}
-                          className="mt-1 mr-3"
+                          className="mt-1 mr-3 flex-shrink-0 h-4 w-4"
                         />
                         <div>
-                          <div className="font-medium text-gray-900">{perm.name}</div>
+                          <div className="font-medium text-gray-900 dark:text-gray-100">{perm.name}</div>
                           <div className="text-sm text-gray-500">{perm.description}</div>
                         </div>
                       </label>
@@ -365,29 +424,29 @@ const AdminRoles = () => {
               ))}
             </div>
 
-            <div className="sticky bottom-0 bg-gray-50 px-6 py-4 border-t flex justify-between">
+            <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-800 px-4 sm:px-6 py-4 border-t flex flex-col sm:flex-row gap-2 sm:justify-between">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                className="w-full sm:w-auto px-4 py-2 border rounded-lg hover:bg-gray-100 order-2 sm:order-1"
               >
                 Cancel
               </button>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 order-1 sm:order-2">
                 <button
                   onClick={() => setPermissions({})}
-                  className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+                  className="w-full sm:w-auto px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
                 >
                   Clear All
                 </button>
                 <button
                   onClick={() => handleApplyTemplate('admin')}
-                  className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200"
+                  className="w-full sm:w-auto px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200"
                 >
                   Select All
                 </button>
                 <button
                   onClick={handleSavePermissions}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
                 >
                   Save Permissions
                 </button>
@@ -401,3 +460,4 @@ const AdminRoles = () => {
 };
 
 export default AdminRoles;
+

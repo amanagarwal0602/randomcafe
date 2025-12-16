@@ -123,7 +123,7 @@ const HomePage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.2 }}
-                  className="bg-white p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow"
+                  className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow"
                 >
                   <div className="text-primary-500 mb-4 flex justify-center">
                     {getIcon(feature.icon)}
@@ -169,7 +169,7 @@ const HomePage = () => {
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
                     )}
                     <div className="flex justify-between items-center">
-                      <span className="text-2xl font-bold text-primary-600">${parseFloat(item.price).toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-primary-600">₹{Math.round(parseFloat(item.price))}</span>
                       <button className="text-primary-500 hover:text-primary-600">
                         <FiArrowRight className="w-6 h-6" />
                       </button>
@@ -211,7 +211,7 @@ const HomePage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {reviews.map((review) => (
-                <div key={review._id || review.id} className="bg-white p-6 rounded-xl shadow-lg">
+                <div key={review._id || review.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 bg-primary-200 rounded-full mr-4 flex items-center justify-center text-primary-600 font-bold text-lg">
                       {review.userName?.charAt(0).toUpperCase() || 'U'}

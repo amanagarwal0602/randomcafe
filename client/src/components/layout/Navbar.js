@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiShoppingCart, FiUser, FiLogOut } from 'react-icons/fi';
+import { FiMenu, FiX, FiShoppingCart, FiUser, FiLogOut, FiPackage, FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useDarkMode } from '../../context/DarkModeContext';
 import api from '../../services/api';
 
 const Navbar = () => {
@@ -11,6 +12,7 @@ const Navbar = () => {
   const [siteName, setSiteName] = useState('Lumière');
   const { user, logout, isAdmin, isStaff } = useAuth();
   const { getItemCount } = useCart();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,13 +44,13 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 transition-colors duration-200">
       <div className="container-custom">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-3xl font-serif font-bold text-primary-500">{siteName}</span>
-            <span className="text-sm text-gray-600 hidden sm:block">CAFÉ</span>
+            <span className="text-3xl font-serif font-bold text-primary-500 dark:text-primary-400">{siteName}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">CAFÉ</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -57,7 +59,7 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-gray-700 hover:text-primary-500 font-medium transition-colors"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium transition-colors"
               >
                 {link.name}
               </Link>
@@ -66,9 +68,29 @@ const Navbar = () => {
 
           {/* Right Side - Actions */}
           <div className="flex items-center space-x-4">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              title={darkMode ? 'Light Mode' : 'Dark Mode'}
+            >
+              {darkMode ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+            </button>
+
+            {/* My Orders - Always visible for logged in users */}
+            {user && (
+              <Link 
+                to="/customer/orders" 
+                className="hidden md:flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400 transition-all"
+              >
+                <FiPackage className="w-5 h-5" />
+                <span className="text-sm font-medium">My Orders</span>
+              </Link>
+            )}
+
             {/* Cart */}
             <Link to="/cart" className="relative">
-              <FiShoppingCart className="w-6 h-6 text-gray-700 hover:text-primary-500 transition-colors" />
+              <FiShoppingCart className="w-6 h-6 text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors" />
               {getItemCount() > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {getItemCount()}
@@ -79,13 +101,13 @@ const Navbar = () => {
             {/* User Menu */}
             {user ? (
               <div className="relative group">
-                <button className="flex items-center space-x-2 text-gray-700 hover:text-primary-500">
+                <button className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400">
                   <FiUser className="w-6 h-6" />
                   <span className="hidden md:block">{user.name}</span>
                 </button>
                 
                 {/* Dropdown */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <div className="py-2">
                     {isStaff && (
                       <Link
@@ -150,7 +172,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t"
+            className="lg:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-800"
           >
             <div className="container-custom py-4 space-y-2">
               {navLinks.map((link) => (
@@ -163,6 +185,16 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              {user && (
+                <Link
+                  to="/customer/orders"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-2 py-2 text-primary-600 font-medium"
+                >
+                  <FiPackage className="w-5 h-5" />
+                  <span>My Orders</span>
+                </Link>
+              )}
               {!user && (
                 <Link
                   to="/login"

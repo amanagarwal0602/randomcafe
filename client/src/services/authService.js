@@ -1,54 +1,121 @@
-// SheetDB Authentication - No backend needed!
-import * as auth from './authSheetDB';
+// localStorage Authentication Service
+import * as db from './localStorage';
 
 const authService = {
   // Register new user
   register: async (userData) => {
-    const result = await auth.register(userData.name, userData.email, userData.password);
-    // Format response to match expected structure
-    return {
-      data: {
-        user: result.user,
-        token: result.token
-      },
-      success: result.success
-    };
+    try {
+      // Check if username already exists
+      if (userData.username) {
+        const users = await db.getUsers();
+        const usernameExists = users.some(u => u.username === userData.username);
+        if (usernameExists) {
+          throw new Error('Username already taken');
+        }
+      }
+
+      // Check if email already exists
+      const users = await db.getUsers();
+      const emailExists = users.some(u => u.email === userData.email);
+      if (emailExists) {
+        throw new Error('Email already registered');
+      }
+
+      // Create new user
+      const newUser = await db.createUser({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        username: userData.username || '',
+        role: 'customer'
+      });
+
+      // Create token
+      const token = btoa(JSON.stringify({ userId: newUser.id, email: newUser.email }));
+      localStorage.setItem('accessToken', token);
+
+      return {
+        data: {
+          user: newUser,
+          token: token
+        },
+        success: true
+      };
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
   },
 
   // Login user
   login: async (credentials) => {
-    console.log('AuthService: Attempting login with:', { email: credentials.email });
+    console.log('AuthService: Attempting login with:', { emailOrUsername: credentials.email });
     try {
-      const result = await auth.login(credentials.email, credentials.password);
-      console.log('AuthService: Login response:', result);
-      // Format response to match expected structure
+      const users = await db.getUsers();
+      
+      // Find user by email or username (case-insensitive)
+      const loginInput = credentials.email.toLowerCase().trim();
+      const user = users.find(u => 
+        u.email.toLowerCase() === loginInput || 
+        (u.username && u.username.toLowerCase() === loginInput)
+      );
+
+      if (!user) {
+        throw new Error('Invalid credentials');
+      }
+
+      if (user.password !== credentials.password) {
+        throw new Error('Invalid credentials');
+      }
+
+      if (!user.is_active) {
+        throw new Error('Account is inactive');
+      }
+
+      // Create token
+      const token = btoa(JSON.stringify({ userId: user.id, email: user.email }));
+      localStorage.setItem('accessToken', token);
+
+      console.log('AuthService: Login successful');
       return {
         data: {
-          user: result.user,
-          token: result.token
+          user: user,
+          token: token
         },
-        success: result.success
+        success: true
       };
     } catch (error) {
-      console.error('AuthService: Login error:', error.message || error);
+      console.error('Login failed:', error);
       throw error;
     }
   },
 
   // Logout user
   logout: async () => {
-    auth.logout();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   },
 
   // Get current user
   getCurrentUser: async () => {
-    const user = auth.getCurrentUser();
-    return { data: user, success: !!user };
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return { data: null, success: false };
+
+      const payload = JSON.parse(atob(token));
+      const users = await db.getUsers();
+      const user = users.find(u => u.id === payload.userId);
+      
+      return { data: user, success: !!user };
+    } catch (error) {
+      console.error('Get current user failed:', error);
+      return { data: null, success: false };
+    }
   },
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    return auth.isAuthenticated();
+    return !!localStorage.getItem('accessToken');
   },
 };
 

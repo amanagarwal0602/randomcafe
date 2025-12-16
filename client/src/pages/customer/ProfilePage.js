@@ -23,10 +23,10 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-2xl">
         <h1 className="text-4xl font-serif font-bold mb-8">My Profile</h1>
-        <div className="bg-white p-8 rounded-xl shadow-lg">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2">Name</label>
@@ -64,3 +64,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

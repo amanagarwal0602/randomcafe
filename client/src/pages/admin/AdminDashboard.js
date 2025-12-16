@@ -166,7 +166,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <div className="text-xl text-gray-600">Loading dashboard...</div>
+          <div className="text-xl text-gray-600 dark:text-gray-400">Loading dashboard...</div>
         </div>
       </div>
     );
@@ -175,66 +175,66 @@ const AdminDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Sales Dashboard</h1>
-        <p className="text-gray-600 mt-2">Complete overview of your restaurant sales and analytics</p>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Sales Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Complete overview of your restaurant sales and analytics</p>
       </div>
 
       {/* Quick Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Today's Sales</p>
-              <p className="text-2xl font-bold text-gray-800">${todaySales.total.toFixed(2)}</p>
-              <p className="text-xs text-gray-500 mt-1">{todaySales.count} orders</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Today's Sales</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">₹{Math.round(todaySales.total)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{todaySales.count} orders</p>
             </div>
-            <div className="bg-blue-100 rounded-full p-3">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-blue-100 dark:bg-blue-900 rounded-full p-3">
+              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Monthly Sales</p>
-              <p className="text-2xl font-bold text-gray-800">${monthlySales.total.toFixed(2)}</p>
-              <p className="text-xs text-gray-500 mt-1">{monthlySales.count} orders</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Monthly Sales</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">₹{Math.round(monthlySales.total)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{monthlySales.count} orders</p>
             </div>
-            <div className="bg-green-100 rounded-full p-3">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-green-100 dark:bg-green-900 rounded-full p-3">
+              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-800">${overallStats.totalRevenue.toFixed(2)}</p>
-              <p className="text-xs text-gray-500 mt-1">{overallStats.totalOrders} orders</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">₹{Math.round(overallStats.totalRevenue)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{overallStats.totalOrders} orders</p>
             </div>
-            <div className="bg-purple-100 rounded-full p-3">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-purple-100 dark:bg-purple-900 rounded-full p-3">
+              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Order Value</p>
-              <p className="text-2xl font-bold text-gray-800">${overallStats.avgOrderValue.toFixed(2)}</p>
-              <p className="text-xs text-gray-500 mt-1">Per order</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Avg Order Value</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">₹{Math.round(overallStats.avgOrderValue)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Per order</p>
             </div>
-            <div className="bg-orange-100 rounded-full p-3">
-              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-orange-100 dark:bg-orange-900 rounded-full p-3">
+              <svg className="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
@@ -243,15 +243,15 @@ const AdminDashboard = () => {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px overflow-x-auto">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'overview'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
               Quick Links
@@ -261,7 +261,7 @@ const AdminDashboard = () => {
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'dateWise'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
               Date-wise Sales
@@ -271,7 +271,7 @@ const AdminDashboard = () => {
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'products'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
               Product-wise Sales
@@ -281,7 +281,7 @@ const AdminDashboard = () => {
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'customers'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
               Customer-wise Sales
@@ -360,31 +360,31 @@ const AdminDashboard = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Sales</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg Order</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Orders</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Sales</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Avg Order</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {dateWiseSales.map((day) => (
                       <tr key={day.date}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                          {new Date(day.date).toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{day.count}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                          ${day.total.toFixed(2)}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">
+                          ₹{Math.round(day.total)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${(day.total / day.count).toFixed(2)}
+                          ₹{Math.round(day.total / day.count)}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
                 {dateWiseSales.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     No sales data for selected date range
                   </div>
                 )}
@@ -398,27 +398,27 @@ const AdminDashboard = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity Sold</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Revenue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Product</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Quantity Sold</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Revenue</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {productWiseSales.map((product, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${product.price.toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">₹{Math.round(product.price)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{product.quantity}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                        ${product.revenue.toFixed(2)}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">
+                        ₹{Math.round(product.revenue)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {productWiseSales.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   No product sales data available
                 </div>
               )}
@@ -431,31 +431,31 @@ const AdminDashboard = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg Order</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Orders</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Total Spent</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Avg Order</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {customerWiseSales.map((customer, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{customer.name}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{customer.email}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{customer.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{customer.orderCount}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                        ${customer.totalSpent.toFixed(2)}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">
+                        ₹{Math.round(customer.totalSpent)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${(customer.totalSpent / customer.orderCount).toFixed(2)}
+                        ₹{Math.round(customer.totalSpent / customer.orderCount)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {customerWiseSales.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   No customer sales data available
                 </div>
               )}

@@ -4,6 +4,25 @@ import { toast } from 'react-toastify';
 import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const AdminOrders = () => {
+    // Export orders as CSV
+    const handleExportCSV = () => {
+      if (!orders || orders.length === 0) return;
+      const replacer = (key, value) => value === null ? '' : value;
+      const header = Object.keys(orders[0]);
+      const csv = [
+        header.join(','),
+        ...orders.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      ].join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    };
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -17,17 +36,13 @@ const AdminOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [filter, dateFilter]);
+  }, []);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const params = {};
-      if (filter !== 'all') params.status = filter;
-      if (dateFilter) params.date = dateFilter;
-      
-      const response = await api.get('/admin/orders', { params });
-      const ordersData = response.data.data || [];
+      const response = await api.get('/orders');
+      const ordersData = response.data.data || response.data || [];
       
       // Add daily bill numbers to orders
       const ordersWithBillNumbers = addDailyBillNumbers(ordersData);
@@ -125,8 +140,22 @@ const AdminOrders = () => {
     return colors[status?.toLowerCase()] || 'bg-gray-100 text-gray-800';
   };
 
-  // Filter orders by search term
+  // Filter orders by search term, status filter, and date filter
   const filteredOrders = orders.filter(order => {
+    // Apply status filter
+    if (filter !== 'all' && order.status?.toLowerCase() !== filter.toLowerCase()) {
+      return false;
+    }
+    
+    // Apply date filter
+    if (dateFilter) {
+      const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+      if (orderDate !== dateFilter) {
+        return false;
+      }
+    }
+    
+    // Apply search filter
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
@@ -165,26 +194,35 @@ const AdminOrders = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <div className="flex justify-between items-center mb-8">
+          <div className="flex gap-2">
+            <button
+              onClick={handleExportCSV}
+              className="px-4 py-2 rounded-lg font-medium transition bg-green-600 text-white hover:bg-green-700"
+              aria-label="Export Orders as CSV"
+            >
+              Export CSV
+            </button>
+          </div>
           <div>
             <h1 className="text-4xl font-serif font-bold">Order Management</h1>
-            <p className="text-gray-600 mt-2">{filteredOrders.length} orders</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">{filteredOrders.length} orders</p>
           </div>
           {dateFilter && (
-            <div className="bg-white px-6 py-4 rounded-lg shadow">
-              <p className="text-sm text-gray-600">Daily Total</p>
-              <p className="text-3xl font-bold text-primary-600">${dailyTotal.toFixed(2)}</p>
+            <div className="bg-white dark:bg-gray-800 px-6 py-4 rounded-lg shadow">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Daily Total</p>
+              <p className="text-3xl font-bold text-primary-600">₹{dailyTotal.toFixed(2)}</p>
             </div>
           )}
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-6 rounded-xl shadow mb-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow mb-6 space-y-4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-2 flex-wrap">
-              <span className="font-semibold text-gray-700 flex items-center">Status:</span>
+              <span className="font-semibold text-gray-700 dark:text-gray-300 flex items-center">Status:</span>
               {['all', 'pending', 'confirmed', 'preparing', 'ready', 'delivered'].map(status => (
                 <button
                   key={status}
@@ -192,7 +230,7 @@ const AdminOrders = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     filter === status
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
                   }`}
                 >
                   {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -206,7 +244,7 @@ const AdminOrders = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === 'list'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
                 }`}
               >
                 List View
@@ -216,7 +254,7 @@ const AdminOrders = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === 'dateWise'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
                 }`}
               >
                 Date-wise View
@@ -252,11 +290,11 @@ const AdminOrders = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-            <p className="mt-4 text-gray-600">Loading orders...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading orders...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="bg-white p-12 rounded-xl shadow text-center">
-            <p className="text-gray-600 text-lg">No orders found</p>
+          <div className="bg-white dark:bg-gray-800 p-12 rounded-xl shadow text-center">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">No orders found</p>
           </div>
         ) : viewMode === 'dateWise' ? (
           <div className="space-y-4">
@@ -266,7 +304,7 @@ const AdminOrders = () => {
               const dateTotal = dateOrders.reduce((sum, order) => sum + (order.total || order.totalPrice || 0), 0);
               
               return (
-                <div key={date} className="bg-white rounded-xl shadow overflow-hidden">
+                <div key={date} className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
                   <div 
                     className="p-6 bg-gradient-to-r from-primary-50 to-primary-100 cursor-pointer hover:from-primary-100 hover:to-primary-200 transition"
                     onClick={() => toggleDateExpansion(date)}
@@ -276,20 +314,20 @@ const AdminOrders = () => {
                         <FiCalendar size={24} className="text-primary-600" />
                         <div>
                           <h3 className="font-bold text-xl text-gray-800">
-                            {new Date(date).toLocaleDateString('en-US', {
+                            {new Date(date).toLocaleDateString('en-IN', {
                               weekday: 'long',
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
                             })}
                           </h3>
-                          <p className="text-sm text-gray-600">{dateOrders.length} orders</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{dateOrders.length} orders</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="text-sm text-gray-600">Daily Total</p>
-                          <p className="text-2xl font-bold text-primary-600">${dateTotal.toFixed(2)}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Daily Total</p>
+                          <p className="text-2xl font-bold text-primary-600">₹{dateTotal.toFixed(2)}</p>
                         </div>
                         {isExpanded ? <FiChevronUp size={24} /> : <FiChevronDown size={24} />}
                       </div>
@@ -299,7 +337,7 @@ const AdminOrders = () => {
                   {isExpanded && (
                     <div className="p-6 space-y-4 border-t">
                       {dateOrders.map(order => (
-                        <div key={order._id} className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition">
+                        <div key={order._id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition">
                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                             <div className="flex-1 min-w-[200px]">
                               <div className="flex items-center gap-3 mb-2">
@@ -308,10 +346,10 @@ const AdminOrders = () => {
                                   {(order.status || 'pending').toUpperCase()}
                                 </span>
                               </div>
-                              <p className="text-gray-600 text-sm">
+                              <p className="text-gray-600 dark:text-gray-400 text-sm">
                                 Customer: {order.customerName || order.userName || 'Guest'}
                               </p>
-                              <p className="text-gray-600 text-sm">
+                              <p className="text-gray-600 dark:text-gray-400 text-sm">
                                 {order.customerEmail || order.userEmail || 'N/A'}
                               </p>
                               <p className="text-gray-500 text-xs mt-1">
@@ -324,11 +362,11 @@ const AdminOrders = () => {
 
                             <div className="text-right">
                               <p className="text-2xl font-bold text-primary-600 mb-3">
-                                ${(order.total || order.totalPrice || 0).toFixed(2)}
+                                ₹{(order.total || order.totalPrice || 0).toFixed(2)}
                               </p>
                               <select
                                 value={order.status || 'pending'}
-                                onChange={(e) => updateStatus(order._id, e.target.value)}
+                                onChange={(e) => updateStatus(order.id, e.target.value)}
                                 className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
                               >
                                 <option value="pending">Pending</option>
@@ -353,12 +391,12 @@ const AdminOrders = () => {
                               {order.items && order.items.length > 0 ? (
                                 order.items.map((item, i) => (
                                   <div key={i} className="flex justify-between text-sm">
-                                    <span className="text-gray-700">
+                                    <span className="text-gray-700 dark:text-gray-300">
                                       {item.name || item.itemName || item.menuItem?.name || 'Unknown Item'} 
                                       <span className="text-gray-500"> x{item.quantity || 1}</span>
                                     </span>
                                     <span className="font-medium">
-                                      ${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
+                                      ₹{((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
                                     </span>
                                   </div>
                                 ))
@@ -378,7 +416,7 @@ const AdminOrders = () => {
         ) : (
           <div className="space-y-4">
             {filteredOrders.map(order => (
-              <div key={order._id} className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+              <div key={order._id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-lg transition">
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                   <div className="flex-1 min-w-[200px]">
                     <div className="flex items-center gap-3 mb-2">
@@ -387,13 +425,13 @@ const AdminOrders = () => {
                         {(order.status || 'pending').toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       Order ID: {order.orderNumber || order._id?.slice(-8)}
                     </p>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       Customer: {order.customerName || order.userName || 'Guest'}
                     </p>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       {order.customerEmail || order.userEmail || 'N/A'}
                     </p>
                     <p className="text-gray-500 text-xs mt-1">
@@ -409,11 +447,11 @@ const AdminOrders = () => {
 
                   <div className="text-right">
                     <p className="text-3xl font-bold text-primary-600 mb-3">
-                      ${(order.total || order.totalPrice || 0).toFixed(2)}
+                      ₹{(order.total || order.totalPrice || 0).toFixed(2)}
                     </p>
                     <select
                       value={order.status || 'pending'}
-                      onChange={(e) => updateStatus(order._id, e.target.value)}
+                      onChange={(e) => updateStatus(order.id, e.target.value)}
                       className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
                     >
                       <option value="pending">Pending</option>
@@ -434,17 +472,17 @@ const AdminOrders = () => {
 
                 {/* Order Items Preview */}
                 <div className="border-t pt-4 mt-4">
-                  <h4 className="font-semibold mb-3 text-gray-700">Order Items:</h4>
+                  <h4 className="font-semibold mb-3 text-gray-700 dark:text-gray-300">Order Items:</h4>
                   <div className="space-y-2">
                     {order.items && order.items.length > 0 ? (
                       order.items.map((item, i) => (
                         <div key={i} className="flex justify-between text-sm">
-                          <span className="text-gray-700">
+                          <span className="text-gray-700 dark:text-gray-300">
                             {item.name || item.itemName || item.menuItem?.name || 'Unknown Item'} 
                             <span className="text-gray-500"> x{item.quantity || 1}</span>
                           </span>
                           <span className="font-medium">
-                            ${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
+                            ₹{((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}
                           </span>
                         </div>
                       ))
@@ -461,8 +499,8 @@ const AdminOrders = () => {
         {/* Bill Modal */}
         {showBill && selectedOrder && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
                 <h2 className="text-2xl font-bold">Bill #{selectedOrder.dailyBillNumber}</h2>
                 <div className="flex gap-2">
                   <button
@@ -473,7 +511,7 @@ const AdminOrders = () => {
                   </button>
                   <button
                     onClick={() => { setShowBill(false); setSelectedOrder(null); }}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300"
                   >
                     <FiX size={24} />
                   </button>
@@ -520,8 +558,8 @@ const AdminOrders = () => {
                         <tr key={i}>
                           <td>{item.name || item.itemName || item.menuItem?.name || 'Unknown Item'}</td>
                           <td>{item.quantity || 1}</td>
-                          <td>${(item.price || item.itemPrice || 0).toFixed(2)}</td>
-                          <td>${((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}</td>
+                          <td>₹{(item.price || item.itemPrice || 0).toFixed(2)}</td>
+                          <td>₹{((item.price || item.itemPrice || 0) * (item.quantity || 1)).toFixed(2)}</td>
                         </tr>
                       ))
                     ) : (
@@ -531,7 +569,7 @@ const AdminOrders = () => {
                     )}
                     <tr className="total-row">
                       <td colSpan="3" style={{ textAlign: 'right' }}>TOTAL:</td>
-                      <td>${(selectedOrder.total || selectedOrder.totalPrice || 0).toFixed(2)}</td>
+                      <td>₹{(selectedOrder.total || selectedOrder.totalPrice || 0).toFixed(2)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -557,3 +595,4 @@ const AdminOrders = () => {
 };
 
 export default AdminOrders;
+

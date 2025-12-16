@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import Alert from '../../components/common/Alert';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { cartItems, getCartTotal, clearCart } = useCart();
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     orderType: 'dine-in',
     contactPhone: '',
-    paymentMethod: 'card',
+    paymentMethod: 'upi',
     specialInstructions: '',
+    hasReservation: false,
+    reservationDate: '',
+    reservationTime: '',
+    numberOfGuests: 2,
     deliveryAddress: {
       street: '',
       city: '',
@@ -22,45 +30,94 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
     
     if (cartItems.length === 0) {
-      toast.error('Your cart is empty');
+      setError('Your cart is empty. Please add items before checkout.');
       return;
     }
 
+    const totalAmount = getCartTotal();
+    
+    // Prepare order details
+    const orderDetails = {
+      items: cartItems.map(item => ({
+        name: item.name,
+        menuItem: item._id,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      orderType: formData.orderType,
+      contactPhone: formData.contactPhone,
+      paymentMethod: formData.paymentMethod,
+      specialInstructions: formData.specialInstructions,
+      customerEmail: user?.email,
+      hasReservation: formData.hasReservation,
+      reservationDate: formData.hasReservation ? formData.reservationDate : null,
+      reservationTime: formData.hasReservation ? formData.reservationTime : null,
+      numberOfGuests: formData.hasReservation ? formData.numberOfGuests : null,
+      total: totalAmount,
+      totalPrice: totalAmount,
+      subtotal: totalAmount,
+      userId: user?.id || user?._id,
+      userName: user?.name,
+      userEmail: user?.email,
+      userPhone: formData.contactPhone,
+      deliveryType: formData.orderType
+    };
+
+    // Add delivery address if order type is delivery
+    if (formData.orderType === 'delivery') {
+      orderDetails.deliveryAddress = formData.deliveryAddress;
+    }
+
+    // If payment method is UPI, redirect to payment page
+    if (formData.paymentMethod === 'upi') {
+      navigate('/payment', { 
+        state: { 
+          orderDetails,
+          totalAmount 
+        } 
+      });
+      return;
+    }
+
+    // For other payment methods, create order directly
     try {
-      const orderData = {
-        items: cartItems.map(item => ({
-          menuItem: item._id,
-          quantity: item.quantity,
-          price: item.price
-        })),
-        orderType: formData.orderType,
-        contactPhone: formData.contactPhone,
-        paymentMethod: formData.paymentMethod,
-        specialInstructions: formData.specialInstructions
-      };
-
-      // Add delivery address if order type is delivery
-      if (formData.orderType === 'delivery') {
-        orderData.deliveryAddress = formData.deliveryAddress;
-      }
-
-      const response = await api.post('/orders', orderData);
+      await api.post('/orders', orderDetails);
       clearCart();
-      toast.success('Order placed successfully!');
-      navigate('/customer/orders');
+      setSuccess('Order placed successfully! Redirecting to your orders...');
+      setTimeout(() => navigate('/customer/orders'), 1500);
     } catch (error) {
       console.error('Order error:', error);
-      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Failed to place order';
-      toast.error(errorMsg);
+      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Failed to place order. Please try again.';
+      setError(errorMsg);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
-        <h1 className="text-4xl font-serif font-bold mb-8">Checkout</h1>
+        <h1 className="text-4xl font-serif font-bold mb-8 dark:text-gray-100">Checkout</h1>
+        
+        {/* Error/Success Messages */}
+        {error && (
+          <Alert 
+            type="error" 
+            message={error} 
+            onClose={() => setError('')}
+            className="mb-6"
+          />
+        )}
+        {success && (
+          <Alert 
+            type="success" 
+            message={success}
+            className="mb-6"
+          />
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white p-6 rounded-xl shadow">
             <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
@@ -109,7 +166,7 @@ const CheckoutPage = () => {
                   </div>
                   <input
                     type="text"
-                    placeholder="Zip Code"
+                    placeholder="PIN Code"
                     value={formData.deliveryAddress.zipCode}
                     onChange={(e) => setFormData({...formData, deliveryAddress: {...formData.deliveryAddress, zipCode: e.target.value}})}
                     className="input-field"
@@ -128,6 +185,79 @@ const CheckoutPage = () => {
                   required
                 />
               </div>
+
+              {/* Reservation Option */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.hasReservation}
+                    onChange={(e) => setFormData({...formData, hasReservation: e.target.checked})}
+                    className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="font-medium text-gray-900">Include Table Reservation</span>
+                </label>
+                <p className="text-xs text-gray-600 mt-1 ml-8">
+                  Reserve a table for dining when you arrive
+                </p>
+              </div>
+
+              {formData.hasReservation && (
+                <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h3 className="font-semibold text-gray-900">Reservation Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Date</label>
+                      <input
+                        type="date"
+                        value={formData.reservationDate}
+                        onChange={(e) => setFormData({...formData, reservationDate: e.target.value})}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="input-field"
+                        required={formData.hasReservation}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Time</label>
+                      <select
+                        value={formData.reservationTime}
+                        onChange={(e) => setFormData({...formData, reservationTime: e.target.value})}
+                        className="input-field"
+                        required={formData.hasReservation}
+                      >
+                        <option value="">Select time</option>
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="9:00 PM">9:00 PM</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Number of Guests</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={formData.numberOfGuests}
+                      onChange={(e) => setFormData({...formData, numberOfGuests: e.target.value})}
+                      className="input-field"
+                      required={formData.hasReservation}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium mb-2">Payment Method</label>
                 <select
@@ -135,10 +265,16 @@ const CheckoutPage = () => {
                   onChange={(e) => setFormData({...formData, paymentMethod: e.target.value})}
                   className="input-field"
                 >
-                  <option value="card">Card</option>
-                  <option value="cash">Cash</option>
-                  <option value="online">Online</option>
+                  <option value="upi">UPI Payment (Recommended)</option>
+                  <option value="cash">Cash on Delivery</option>
+                  <option value="card">Card Payment</option>
                 </select>
+                {formData.paymentMethod === 'upi' && (
+                  <p className="mt-2 text-sm text-green-600 flex items-center gap-2">
+                    <span>✓</span>
+                    <span>Secure UPI payment with QR code</span>
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Special Instructions (Optional)</label>
@@ -159,17 +295,19 @@ const CheckoutPage = () => {
               {cartItems.map(item => (
                 <div key={item._id} className="flex justify-between">
                   <span>{item.name} x{item.quantity}</span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>₹{Math.round(item.price * item.quantity)}</span>
                 </div>
               ))}
               <div className="border-t pt-2 mt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${getCartTotal().toFixed(2)}</span>
+                <span>₹{getCartTotal().toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          <button type="submit" className="btn-primary w-full">Place Order</button>
+          <button type="submit" className="btn-primary w-full">
+            {formData.paymentMethod === 'upi' ? 'Proceed to Payment' : 'Place Order'}
+          </button>
         </form>
       </div>
     </div>

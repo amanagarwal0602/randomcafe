@@ -70,29 +70,29 @@ const AdminReviews = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold mb-2">Review Management</h1>
-          <p className="text-gray-600">{reviews.length} total reviews</p>
+          <p className="text-gray-600 dark:text-gray-400">{reviews.length} total reviews</p>
         </div>
 
         <div className="mb-6 flex gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'}`}
+            className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-primary-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
           >
             All ({reviews.length})
           </button>
           <button
             onClick={() => setFilter('published')}
-            className={`px-4 py-2 rounded-lg ${filter === 'published' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'}`}
+            className={`px-4 py-2 rounded-lg ${filter === 'published' ? 'bg-primary-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
           >
             Published ({reviews.filter(r => r.isPublished).length})
           </button>
           <button
             onClick={() => setFilter('unpublished')}
-            className={`px-4 py-2 rounded-lg ${filter === 'unpublished' ? 'bg-primary-500 text-white' : 'bg-white text-gray-700'}`}
+            className={`px-4 py-2 rounded-lg ${filter === 'unpublished' ? 'bg-primary-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'}`}
           >
             Unpublished ({reviews.filter(r => !r.isPublished).length})
           </button>
@@ -100,7 +100,7 @@ const AdminReviews = () => {
 
         <div className="space-y-4">
           {filteredReviews.map(review => (
-            <div key={review._id} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+            <div key={review._id} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition">
               <div className="flex justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -111,7 +111,7 @@ const AdminReviews = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-gray-600 text-sm mb-1">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
                     By {review.user?.name || 'Anonymous'} • {new Date(review.createdAt).toLocaleDateString()}
                   </p>
                   {review.isVerifiedPurchase && (
@@ -122,7 +122,7 @@ const AdminReviews = () => {
                   <button
                     onClick={() => togglePublish(review._id)}
                     className={`px-4 py-2 rounded-lg font-medium ${
-                      review.isPublished ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                      review.isPublished ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-700 dark:text-gray-300 hover:bg-gray-400'
                     }`}
                   >
                     {review.isPublished ? 'Published' : 'Unpublished'}
@@ -141,7 +141,7 @@ const AdminReviews = () => {
                   </button>
                 </div>
               </div>
-              <p className="text-gray-700 mb-4">{review.comment}</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">{review.comment}</p>
               
               {review.adminResponse && (
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
@@ -159,17 +159,17 @@ const AdminReviews = () => {
         {/* Response Modal */}
         {showResponseModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-2xl w-full">
+            <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full">
               <div className="p-6 border-b flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Respond to Review</h2>
-                <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="text-gray-500 hover:text-gray-700">
+                <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="text-gray-500 hover:text-gray-700 dark:text-gray-300">
                   <FiX size={24} />
                 </button>
               </div>
               <div className="p-6">
-                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
                   <p className="font-semibold mb-2">{selectedReview?.title}</p>
-                  <p className="text-gray-700 text-sm">{selectedReview?.comment}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{selectedReview?.comment}</p>
                 </div>
                 <label className="block text-sm font-medium mb-2">Your Response</label>
                 <textarea
@@ -180,7 +180,7 @@ const AdminReviews = () => {
                   placeholder="Thank you for your feedback..."
                 />
                 <div className="flex gap-3 mt-4">
-                  <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                  <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50">
                     Cancel
                   </button>
                   <button onClick={handleResponse} className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
@@ -197,3 +197,4 @@ const AdminReviews = () => {
 };
 
 export default AdminReviews;
+

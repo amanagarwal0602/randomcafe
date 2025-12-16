@@ -1,8 +1,9 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { checkAnyPermission } from '../utils/permissions';
 
-const ProtectedRoute = ({ children, roles = [] }) => {
+const ProtectedRoute = ({ children, roles = [], permissions = [] }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -17,7 +18,11 @@ const ProtectedRoute = ({ children, roles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(user.role)) {
+  // Check if user has required role OR permissions
+  const hasRole = roles.length === 0 || roles.includes(user.role);
+  const hasPermission = permissions.length === 0 || checkAnyPermission(user, permissions);
+  
+  if (!hasRole && !hasPermission) {
     return <Navigate to="/" replace />;
   }
 

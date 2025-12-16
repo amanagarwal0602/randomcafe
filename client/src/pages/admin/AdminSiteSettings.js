@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../services/api';
+import InfoTooltip from '../../components/InfoTooltip';
 
 const AdminSiteSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -98,17 +99,29 @@ const AdminSiteSettings = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Site Settings</h1>
-        <p className="text-gray-600 mt-2">Configure your website settings</p>
+        <div className="flex items-center gap-2 mb-2">
+          <h1 className="text-3xl font-bold text-gray-800">Site Settings</h1>
+          <InfoTooltip 
+            title="Site Settings"
+            content="Control the overall look, branding, and functionality of your entire website. These settings apply to every page."
+          />
+        </div>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your website settings</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Settings */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Settings</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Basic Settings</h2>
+            <InfoTooltip content="Essential branding elements that identify your café across the website" />
+          </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Site Name *</label>
+            <div className="flex items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Site Name *</label>
+              <InfoTooltip content="Your café's name as it appears in browser tabs and throughout the site" />
+            </div>
             <input
               type="text"
               name="siteName"
@@ -121,7 +134,13 @@ const AdminSiteSettings = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Logo URL</label>
+                <InfoTooltip 
+                  title="Logo"
+                  content="Your café's logo image that appears in the header. Upload to an image hosting service and paste the URL here."
+                />
+              </div>
               <input
                 type="url"
                 name="logo"
@@ -133,7 +152,13 @@ const AdminSiteSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Favicon URL</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Favicon URL</label>
+                <InfoTooltip 
+                  title="Favicon"
+                  content="The small icon that appears in browser tabs. Should be 16x16 or 32x32 pixels. Use a simple version of your logo."
+                />
+              </div>
               <input
                 type="url"
                 name="favicon"
@@ -146,7 +171,10 @@ const AdminSiteSettings = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Footer Text</label>
+            <div className="flex items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Footer Text</label>
+              <InfoTooltip content="Copyright text that appears at the bottom of every page. Example: '© 2024 Lumière Café. All rights reserved.'" />
+            </div>
             <input
               type="text"
               name="footerText"
@@ -158,12 +186,21 @@ const AdminSiteSettings = () => {
         </div>
 
         {/* Brand Colors */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Brand Colors</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Brand Colors</h2>
+            <InfoTooltip 
+              title="Brand Colors"
+              content="Choose colors that match your café's personality. Primary: main buttons & links. Secondary: headings & highlights. Accent: special elements & CTAs."
+            />
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Primary Color</label>
+                <InfoTooltip content="Main brand color used for buttons, links, and primary elements" />
+              </div>
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -182,7 +219,10 @@ const AdminSiteSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Secondary Color</label>
+                <InfoTooltip content="Supporting color for headings and secondary elements" />
+              </div>
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -201,7 +241,10 @@ const AdminSiteSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Accent Color</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Accent Color</label>
+                <InfoTooltip content="Eye-catching color for special offers, important buttons, and call-to-actions" />
+              </div>
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -222,9 +265,15 @@ const AdminSiteSettings = () => {
         </div>
 
         {/* Announcement Bar */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Announcement Bar</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-800">Announcement Bar</h2>
+              <InfoTooltip 
+                title="Announcement Bar"
+                content="A colorful banner at the top of your website to display important messages like 'Free delivery on orders over ₹500' or 'New seasonal menu available!'"
+              />
+            </div>
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -233,26 +282,33 @@ const AdminSiteSettings = () => {
                 onChange={(e) => handleChange(e, 'announcementBar')}
                 className="w-4 h-4 text-blue-600"
               />
-              <span className="ml-2 text-sm font-medium text-gray-700">Enable</span>
+              <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Enable</span>
             </label>
           </div>
 
           {formData.announcementBar.enabled && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                <div className="flex items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+                  <InfoTooltip content="Your announcement text. Keep it short and attention-grabbing!" />
+                </div>
                 <input
                   type="text"
                   name="message"
                   value={formData.announcementBar.message}
                   onChange={(e) => handleChange(e, 'announcementBar')}
                   className="w-full px-4 py-2 border rounded-lg"
+                  placeholder="🎉 Grand Opening Special: 20% off all orders this week!"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Background Color</label>
+                    <InfoTooltip content="Choose a bright, eye-catching color for the announcement bar background" />
+                  </div>
                   <input
                     type="color"
                     name="backgroundColor"
@@ -263,7 +319,10 @@ const AdminSiteSettings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Text Color</label>
+                    <InfoTooltip content="Text color should contrast well with the background for readability" />
+                  </div>
                   <input
                     type="color"
                     name="textColor"
@@ -278,9 +337,15 @@ const AdminSiteSettings = () => {
         </div>
 
         {/* Maintenance Mode */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Maintenance Mode</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-gray-800">Maintenance Mode</h2>
+              <InfoTooltip 
+                title="Maintenance Mode"
+                content="Temporarily disable your website and show a maintenance message. Use this when making major updates or repairs. Only admins can access the site when enabled."
+              />
+            </div>
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -289,30 +354,46 @@ const AdminSiteSettings = () => {
                 onChange={(e) => handleChange(e, 'maintenanceMode')}
                 className="w-4 h-4 text-blue-600"
               />
-              <span className="ml-2 text-sm font-medium text-gray-700">Enable</span>
+              <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Enable</span>
             </label>
           </div>
 
           {formData.maintenanceMode.enabled && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+              <div className="flex items-center mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+                <InfoTooltip content="Message visitors will see while the site is under maintenance" />
+              </div>
               <textarea
                 name="message"
                 value={formData.maintenanceMode.message}
                 onChange={(e) => handleChange(e, 'maintenanceMode')}
                 rows="3"
                 className="w-full px-4 py-2 border rounded-lg"
+                placeholder="We're making improvements! Check back soon."
               />
             </div>
           )}
         </div>
 
         {/* Analytics */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Analytics & Tracking</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Analytics & Tracking</h2>
+            <InfoTooltip 
+              title="Analytics"
+              content="Track visitor behavior and measure marketing success. Google Analytics shows website traffic. Facebook Pixel tracks ad performance."
+            />
+          </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Google Analytics ID</label>
+            <div className="flex items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Google Analytics ID</label>
+              <InfoTooltip 
+                title="Google Analytics"
+                content="Get insights on visitors, page views, and user behavior. Sign up at analytics.google.com. Format: G-XXXXXXXXXX"
+              />
+            </div>
             <input
               type="text"
               name="googleAnalyticsId"
@@ -324,7 +405,13 @@ const AdminSiteSettings = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Facebook Pixel ID</label>
+            <div className="flex items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Facebook Pixel ID</label>
+              <InfoTooltip 
+                title="Facebook Pixel"
+                content="Track conversions from Facebook ads. Find your Pixel ID in Facebook Events Manager. Format: 15-16 digit number"
+              />
+            </div>
             <input
               type="text"
               name="facebookPixelId"
@@ -351,3 +438,4 @@ const AdminSiteSettings = () => {
 };
 
 export default AdminSiteSettings;
+

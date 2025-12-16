@@ -1,5 +1,5 @@
-import { createUser, getUserByEmail, updateUser } from './localStorage';
-// import { createUser, getUserByEmail, updateUser } from './sheetdb'; // Uncomment when SheetDB API key is ready
+import { createUser, getUserByEmail, getUserByUsername, updateUser } from './localStorage';
+// import { createUser, getUserByEmail, getUserByUsername, updateUser } from './sheetdb'; // Uncomment when SheetDB API key is ready
 
 // Simple client-side auth using SheetDB
 const AUTH_STORAGE_KEY = 'lumiere_auth';
@@ -23,17 +23,26 @@ const isExplicitlyInactive = (value) => {
 };
 
 // Register new user
-export const register = async (name, email, password) => {
+export const register = async (name, email, password, username = '') => {
   try {
-    // Check if user exists
+    // Check if email exists
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
       throw new Error('Email already registered');
     }
 
+    // Check if username exists (if provided)
+    if (username) {
+      const existingUsername = await getUserByUsername(username);
+      if (existingUsername) {
+        throw new Error('Username already taken');
+      }
+    }
+
     // Create user (plain text password for simplicity)
     const userData = {
       name,
+      username,
       email,
       password: password,
       role: 'customer'
@@ -45,6 +54,7 @@ export const register = async (name, email, password) => {
     const token = btoa(JSON.stringify({
       id: result.id,
       email: email,
+      username: username,
       role: 'customer',
       timestamp: Date.now()
     }));
@@ -55,6 +65,7 @@ export const register = async (name, email, password) => {
       user: {
         id: result.id,
         name: name,
+        username: username,
         email: email,
         role: 'customer',
         avatar: '',
@@ -76,19 +87,104 @@ export const register = async (name, email, password) => {
 };
 
 // Login user
-export const login = async (email, password) => {
+export const login = async (emailOrUsername, password) => {
   try {
-    console.log('Login attempt for:', email);
+    console.log('Login attempt for:', emailOrUsername);
     
-    // Get user from SheetDB
-    const user = await getUserByEmail(email);
+    // Hardcoded demo accounts - support both username and email
+    if ((emailOrUsername === 'demo' || emailOrUsername === 'demo@lumierecafe.com') && password === 'demo') {
+      const demoUser = {
+        id: 'demo001',
+        name: 'Demo User',
+        username: 'demo',
+        email: 'demo@lumierecafe.com',
+        role: 'customer',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+        phone: '+1-555-0000',
+        is_active: true
+      };
+      
+      const token = btoa(JSON.stringify({
+        id: demoUser.id,
+        email: demoUser.email,
+        username: demoUser.username,
+        role: demoUser.role,
+        timestamp: Date.now()
+      }));
+      
+      const authData = {
+        token,
+        user: demoUser
+      };
+      
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+      
+      return {
+        success: true,
+        token,
+        user: demoUser
+      };
+    }
+    
+    if ((emailOrUsername === 'admin' || emailOrUsername === 'admin@lumierecafe.com') && password === 'admin') {
+      const adminUser = {
+        id: 'admin001',
+        name: 'Admin User',
+        username: 'admin',
+        email: 'admin@lumierecafe.com',
+        role: 'admin',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
+        phone: '+1-555-0100',
+        is_active: true
+      };
+      
+      const token = btoa(JSON.stringify({
+        id: adminUser.id,
+        email: adminUser.email,
+        username: adminUser.username,
+        role: adminUser.role,
+        timestamp: Date.now()
+      }));
+      
+      const authData = {
+        token,
+        user: adminUser
+      };
+      
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+      
+      return {
+        success: true,
+        token,
+        user: adminUser
+      };
+    }
+    
+    // Determine if input is email or username
+    const isEmail = emailOrUsername.includes('@');
+    let user = null;
+    
+    if (isEmail) {
+      // Login with email
+      user = await getUserByEmail(emailOrUsername);
+    } else {
+      // Login with username
+      user = await getUserByUsername(emailOrUsername);
+    }
     
     if (!user) {
       console.log('User not found');
-      throw new Error('Invalid email or password');
+      throw new Error('Invalid username/email or password');
     }
 
-    console.log('User found:', { email: user.email, role: user.role, hasPassword: !!user.password, isActive: user.is_active, type: typeof user.is_active });
+    console.log('User found:', { 
+      email: user.email, 
+      username: user.username,
+      role: user.role, 
+      hasPassword: !!user.password, 
+      isActive: user.is_active, 
+      type: typeof user.is_active 
+    });
 
     // Verify password (plain text comparison)
     const isValidPassword = password === user.password;
@@ -96,7 +192,7 @@ export const login = async (email, password) => {
     console.log('Password validation result:', isValidPassword);
     
     if (!isValidPassword) {
-      throw new Error('Invalid email or password');
+      throw new Error('Invalid username/email or password');
     }
 
     // Treat blank/missing values as active, only block when explicitly inactive
@@ -109,6 +205,7 @@ export const login = async (email, password) => {
     const token = btoa(JSON.stringify({
       id: user.id,
       email: user.email,
+      username: user.username,
       role: user.role,
       timestamp: Date.now()
     }));
@@ -119,6 +216,7 @@ export const login = async (email, password) => {
       user: {
         id: user.id,
         name: user.name,
+        username: user.username,
         email: user.email,
         role: user.role,
         avatar: user.avatar,

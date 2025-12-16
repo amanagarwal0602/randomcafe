@@ -35,8 +35,8 @@ const ReservationPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-brown-500 text-white py-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="bg-brown-500 dark:bg-gray-800 text-white py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Reserve a Table</h1>
           <p className="text-xl">Book your unforgettable dining experience</p>
@@ -44,44 +44,55 @@ const ReservationPage = () => {
       </div>
 
       <div className="container-custom py-12">
-        <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Name</label>
+                <label htmlFor="guestName" className="block text-sm font-medium mb-2 dark:text-gray-200">Name</label>
                 <input
+                  id="guestName"
                   type="text"
                   value={formData.guestName}
                   onChange={(e) => setFormData({...formData, guestName: e.target.value})}
                   className="input-field"
                   required
+                  aria-label="Guest Name"
+                  tabIndex={0}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
+                <label htmlFor="guestEmail" className="block text-sm font-medium mb-2 dark:text-gray-200">Email</label>
                 <input
+                  id="guestEmail"
                   type="email"
                   value={formData.guestEmail}
                   onChange={(e) => setFormData({...formData, guestEmail: e.target.value})}
                   className="input-field"
                   required
+                  aria-label="Guest Email"
+                  tabIndex={0}
                 />
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Phone</label>
+                <label htmlFor="guestPhone" className="block text-sm font-medium mb-2 dark:text-gray-200">Phone</label>
                 <input
+                  id="guestPhone"
                   type="tel"
                   value={formData.guestPhone}
                   onChange={(e) => setFormData({...formData, guestPhone: e.target.value})}
                   className="input-field"
                   required
+                  aria-label="Guest Phone"
+                  tabIndex={0}
+                  className="input-field"
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Number of Guests</label>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-200">Number of Guests</label>
                 <input
                   type="number"
                   min="1"
@@ -96,7 +107,7 @@ const ReservationPage = () => {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Date</label>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-200">Date</label>
                 <input
                   type="date"
                   value={formData.date}
@@ -107,7 +118,7 @@ const ReservationPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Time Slot</label>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-200">Time Slot</label>
                 <select
                   value={formData.timeSlot}
                   onChange={(e) => setFormData({...formData, timeSlot: e.target.value})}
@@ -123,7 +134,7 @@ const ReservationPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Special Requests</label>
+              <label className="block text-sm font-medium mb-2 dark:text-gray-200">Special Requests</label>
               <textarea
                 value={formData.specialRequests}
                 onChange={(e) => setFormData({...formData, specialRequests: e.target.value})}
@@ -143,3 +154,4 @@ const ReservationPage = () => {
 };
 
 export default ReservationPage;
+

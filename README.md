@@ -2,7 +2,7 @@
 
 A complete, serverless café website with professional UK café aesthetics, featuring localStorage-based data management, comprehensive RBAC system, and full admin control panel.
 
-## 🌟 Features
+## 🌟 Features```
 
 ### Public Website
 - **Home Page**: Elegant hero section with Cormorant Garamond typography

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiTarget, FiUsers, FiHeart } from 'react-icons/fi';
 import api from '../../services/api';
+import Avatar from '../../components/common/Avatar';
 
 const AboutPage = () => {
   const [about, setAbout] = useState(null);
@@ -17,13 +18,13 @@ const AboutPage = () => {
     try {
       const [aboutRes, featuresRes, teamRes] = await Promise.all([
         api.get('/about'),
-        api.get('/features/all'),
+        api.get('/features'),
         api.get('/team')
       ]);
       
       setAbout(aboutRes.data);
-      setValues(featuresRes.data.filter(f => f.isActive).slice(0, 3));
-      setTeam(teamRes.data.filter(t => t.isActive));
+      setValues(featuresRes.data.filter(f => f.is_active));
+      setTeam(teamRes.data.filter(t => t.is_active));
     } catch (error) {
       console.error('Failed to load about page content:', error);
     } finally {
@@ -46,12 +47,12 @@ const AboutPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen dark:bg-gray-900">
       {/* Hero */}
-      <div className="bg-brown-500 text-white py-20">
+      <div className="bg-brown-500 dark:bg-gray-800 text-white py-20">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">{about?.title || 'About Us'}</h1>
-          <p className="text-xl text-gray-200">{about?.description || 'Our story, passion, and commitment to excellence'}</p>
+          <p className="text-xl text-gray-200 dark:text-gray-300">{about?.description || 'Our story, passion, and commitment to excellence'}</p>
         </div>
       </div>
 
@@ -64,8 +65,8 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-serif font-bold mb-6">{about?.heading || 'Our Story'}</h2>
-              <div className="text-gray-700 space-y-4">
+              <h2 className="text-4xl font-serif font-bold mb-6 dark:text-gray-100">{about?.heading || 'Our Story'}</h2>
+              <div className="text-gray-700 dark:text-gray-300 space-y-4">
                 {about?.content && about.content.split('\n').map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 ))}
@@ -88,9 +89,9 @@ const AboutPage = () => {
       </section>
 
       {/* Values */}
-      <section className="section-padding bg-primary-50">
+      <section className="section-padding bg-primary-50 dark:bg-gray-800">
         <div className="container-custom">
-          <h2 className="text-4xl font-serif font-bold text-center mb-12">Our Values</h2>
+          <h2 className="text-4xl font-serif font-bold text-center mb-12 dark:text-gray-100">Our Values</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value, i) => (
               <motion.div
@@ -99,13 +100,13 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2 }}
-                className="bg-white p-8 rounded-xl shadow-lg text-center"
+                className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg text-center"
               >
                 <div className="text-primary-500 text-5xl mb-4 flex justify-center">
                   {iconMap[value.icon] || value.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{value.title}</h3>
-                <p className="text-gray-600">{value.description}</p>
+                <h3 className="text-xl font-semibold mb-3 dark:text-gray-200">{value.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{value.description}</p>
               </motion.div>
             ))}
           </div>
@@ -115,19 +116,20 @@ const AboutPage = () => {
       {/* Team */}
       <section className="section-padding">
         <div className="container-custom">
-          <h2 className="text-4xl font-serif font-bold text-center mb-12">Meet Our Team</h2>
+          <h2 className="text-4xl font-serif font-bold text-center mb-12 dark:text-gray-100">Meet Our Team</h2>
           <div className="grid md:grid-cols-4 gap-8">
             {team.map((member) => (
               <div key={member.id} className="text-center">
-                <div className="w-48 h-48 mx-auto rounded-full mb-4 overflow-hidden">
-                  <img 
-                    src={member.image || 'https://via.placeholder.com/200'} 
-                    alt={member.name}
-                    className="w-full h-full object-cover"
+                <div className="flex justify-center mb-4">
+                  <Avatar 
+                    name={member.name} 
+                    image={member.image} 
+                    size="xl"
+                    className="w-48 h-48"
                   />
                 </div>
-                <h3 className="font-semibold text-lg">{member.name}</h3>
-                <p className="text-gray-600">{member.position}</p>
+                <h3 className="font-semibold text-lg dark:text-gray-200">{member.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{member.position}</p>
               </div>
             ))}
           </div>

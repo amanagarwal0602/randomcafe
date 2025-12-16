@@ -20,8 +20,8 @@ const GalleryPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-brown-500 text-white py-16">
+    <div className="min-h-screen dark:bg-gray-900">
+      <div className="bg-brown-500 dark:bg-gray-800 text-white dark:text-gray-200 py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Gallery</h1>
           <p className="text-xl">Moments captured at Lumière</p>
@@ -63,3 +63,5 @@ const GalleryPage = () => {
 };
 
 export default GalleryPage;
+
+

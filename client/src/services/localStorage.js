@@ -10,25 +10,23 @@ const getTimestamp = () => new Date().toISOString();
 // Initialize localStorage with default data
 const initializeData = () => {
   const existingData = localStorage.getItem('cafe_data');
+  const DATA_VERSION = '2.2'; // Dynamic data: reviews, gallery, team, features only in sample data
   
-  // Check if we need to reinitialize (old version or missing data)
-  let needsReinit = false;
-  if (!existingData) {
-    needsReinit = true;
-  } else {
+  // DON'T reinitialize if data exists - let App.js handle sample data loading
+  if (existingData) {
     try {
       const parsed = JSON.parse(existingData);
-      // Check if hero fields exist in about section
-      if (!parsed.about || parsed.about.length === 0 || !parsed.about[0].hero_title) {
-        console.log('Old data structure detected, reinitializing...');
-        needsReinit = true;
+      // Only check if data is valid JSON
+      if (parsed && typeof parsed === 'object') {
+        return; // Data exists and is valid, don't reinitialize
       }
     } catch (e) {
-      needsReinit = true;
+      console.log('Invalid data format, reinitializing...');
     }
   }
   
-  if (needsReinit) {
+  // Only initialize with minimal default structure if no data exists at all
+  if (!existingData) {
     const now = getTimestamp();
     const today = new Date();
     const yesterday = new Date(today);
@@ -36,6 +34,52 @@ const initializeData = () => {
     
     const defaultData = {
       users: [
+        {
+          id: 'demo001',
+          table_type: 'user',
+          name: 'Demo User',
+          email: 'demo@demo.com',
+          username: 'demo',
+          password: 'demo',
+          phone: '+91-98765-43210',
+          role: 'customer',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+          address_street: '456 Demo Street',
+          address_city: 'Mumbai',
+          address_state: 'Maharashtra',
+          address_zipcode: '400001',
+          address_country: 'India',
+          favorite_items: [],
+          permissions: ['view_dashboard', 'view_orders', 'view_menu', 'view_reservations'],
+          refresh_token: '',
+          is_active: true,
+          email_verified: true,
+          created_at: now,
+          updated_at: now
+        },
+        {
+          id: 'admin000',
+          table_type: 'user',
+          name: 'Admin',
+          email: 'admin@admin.com',
+          username: 'admin',
+          password: 'admin',
+          phone: '+91-98765-43211',
+          role: 'admin',
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
+          address_street: '123 Admin Avenue',
+          address_city: 'Mumbai',
+          address_state: 'Maharashtra',
+          address_zipcode: '400001',
+          address_country: 'India',
+          favorite_items: [],
+          permissions: ['all'],
+          refresh_token: '',
+          is_active: true,
+          email_verified: true,
+          created_at: now,
+          updated_at: now
+        },
         {
           id: 'admin001',
           table_type: 'user',
@@ -142,219 +186,10 @@ const initializeData = () => {
           updated_at: now
         }
       ],
-      gallery: [
-        {
-          id: 'gallery001',
-          table_type: 'gallery',
-          title: 'Cozy Interior',
-          description: 'Our warm and inviting dining space',
-          image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800',
-          category: 'interior',
-          is_active: true,
-          order: 1,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'gallery002',
-          table_type: 'gallery',
-          title: 'Artisan Coffee',
-          description: 'Freshly brewed perfection',
-          image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800',
-          category: 'food',
-          is_active: true,
-          order: 2,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'gallery003',
-          table_type: 'gallery',
-          title: 'Gourmet Pizza',
-          description: 'Wood-fired Italian pizza',
-          image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800',
-          category: 'food',
-          is_active: true,
-          order: 3,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'gallery004',
-          table_type: 'gallery',
-          title: 'Fresh Pastries',
-          description: 'Baked fresh daily',
-          image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800',
-          category: 'food',
-          is_active: true,
-          order: 4,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'gallery005',
-          table_type: 'gallery',
-          title: 'Outdoor Seating',
-          description: 'Enjoy dining al fresco',
-          image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800',
-          category: 'interior',
-          is_active: true,
-          order: 5,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'gallery006',
-          table_type: 'gallery',
-          title: 'Chef at Work',
-          description: 'Culinary artistry in action',
-          image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=800',
-          category: 'team',
-          is_active: true,
-          order: 6,
-          created_at: new Date('2024-01-01').toISOString(),
-          updated_at: now
-        }
-      ],
-      reviews: [
-        {
-          id: 'review001',
-          table_type: 'review',
-          user_id: 'user001',
-          user_name: 'Sarah Williams',
-          user_email: 'sarah@example.com',
-          menu_item_id: 'menu001',
-          menu_item_name: 'Margherita Pizza',
-          rating: 5,
-          comment: 'Amazing atmosphere and incredible food. The coffee is the best I\'ve ever had! Highly recommend the brunch menu.',
-          status: 'approved',
-          created_at: new Date('2024-12-10').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'review002',
-          table_type: 'review',
-          user_id: 'user001',
-          user_name: 'Michael Chen',
-          user_email: 'michael@example.com',
-          menu_item_id: 'menu002',
-          menu_item_name: 'Chicken Burger',
-          rating: 5,
-          comment: 'Absolutely love this place! The service is outstanding and the food quality is consistently excellent. Will definitely come back!',
-          status: 'approved',
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'review003',
-          table_type: 'review',
-          user_id: 'user003',
-          user_name: 'Emily Rodriguez',
-          user_email: 'emily@example.com',
-          menu_item_id: 'menu003',
-          menu_item_name: 'Caesar Salad',
-          rating: 4,
-          comment: 'Great dining experience! The ambiance is perfect for both casual lunches and special occasions. Highly recommended!',
-          status: 'approved',
-          created_at: new Date('2024-11-20').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'review004',
-          table_type: 'review',
-          user_id: 'user002',
-          user_name: 'Michael Chen',
-          user_email: 'michael@example.com',
-          menu_item_id: 'menu005',
-          menu_item_name: 'Chocolate Lava Cake',
-          rating: 5,
-          comment: 'The dessert was absolutely divine! Rich, decadent, and perfectly balanced sweetness.',
-          status: 'approved',
-          created_at: new Date('2024-11-18').toISOString(),
-          updated_at: now
-        },
-        {
-          id: 'review005',
-          table_type: 'review',
-          user_id: 'user001',
-          user_name: 'Sarah Williams',
-          user_email: 'sarah@example.com',
-          menu_item_id: 'menu004',
-          menu_item_name: 'Espresso',
-          rating: 5,
-          comment: 'Best espresso in town! Rich, smooth, and perfectly extracted every time.',
-          status: 'approved',
-          created_at: new Date('2024-12-05').toISOString(),
-          updated_at: now
-        }
-      ],
-      features: [
-        {
-          id: 'feature001',
-          table_type: 'feature',
-          icon: '☕',
-          title: 'Quality First',
-          description: 'We never compromise on the quality of our ingredients or service.',
-          order: 1,
-          is_active: true,
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'feature002',
-          table_type: 'feature',
-          icon: '🏆',
-          title: 'Community',
-          description: 'Building connections and supporting local businesses is at our core.',
-          order: 2,
-          is_active: true,
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'feature003',
-          table_type: 'feature',
-          icon: '❤️',
-          title: 'Passion',
-          description: 'Every dish and drink is crafted with genuine care and expertise.',
-          order: 3,
-          is_active: true,
-          created_at: now,
-          updated_at: now
-        }
-      ],
-      team: [
-        {
-          id: 'team001',
-          table_type: 'team',
-          name: 'John Smith',
-          position: 'Head Chef',
-          bio: 'Award-winning chef with 15+ years of culinary experience',
-          image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400',
-          email: 'chef@lumierecafe.com',
-          phone: '+1234567890',
-          social_links: JSON.stringify({ facebook: '', instagram: '', twitter: '', linkedin: '' }),
-          order: 1,
-          is_active: true,
-          created_at: now,
-          updated_at: now
-        },
-        {
-          id: 'team002',
-          table_type: 'team',
-          name: 'Sarah Johnson',
-          position: 'Manager',
-          bio: 'Passionate about creating memorable dining experiences for our guests',
-          image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
-          email: 'manager@lumierecafe.com',
-          phone: '+1234567891',
-          social_links: JSON.stringify({ facebook: '', instagram: '', twitter: '', linkedin: '' }),
-          order: 2,
-          is_active: true,
-          created_at: now,
-          updated_at: now
-        }
-      ],
+      gallery: [],
+      reviews: [],
+      features: [],
+      team: [],
       about: [
         {
           id: 'about001',
@@ -414,9 +249,11 @@ const initializeData = () => {
           created_at: now,
           updated_at: now
         }
-      ]
+      ],
+      version: '2.2' // Data version for tracking updates
     };
     localStorage.setItem('cafe_data', JSON.stringify(defaultData));
+    console.log('✅ Default empty structure initialized');
   }
 };
 
@@ -439,6 +276,7 @@ export const createUser = async (userData) => {
     id: userId,
     table_type: 'user',
     name: userData.name,
+    username: userData.username || '',
     email: userData.email,
     password: userData.password,
     phone: userData.phone || '',
@@ -472,6 +310,11 @@ export const getUserByEmail = async (email) => {
   return data.users.find(u => u.email === email) || null;
 };
 
+export const getUserByUsername = async (username) => {
+  const data = getData();
+  return data.users.find(u => u.username && u.username.toLowerCase() === username.toLowerCase()) || null;
+};
+
 export const getUserById = async (id) => {
   const data = getData();
   return data.users.find(u => u.id === id) || null;
@@ -502,6 +345,10 @@ export const deleteUser = async (id) => {
 // ============ MENU ============
 export const createMenuItem = async (itemData) => {
   const data = getData();
+  if (!data.menuItems) data.menuItems = [];
+  if (!data.menu) data.menu = [];
+  
+  const menuArray = data.menuItems.length > 0 ? data.menuItems : data.menu;
   const itemId = generateId();
   const item = {
     id: itemId,
@@ -527,14 +374,15 @@ export const createMenuItem = async (itemData) => {
     created_at: getTimestamp(),
     updated_at: getTimestamp()
   };
-  data.menu.push(item);
+  menuArray.push(item);
   saveData(data);
   return item;
 };
 
 export const getMenuItems = async () => {
   const data = getData();
-  return (data.menu || []).map(item => ({
+  const menuData = data.menuItems || data.menu || [];
+  return menuData.map(item => ({
     ...item,
     _id: item.id,
     image: item.image || item.imageUrl || item.image_url,
@@ -555,27 +403,33 @@ export const getMenuItems = async () => {
 
 export const updateMenuItem = async (id, updates) => {
   const data = getData();
-  const index = data.menu.findIndex(m => m.id === id);
+  const menuArray = data.menuItems || data.menu || [];
+  const index = menuArray.findIndex(m => m.id === id);
   if (index !== -1) {
-    data.menu[index] = {
-      ...data.menu[index],
-      name: updates.name || data.menu[index].name,
-      description: updates.description !== undefined ? updates.description : data.menu[index].description,
-      price: updates.price !== undefined ? parseFloat(updates.price) || 0 : data.menu[index].price,
-      category: updates.category || data.menu[index].category,
-      image: updates.image !== undefined ? updates.image : data.menu[index].image,
-      is_available: updates.isAvailable !== undefined ? updates.isAvailable : data.menu[index].is_available,
+    menuArray[index] = {
+      ...menuArray[index],
+      name: updates.name || menuArray[index].name,
+      description: updates.description !== undefined ? updates.description : menuArray[index].description,
+      price: updates.price !== undefined ? parseFloat(updates.price) || 0 : menuArray[index].price,
+      category: updates.category || menuArray[index].category,
+      image: updates.image !== undefined ? updates.image : menuArray[index].image,
+      is_available: updates.isAvailable !== undefined ? updates.isAvailable : menuArray[index].is_available,
       updated_at: getTimestamp()
     };
     saveData(data);
-    return data.menu[index];
+    return menuArray[index];
   }
   throw new Error('Menu item not found');
 };
 
 export const deleteMenuItem = async (id) => {
   const data = getData();
-  data.menu = data.menu.filter(m => m.id !== id);
+  if (data.menuItems) {
+    data.menuItems = data.menuItems.filter(m => m.id !== id);
+  }
+  if (data.menu) {
+    data.menu = data.menu.filter(m => m.id !== id);
+  }
   saveData(data);
   return true;
 };
@@ -721,8 +575,9 @@ export const createReservation = async (resData) => {
     guest_email: resData.guestEmail,
     guest_phone: resData.guestPhone,
     date: resData.date,
-    time: resData.time,
-    guests: resData.guests,
+    time: resData.timeSlot || resData.time,
+    guests: parseInt(resData.numberOfGuests || resData.guests) || 2,
+    numberOfGuests: parseInt(resData.numberOfGuests || resData.guests) || 2,
     table_number: resData.tableNumber || '',
     status: resData.status || 'pending',
     special_requests: resData.specialRequests || '',
@@ -743,6 +598,7 @@ export const getReservations = async () => {
     guestName: res.guest_name,
     guestEmail: res.guest_email,
     guestPhone: res.guest_phone,
+    numberOfGuests: parseInt(res.numberOfGuests || res.guests) || 0,
     tableNumber: res.table_number,
     specialRequests: res.special_requests
   }));

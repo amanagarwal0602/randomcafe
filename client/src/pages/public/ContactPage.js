@@ -36,7 +36,7 @@ const ContactPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl text-gray-600">Loading...</div>
+        <div className="text-xl text-gray-600 dark:text-gray-400 dark:text-gray-400">Loading...</div>
       </div>
     );
   }
@@ -44,8 +44,8 @@ const ContactPage = () => {
   const hours = contactInfo?.openingHours || contactInfo?.hours || {};
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-brown-500 text-white py-16">
+    <div className="min-h-screen dark:bg-gray-900">
+      <div className="bg-brown-500 dark:bg-gray-800 text-white dark:text-gray-200 py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Contact Us</h1>
           <p className="text-xl">We'd love to hear from you</p>
@@ -91,7 +91,7 @@ const ContactPage = () => {
               <FiMapPin className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Address</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
                   {contactInfo?.addressStreet}<br />
                   {contactInfo?.addressCity}, {contactInfo?.addressState} {contactInfo?.addressZipcode}
                 </p>
@@ -101,21 +101,21 @@ const ContactPage = () => {
               <FiPhone className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Phone</h3>
-                <p className="text-gray-600">{contactInfo?.phone || '(555) 123-4567'}</p>
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{contactInfo?.phone || '(555) 123-4567'}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <FiMail className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Email</h3>
-                <p className="text-gray-600">{contactInfo?.email || 'hello@lumierecafe.com'}</p>
+                <p className="text-gray-600 dark:text-gray-400 dark:text-gray-400">{contactInfo?.email || 'hello@lumierecafe.com'}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
               <FiClock className="w-6 h-6 text-primary-500 mt-1" />
               <div>
                 <h3 className="font-semibold mb-1">Hours</h3>
-                <div className="text-gray-600">
+                <div className="text-gray-600 dark:text-gray-400 dark:text-gray-400">
                   {Object.entries(hours).map(([day, time]) => (
                     <div key={day}>
                       {day.charAt(0).toUpperCase() + day.slice(1)}: {time}
@@ -132,3 +132,5 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+
