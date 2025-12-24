@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
 import ImageUpload from '../../components/ImageUpload';
 import Avatar from '../../components/Avatar';
 import api from '../../services/api';
+import { toast } from 'react-toastify';
 
 const AdminTeam = () => {
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [formData, setFormData] = useState({
@@ -32,8 +30,7 @@ const AdminTeam = () => {
       const { data } = await api.get('/team/all');
       setMembers(data);
     } catch (error) {
-      setError('Failed to load team members');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load team members');
     } finally {
       setLoading(false);
     }
@@ -44,19 +41,16 @@ const AdminTeam = () => {
     try {
       if (editingMember) {
         await api.put(`/team/${editingMember._id}`, formData);
-        setSuccess('Team member updated!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Team member updated!', { autoClose: 2000 });
       } else {
         await api.post('/team', formData);
-        setSuccess('Team member added!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Team member added!', { autoClose: 2000 });
       }
       setShowModal(false);
       resetForm();
       fetchMembers();
     } catch (error) {
-      setError(error.response?.data?.message || 'Operation failed');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Operation failed');
     }
   };
 
@@ -64,12 +58,10 @@ const AdminTeam = () => {
     if (window.confirm('Remove this team member?')) {
       try {
         await api.delete(`/team/${id}`);
-        setSuccess('Team member removed!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Team member removed!', { autoClose: 2000 });
         fetchMembers();
       } catch (error) {
-        setError('Failed to delete');
-        setTimeout(() => setError(''), 5000);
+        toast.error('Failed to delete');
       }
     }
   };
@@ -80,24 +72,20 @@ const AdminTeam = () => {
         ...member,
         is_active: !member.is_active
       });
-      setSuccess(`Team member ${!member.is_active ? 'shown' : 'hidden'} on website`);
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success(`✓ Team member ${!member.is_active ? 'shown' : 'hidden'} on website`, { autoClose: 2000 });
       fetchMembers();
     } catch (error) {
-      setError('Failed to update visibility');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update visibility');
     }
   };
 
   const handleToggleAbout = async (memberId) => {
     try {
       await api.put(`/team/${memberId}/toggle-about`);
-      setSuccess('About section display updated');
-      setTimeout(() => setSuccess(''), 3000);
+      toast.success('✓ About section updated!', { autoClose: 2000 });
       fetchMembers();
     } catch (error) {
-      setError('Failed to update about section display');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update about section display');
     }
   };
 
@@ -134,9 +122,6 @@ const AdminTeam = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Team Members</h1>

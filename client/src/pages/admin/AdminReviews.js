@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
-import { FiTrash2, FiMessageSquare, FiX, FiHome } from 'react-icons/fi';
+import { FiTrash2, FiMessageSquare, FiX, FiHome, FiCheck } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const AdminReviews = () => {
   const [reviews, setReviews] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const [responseText, setResponseText] = useState('');
   const [filter, setFilter] = useState('all');
+  const [actionStatus, setActionStatus] = useState({});
 
   useEffect(() => {
     fetchReviews();
@@ -21,33 +20,34 @@ const AdminReviews = () => {
       const response = await api.get('/admin/reviews');
       setReviews(response.data.data || []);
     } catch (error) {
-      setError('Failed to load reviews');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load reviews');
       setReviews([]);
     }
   };
 
   const togglePublish = async (reviewId) => {
     try {
+      setActionStatus({ [reviewId]: 'publishing' });
       await api.put(`/admin/reviews/${reviewId}/toggle-publish`);
-      setSuccess('Review status updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Status updated!', { autoClose: 2000 });
+      setActionStatus({ [reviewId]: 'success' });
       fetchReviews();
     } catch (error) {
-      setError('Failed to update review');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update');
+      setActionStatus({});
     }
   };
 
   const toggleHomepage = async (reviewId) => {
     try {
+      setActionStatus({ [reviewId]: 'homepage' });
       await api.put(`/reviews/${reviewId}/toggle-homepage`);
-      setSuccess('Homepage display updated');
-      setTimeout(() => setSuccess(''), 3000);
+      toast.success('✓ Homepage updated!', { autoClose: 2000 });
+      setActionStatus({ [reviewId]: 'success' });
       fetchReviews();
     } catch (error) {
-      setError('Failed to update homepage display');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update');
+      setActionStatus({});
     }
   };
 
@@ -55,33 +55,28 @@ const AdminReviews = () => {
     if (window.confirm('Are you sure you want to delete this review?')) {
       try {
         await api.delete(`/reviews/${reviewId}`);
-        setSuccess('Review deleted successfully');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Review deleted!', { autoClose: 2000 });
         fetchReviews();
       } catch (error) {
-        setError('Failed to delete review');
-        setTimeout(() => setError(''), 5000);
+        toast.error('Failed to delete review');
       }
     }
   };
 
   const handleResponse = async () => {
     if (!responseText.trim()) {
-      setError('Please enter a response');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Please enter a response');
       return;
     }
     try {
       await api.put(`/reviews/${selectedReview._id}/respond`, { response: responseText });
-      setSuccess('Response added successfully');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Response added!', { autoClose: 2000 });
       setShowResponseModal(false);
       setResponseText('');
       setSelectedReview(null);
       fetchReviews();
     } catch (error) {
-      setError('Failed to add response');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to add response');
     }
   };
 
@@ -94,9 +89,6 @@ const AdminReviews = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-2">Review Management</h1>
           <p className="text-gray-600 dark:text-gray-400">{reviews.length} total reviews</p>
@@ -129,25 +121,25 @@ const AdminReviews = () => {
               <div className="flex justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-lg">{review.title}</h3>
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">{review.title}</h3>
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < review.rating ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+                        <span key={i} className={i < review.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}>★</span>
                       ))}
                     </div>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
-                    By {review.user?.name || 'Anonymous'} • {new Date(review.createdAt).toLocaleDateString()}
+                    By {review.user?.name || review.userName || 'Customer'} • {review.createdAt || review.created_at ? new Date(review.createdAt || review.created_at).toLocaleDateString() : 'Recent'}
                   </p>
                   {review.isVerifiedPurchase && (
-                    <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded">✓ Verified Purchase</span>
+                    <span className="inline-block px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 text-xs rounded">✓ Verified Purchase</span>
                   )}
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => togglePublish(review._id)}
                     className={`px-4 py-2 rounded-lg font-medium ${
-                      review.isPublished ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-700 dark:text-gray-300 hover:bg-gray-400'
+                      review.isPublished ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-500'
                     }`}
                   >
                     {review.isPublished ? 'Published' : 'Unpublished'}

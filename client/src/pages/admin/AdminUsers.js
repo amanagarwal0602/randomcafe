@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [showUserOrdersModal, setShowUserOrdersModal] = useState(false);
@@ -103,8 +101,7 @@ const AdminUsers = () => {
       const usersData = response.data?.data?.users || response.data?.users || response.data || [];
       setUsers(Array.isArray(usersData) ? usersData : []);
     } catch (error) {
-      setError('Failed to load users');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load users');
     }
   };
 
@@ -175,12 +172,10 @@ const AdminUsers = () => {
     try {
       const user = users.find(u => u.id === userId);
       await api.put(`/users/${userId}`, { is_active: !user.is_active });
-      setSuccess('User status updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ User status updated!');
       fetchUsers();
     } catch (error) {
-      setError('Failed to update user');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update user');
     }
   };
 
@@ -195,29 +190,25 @@ const AdminUsers = () => {
     e.preventDefault();
 
     if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Passwords do not match');
       return;
     }
 
     try {
       // Use plain text password for simplicity
       await api.put(`/users/${selectedUser.id}`, { password: newPassword });
-      setSuccess('Password updated successfully');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Password updated!');
       setShowPasswordModal(false);
       setSelectedUser(null);
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      setError('Failed to update password');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update password');
     }
   };
 
@@ -249,13 +240,11 @@ const AdminUsers = () => {
       await api.put(`/users/${selectedUser.id}`, { 
         permissions: selectedUser.permissions 
       });
-      setSuccess('Permissions updated successfully');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Permissions updated!');
       setShowPermissionsModal(false);
       fetchUsers();
     } catch (error) {
-      setError('Failed to update permissions');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update permissions');
     }
   };
 
@@ -291,23 +280,18 @@ const AdminUsers = () => {
     e.preventDefault();
     try {
       await api.post('/admin/users', newUserData);
-      setSuccess('User created successfully');
-      setTimeout(() => setSuccess(''), 3000);
+      toast.success('✓ User created!');
       setShowCreateUserModal(false);
       setNewUserData({ name: '', email: '', password: '', role: 'customer', phone: '' });
       fetchUsers();
     } catch (error) {
-      setError('Failed to create user');
-      setTimeout(() => setError(''), 3000);
+      toast.error('Failed to create user');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">User Management</h1>
           <button

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getUserByUsername } from '../../services/localStorage';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import Avatar from '../../components/common/Avatar';
 
 const RegisterPage = () => {
@@ -20,8 +20,6 @@ const RegisterPage = () => {
   const [usernameChecking, setUsernameChecking] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [usernameError, setUsernameError] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const checkUsernameAvailability = async (username) => {
     if (!username || username.length < 3) {
@@ -86,29 +84,27 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     
     // Final validation
     if (!formData.username || formData.username.length < 3) {
-      setError('Please enter a valid username (minimum 3 characters)');
+      toast.error('Please enter a valid username (minimum 3 characters)');
       return;
     }
 
     if (usernameAvailable === false || usernameError) {
-      setError('Please choose a valid and available username');
+      toast.error('Please choose a valid and available username');
       return;
     }
 
     setLoading(true);
     try {
       await register(formData);
-      setSuccess('Registration successful! Redirecting...');
+      toast.success('✓ Registration successful! Redirecting...', { autoClose: 1500 });
       setTimeout(() => navigate('/'), 1000);
     } catch (error) {
       console.error('Registration error:', error);
       const errorMsg = error.message || error.response?.data?.message || 'Registration failed. Please try again.';
-      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -119,23 +115,6 @@ const RegisterPage = () => {
       <div className="max-w-md w-full bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-serif font-bold text-center mb-2 dark:text-gray-100">Create Account</h2>
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">Join Lumière Café today</p>
-        
-        {/* Error/Success Messages */}
-        {error && (
-          <Alert 
-            type="error" 
-            message={error} 
-            onClose={() => setError('')}
-            className="mb-4"
-          />
-        )}
-        {success && (
-          <Alert 
-            type="success" 
-            message={success}
-            className="mb-4"
-          />
-        )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Avatar Preview */}

@@ -5,7 +5,7 @@ import QRCode from 'qrcode';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -16,8 +16,6 @@ const PaymentPage = () => {
   const [utrNumber, setUtrNumber] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const orderDetails = location.state?.orderDetails;
   const totalAmount = location.state?.totalAmount || 0;
@@ -27,7 +25,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     if (!orderDetails || !totalAmount) {
-      setError('Invalid payment request. Redirecting to cart...');
+      toast.error('Invalid payment request. Redirecting to cart...');
       setTimeout(() => navigate('/cart'), 2000);
       return;
     }
@@ -50,17 +48,16 @@ const PaymentPage = () => {
       
       setQrCode(qrDataUrl);
     } catch (error) {
-      setError('Failed to generate QR code. Please refresh the page.');
+      toast.error('Failed to generate QR code. Please refresh the page.');
     }
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setSuccess('UPI ID copied to clipboard!');
+    toast.success('✓ UPI ID copied!', { autoClose: 2000 });
     setTimeout(() => {
       setCopied(false);
-      setSuccess('');
     }, 2000);
   };
 
@@ -69,19 +66,16 @@ const PaymentPage = () => {
     link.href = qrCode;
     link.download = `payment-qr-${orderDetails?.orderId || 'order'}.png`;
     link.click();
-    setSuccess('QR Code downloaded successfully!');
-    setTimeout(() => setSuccess(''), 3000);
+    toast.success('✓ QR Code downloaded!', { autoClose: 2000 });
   };
 
   const handlePaymentConfirmation = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     
     // Validate UTR number format (12 digits alphanumeric)
     const cleanedUtr = utrNumber.trim();
     if (!cleanedUtr || cleanedUtr.length < 12) {
-      setError('Please enter a valid UTR/Transaction ID (minimum 12 characters)');
+      toast.error('Please enter a valid UTR/Transaction ID (minimum 12 characters)');
       return;
     }
 
@@ -101,7 +95,7 @@ const PaymentPage = () => {
 
       const response = await api.post('/orders', orderData);
       
-      setSuccess('Payment confirmed! Your order has been placed successfully. Redirecting...');
+      toast.success('✓ Payment confirmed! Redirecting to orders...');
       setTimeout(() => {
         navigate('/customer/orders', { 
           state: { 
@@ -112,7 +106,7 @@ const PaymentPage = () => {
       }, 1500);
     } catch (error) {
       console.error('Error confirming payment:', error);
-      setError('Failed to confirm payment. Please check your UTR number and try again.');
+      toast.error('Failed to confirm payment. Please check your UTR number and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -125,24 +119,6 @@ const PaymentPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
-        {/* Error/Success Messages */}
-        {error && (
-          <Alert 
-            type="error" 
-            message={error} 
-            onClose={() => setError('')}
-            className="mb-6"
-          />
-        )}
-        {success && (
-          <Alert 
-            type="success" 
-            message={success}
-            onClose={() => setSuccess('')}
-            className="mb-6"
-          />
-        )}
-        
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-6">

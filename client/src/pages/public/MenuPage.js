@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import { FiFilter, FiSearch, FiPlus, FiMinus } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import EditableWrapper from '../../components/EditableWrapper';
@@ -14,8 +14,6 @@ const MenuPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [vegOnly, setVegOnly] = useState(false); // single veg-only toggle
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [editModal, setEditModal] = useState({ isOpen: false, type: '', data: null });
   const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
 
@@ -30,8 +28,7 @@ const MenuPage = () => {
       const items = response.data.data?.items || response.data.data || response.data || [];
       setMenuItems(items);
     } catch (error) {
-      setError('Failed to load menu items');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load menu items');
     } finally {
       setLoading(false);
     }
@@ -215,9 +212,6 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       {/* Header */}
       <div className="bg-gradient-to-r from-brown-600 to-brown-500 dark:from-gray-800 dark:to-gray-700 text-white py-16">
         <div className="container-custom text-center">

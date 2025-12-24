@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
 import api from '../../services/api';
+import { toast } from 'react-toastify';
 
 const AdminCoupons = () => {
   const [loading, setLoading] = useState(true);
   const [coupons, setCoupons] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [formData, setFormData] = useState({
@@ -32,8 +30,7 @@ const AdminCoupons = () => {
       const { data } = await api.get('/coupons');
       setCoupons(data.data || []);
     } catch (error) {
-      setError('Failed to load coupons');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load coupons');
       setCoupons([]);
     } finally {
       setLoading(false);
@@ -51,19 +48,16 @@ const AdminCoupons = () => {
 
       if (editingCoupon) {
         await api.put(`/coupons/${editingCoupon._id}`, submitData);
-        setSuccess('Coupon updated!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Coupon updated!');
       } else {
         await api.post('/coupons', submitData);
-        setSuccess('Coupon created!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Coupon created!');
       }
       setShowModal(false);
       resetForm();
       fetchCoupons();
     } catch (error) {
-      setError(error.response?.data?.message || 'Operation failed');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Operation failed');
     }
   };
 
@@ -71,12 +65,10 @@ const AdminCoupons = () => {
     if (window.confirm('Delete this coupon?')) {
       try {
         await api.delete(`/coupons/${id}`);
-        setSuccess('Coupon deleted!');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Coupon deleted!');
         fetchCoupons();
       } catch (error) {
-        setError('Failed to delete coupon');
-        setTimeout(() => setError(''), 5000);
+        toast.error('Failed to delete coupon');
       }
     }
   };
@@ -84,12 +76,10 @@ const AdminCoupons = () => {
   const handleToggleStatus = async (id) => {
     try {
       await api.patch(`/coupons/${id}/toggle`);
-      setSuccess('Status updated!');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Status updated!');
       fetchCoupons();
     } catch (error) {
-      setError('Failed to update status');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update status');
     }
   };
 
@@ -141,9 +131,6 @@ const AdminCoupons = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Coupon Codes</h1>

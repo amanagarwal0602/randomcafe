@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
 import ImageUpload from '../../components/ImageUpload';
 import Avatar from '../../components/Avatar';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiHome } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const AdminMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -73,8 +71,7 @@ const AdminMenu = () => {
       }
     } catch (error) {
       console.error('Failed to load menu items:', error);
-      setError(error.response?.data?.message || 'Failed to load menu items');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Failed to load menu items');
       setMenuItems([]);
       setCategories([]);
     } finally {
@@ -94,12 +91,10 @@ const AdminMenu = () => {
     try {
       if (editItem) {
         await api.put(`/menu/${editItem._id}`, submitData);
-        setSuccess('Menu item updated successfully');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Menu item updated!');
       } else {
         await api.post('/menu', submitData);
-        setSuccess('Menu item added successfully');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Menu item added!');
       }
       setShowModal(false);
       setEditItem(null);
@@ -126,8 +121,7 @@ const AdminMenu = () => {
         errorMsg = 'You do not have permission to perform this action.';
       }
       
-      setError(errorMsg);
-      setTimeout(() => setError(''), 5000);
+      toast.error(errorMsg);
     }
   };
 
@@ -135,12 +129,10 @@ const AdminMenu = () => {
     if (window.confirm('Are you sure you want to delete this menu item?')) {
       try {
         await api.delete(`/menu/${id}`);
-        setSuccess('Item deleted successfully');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Item deleted!');
         fetchMenuItems();
       } catch (error) {
-        setError('Failed to delete item');
-        setTimeout(() => setError(''), 5000);
+        toast.error('Failed to delete item');
       }
     }
   };
@@ -148,33 +140,26 @@ const AdminMenu = () => {
   const toggleAvailability = async (item) => {
     try {
       await api.put(`/menu/${item._id}`, { isAvailable: !item.isAvailable });
-      setSuccess('Availability updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success(`✓ ${item.isAvailable ? 'Marked unavailable' : 'Marked available'}!`, { autoClose: 2000 });
       fetchMenuItems();
     } catch (error) {
-      setError('Failed to update availability');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update availability');
     }
   };
 
   const toggleHomepage = async (item) => {
     try {
       await api.put(`/menu/${item._id}/toggle-homepage`);
-      setSuccess(`Menu item ${item.showOnHomepage ? 'removed from' : 'added to'} homepage`);
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success(`✓ ${item.showOnHomepage ? 'Removed from' : 'Added to'} homepage!`, { autoClose: 2000 });
       fetchMenuItems();
     } catch (error) {
-      setError('Failed to update homepage display');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update homepage display');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Menu Management</h1>

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
 import ImageUpload from '../../components/ImageUpload';
 import Avatar from '../../components/Avatar';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const AdminTodaysOffers = () => {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editOffer, setEditOffer] = useState(null);
   const [formData, setFormData] = useState({
@@ -59,8 +57,7 @@ const AdminTodaysOffers = () => {
       }
     } catch (error) {
       console.error('Failed to load offers:', error);
-      setError('Failed to load offers');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load offers');
     } finally {
       setLoading(false);
     }
@@ -72,18 +69,16 @@ const AdminTodaysOffers = () => {
     try {
       if (editOffer) {
         await api.put(`/todays-offers/${editOffer._id || editOffer.id}`, formData);
-        setSuccess('Offer updated successfully');
+        toast.success('✓ Offer updated!', { autoClose: 2000 });
       } else {
         await api.post('/todays-offers', formData);
-        setSuccess('Offer added successfully');
+        toast.success('✓ Offer added!', { autoClose: 2000 });
       }
-      setTimeout(() => setSuccess(''), 5000);
       setShowModal(false);
       setEditOffer(null);
       fetchOffers();
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to save offer');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Failed to save offer');
     }
   };
 
@@ -91,12 +86,10 @@ const AdminTodaysOffers = () => {
     if (window.confirm('Are you sure you want to delete this offer?')) {
       try {
         await api.delete(`/todays-offers/${id}`);
-        setSuccess('Offer deleted successfully');
-        setTimeout(() => setSuccess(''), 5000);
+        toast.success('✓ Offer deleted!', { autoClose: 2000 });
         fetchOffers();
       } catch (error) {
-        setError('Failed to delete offer');
-        setTimeout(() => setError(''), 5000);
+        toast.error('Failed to delete offer');
       }
     }
   };
@@ -104,12 +97,10 @@ const AdminTodaysOffers = () => {
   const toggleActive = async (offer) => {
     try {
       await api.patch(`/todays-offers/${offer._id || offer.id}/toggle`);
-      setSuccess('Offer status updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ Offer status updated!', { autoClose: 2000 });
       fetchOffers();
     } catch (error) {
-      setError('Failed to update offer status');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update offer status');
     }
   };
 
@@ -127,9 +118,6 @@ const AdminTodaysOffers = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Today's Offers Management</h1>
@@ -222,7 +210,7 @@ const AdminTodaysOffers = () => {
                       <FiEdit2 /> Edit
                     </button>
                     <button 
-                      onClick={() => deleteOffer(offer.id)} 
+                      onClick={() => deleteOffer(offer._id || offer.id)} 
                       className="flex-1 px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm flex items-center justify-center gap-1"
                     >
                       <FiTrash2 /> Delete

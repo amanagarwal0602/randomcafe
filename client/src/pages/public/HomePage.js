@@ -342,6 +342,12 @@ const HomePage = () => {
                         Verified Purchase
                       </div>
                     )}
+                    {review.adminResponse && (
+                      <div className="mt-4 bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500 p-3 rounded-r">
+                        <p className="text-xs font-semibold text-primary-700 dark:text-primary-300 mb-1">Response from Lumière Café:</p>
+                        <p className="text-sm text-primary-600 dark:text-primary-400">{review.adminResponse.response}</p>
+                      </div>
+                    )}
                   </div>
                 </EditableWrapper>
               ))}

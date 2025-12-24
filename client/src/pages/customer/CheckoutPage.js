@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -14,9 +14,6 @@ const CheckoutPage = () => {
   // Get coupon from cart page
   const appliedCoupon = location.state?.appliedCoupon || null;
   const discount = location.state?.discount || 0;
-  
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     orderType: 'dine-in',
     contactPhone: '',
@@ -36,25 +33,23 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     
     if (cartItems.length === 0) {
-      setError('Your cart is empty. Please add items before checkout.');
+      toast.error('Your cart is empty. Please add items before checkout.');
       return;
     }
 
     // Validate phone number (10 digits)
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!phoneRegex.test(formData.contactPhone.replace(/[^0-9]/g, ''))) {
-      setError('Please enter a valid 10-digit Indian mobile number.');
+      toast.error('Please enter a valid 10-digit Indian mobile number.');
       return;
     }
 
     // Validate reservation details if selected
     if (formData.hasReservation) {
       if (!formData.reservationDate || !formData.reservationTime) {
-        setError('Please select both date and time for your reservation.');
+        toast.error('Please select both date and time for your reservation.');
         return;
       }
       
@@ -62,7 +57,7 @@ const CheckoutPage = () => {
       const now = new Date();
       
       if (selectedDate < now) {
-        setError('Reservation time must be in the future.');
+        toast.error('Reservation time must be in the future.');
         return;
       }
     }
@@ -116,11 +111,11 @@ const CheckoutPage = () => {
     try {
       await api.post('/orders', orderDetails);
       clearCart();
-      setSuccess('Order placed successfully! Redirecting to your orders...');
+      toast.success('✓ Order placed! Redirecting to your orders...');
       setTimeout(() => navigate('/customer/orders'), 1500);
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || 'Failed to place order. Please try again.';
-      setError(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -128,23 +123,6 @@ const CheckoutPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
         <h1 className="text-4xl font-serif font-bold mb-8 dark:text-gray-100">Checkout</h1>
-        
-        {/* Error/Success Messages */}
-        {error && (
-          <Alert 
-            type="error" 
-            message={error} 
-            onClose={() => setError('')}
-            className="mb-6"
-          />
-        )}
-        {success && (
-          <Alert 
-            type="success" 
-            message={success}
-            className="mb-6"
-          />
-        )}
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
@@ -175,7 +153,7 @@ const CheckoutPage = () => {
               </div>
 
               {/* Reservation Option - Available for both dine-in and takeaway */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
                   <label className="flex items-center space-x-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -183,16 +161,16 @@ const CheckoutPage = () => {
                       onChange={(e) => setFormData({...formData, hasReservation: e.target.checked})}
                       className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                     />
-                    <span className="font-medium text-gray-900">Include Table Reservation</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">Include Table Reservation</span>
                   </label>
-                  <p className="text-xs text-gray-600 mt-1 ml-8">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 ml-8">
                     Reserve a table for dining when you arrive
                   </p>
                 </div>
 
               {formData.hasReservation && (
-                <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h3 className="font-semibold text-gray-900">Reservation Details</h3>
+                <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Reservation Details</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">Date</label>

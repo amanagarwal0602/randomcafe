@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [orders, setOrders] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [dateFilter, setDateFilter] = useState({
@@ -30,8 +28,7 @@ const AdminDashboard = () => {
       setMenuItems(menuRes.data.data?.items || menuRes.data.data || []);
     } catch (error) {
       console.error('Dashboard error:', error);
-      setError('Failed to load dashboard data');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -176,9 +173,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Sales Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Complete overview of your restaurant sales and analytics</p>

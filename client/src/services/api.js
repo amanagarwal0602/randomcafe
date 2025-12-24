@@ -44,7 +44,10 @@ const api = {
         return { data: await db.getContactInfo() };
       }
       if (parts[0] === 'site-settings') return { data: await db.getSiteSettings() };
-      if (parts[0] === 'todays-offers') return { data: { data: await db.getTodaysOffers() } };
+      if (parts[0] === 'todays-offers') {
+        // Handle both /todays-offers and /todays-offers/all
+        return { data: { data: await db.getTodaysOffers() } };
+      }
       if (parts[0] === 'seo') return { data: {} };
       
       return { data: { data: [] } };
@@ -120,6 +123,9 @@ const api = {
       if (parts[0] === 'reviews' && parts[2] === 'toggle-homepage') {
         return { data: { data: await db.toggleReviewHomepage(parts[1]) } };
       }
+      if (parts[0] === 'reviews' && parts[2] === 'respond') {
+        return { data: { data: await db.respondToReview(parts[1], data.response) } };
+      }
       if (parts[0] === 'admin' && parts[1] === 'reviews' && parts[3] === 'toggle-publish') {
         return { data: { data: await db.toggleReviewPublish(parts[2]) } };
       }
@@ -153,6 +159,9 @@ const api = {
         const items = await db.getMenuItems();
         const item = items.find(i => i._id === id);
         return { data: { data: await db.updateMenuItem(id, { isAvailable: !item.isAvailable }) } };
+      }
+      if (parts[0] === 'todays-offers' && parts[2] === 'toggle') {
+        return { data: { data: await db.toggleTodaysOffer(parts[1]) } };
       }
       
       return api.put(url, data);

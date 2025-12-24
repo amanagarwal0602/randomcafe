@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
 import InfoTooltip from '../../components/InfoTooltip';
 
 const AdminSiteSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     siteName: '',
     logo: '',
@@ -60,8 +58,7 @@ const AdminSiteSettings = () => {
       });
     } catch (error) {
       console.error('Settings error:', error);
-      setError('Failed to load settings');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load settings');
     } finally {
       setLoading(false);
     }
@@ -72,13 +69,12 @@ const AdminSiteSettings = () => {
     setSaving(true);
     try {
       await api.put('/site-settings', formData);
-      setSuccess('Settings updated! Page will reload to apply changes...');
+      toast.success('✓ Settings updated! Page will reload...');
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to update');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Failed to update');
     } finally {
       setSaving(false);
     }
@@ -104,9 +100,6 @@ const AdminSiteSettings = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Site Settings</h1>

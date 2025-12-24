@@ -20,6 +20,7 @@ import NotificationPopup from './components/NotificationPopup';
 import MaintenanceMode from './components/MaintenanceMode';
 import AnnouncementBar from './components/AnnouncementBar';
 import EditModeToggle from './components/EditModeToggle';
+import FloatingCartButton from './components/FloatingCartButton';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -165,6 +166,7 @@ function App() {
             <AnnouncementBar />
             <Navbar />
             <EditModeToggle />
+            <FloatingCartButton />
           <main className="flex-grow bg-gray-50 dark:bg-gray-800">
           <Routes>
             {/* Public Routes */}

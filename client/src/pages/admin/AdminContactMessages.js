@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import { FiMail, FiTrash2, FiCheck, FiX, FiSend } from 'react-icons/fi';
 
 const AdminContactMessages = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showReplyModal, setShowReplyModal] = useState(false);
@@ -23,8 +21,7 @@ const AdminContactMessages = () => {
       const messagesData = response.data?.data?.messages || response.data?.messages || response.data || [];
       setMessages(Array.isArray(messagesData) ? messagesData : []);
     } catch (error) {
-      setError('Failed to load messages');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load messages');
     } finally {
       setLoading(false);
     }
@@ -43,15 +40,13 @@ const AdminContactMessages = () => {
       }
       
       await api.put(`/contact-info/messages/${id}`, updateData);
-      setSuccess('Message status updated successfully');
-      setTimeout(() => setSuccess(''), 3000);
+      toast.success('✓ Status updated!', { autoClose: 2000 });
       fetchMessages();
       setShowReplyModal(false);
       setReplyText('');
       setSelectedMessage(null);
     } catch (error) {
-      setError('Failed to update message status');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update message status');
     }
   };
 
@@ -60,12 +55,10 @@ const AdminContactMessages = () => {
     
     try {
       await api.delete(`/contact-info/messages/${id}`);
-      setSuccess('Message deleted successfully');
-      setTimeout(() => setSuccess(''), 3000);
+      toast.success('✓ Message deleted!', { autoClose: 2000 });
       fetchMessages();
     } catch (error) {
-      setError('Failed to delete message');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to delete message');
     }
   };
 
@@ -76,8 +69,7 @@ const AdminContactMessages = () => {
 
   const submitReply = () => {
     if (!replyText.trim()) {
-      setError('Please enter a reply message');
-      setTimeout(() => setError(''), 3000);
+      toast.error('Please enter a reply message');
       return;
     }
     updateMessageStatus(selectedMessage._id, 'replied', replyText);
@@ -106,9 +98,6 @@ const AdminContactMessages = () => {
 
   return (
     <div className="space-y-6">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

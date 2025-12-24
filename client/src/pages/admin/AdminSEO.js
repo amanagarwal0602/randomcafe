@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
 import InfoTooltip from '../../components/InfoTooltip';
 
 const AdminSEO = () => {
   const [page, setPage] = useState('home');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [seoData, setSeoData] = useState({
     title: '',
@@ -46,20 +44,15 @@ const AdminSEO = () => {
   const handleSave = async () => {
     try {
       await api.put(`/seo/${page}`, seoData);
-      setSuccess('SEO settings updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ SEO settings updated!', { autoClose: 2000 });
     } catch (error) {
-      setError('Failed to update SEO settings');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update SEO settings');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom max-w-4xl">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">SEO Management</h1>
@@ -88,7 +81,7 @@ const AdminSEO = () => {
           </div>
           
           <div className="space-y-6">
-            <div className="border-b pb-6">
+            <div className="border-b dark:border-gray-700 pb-6">
               <div className="flex items-center mb-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
                 <InfoTooltip 
@@ -104,12 +97,12 @@ const AdminSEO = () => {
                 className="input-field"
                 placeholder="Lumière Café - Best Coffee & Dining Experience"
               />
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {seoData.title.length}/60 characters
               </div>
             </div>
             
-            <div className="border-b pb-6">
+            <div className="border-b dark:border-gray-700 pb-6">
               <div className="flex items-center mb-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Description</label>
                 <InfoTooltip 
@@ -125,14 +118,14 @@ const AdminSEO = () => {
                 rows="3"
                 placeholder="Experience fine dining at Lumière Café. Fresh ingredients, cozy ambiance, and exceptional service in the heart of the city."
               />
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {seoData.description.length}/160 characters
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">💡 SEO Best Practices</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 SEO Best Practices</h3>
+              <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                 <li>• Include your café name and key offerings in the title</li>
                 <li>• Mention your location to attract local customers</li>
                 <li>• Use action words like "Discover", "Experience", "Taste"</li>

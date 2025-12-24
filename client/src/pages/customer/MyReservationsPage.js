@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
 import { useAuth } from '../../context/AuthContext';
 import { FiX, FiStar } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const MyReservationsPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [cancellationReason, setCancellationReason] = useState('');
@@ -47,8 +45,7 @@ const MyReservationsPage = () => {
 
   const confirmCancellation = async () => {
     if (!cancellationReason.trim()) {
-      setError('Please provide a cancellation reason');
-      setTimeout(() => setError(''), 3000);
+      toast.error('Please provide a cancellation reason');
       return;
     }
 
@@ -58,15 +55,13 @@ const MyReservationsPage = () => {
         cancellationReason: cancellationReason.trim(),
         cancelledAt: new Date().toISOString()
       });
-      setSuccess('Reservation cancelled successfully');
+      toast.success('✓ Reservation cancelled!');
       setShowCancelModal(false);
       setSelectedReservation(null);
       setCancellationReason('');
       fetchReservations();
-      setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
-      setError('Failed to cancel reservation. Please try again.');
-      setTimeout(() => setError(''), 3000);
+      toast.error('Failed to cancel reservation. Please try again.');
     }
   };
 
@@ -74,24 +69,6 @@ const MyReservationsPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <h1 className="text-4xl font-serif font-bold mb-8 dark:text-gray-100">My Reservations</h1>
-        
-        {/* Error/Success Messages */}
-        {error && (
-          <Alert 
-            type="error" 
-            message={error} 
-            onClose={() => setError('')}
-            className="mb-6"
-          />
-        )}
-        {success && (
-          <Alert 
-            type="success" 
-            message={success}
-            onClose={() => setSuccess('')}
-            className="mb-6"
-          />
-        )}
         
         {reservations.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 p-12 rounded-xl shadow text-center">

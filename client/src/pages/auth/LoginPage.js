@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { checkPermission, hasRole } from '../../utils/permissions';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
 
 const LoginPage = () => {
@@ -12,8 +12,6 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   useEffect(() => {
@@ -39,8 +37,6 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
     
     try {
       const response = await login(formData);
@@ -48,7 +44,7 @@ const LoginPage = () => {
       
       // Check if customer is trying to login during maintenance
       if (maintenanceMode && userData.role === 'customer') {
-        setError('Site is under maintenance. Please wait until we are back online.');
+        toast.error('Site is under maintenance. Please wait until we are back online.');
         setLoading(false);
         return;
       }
@@ -59,7 +55,7 @@ const LoginPage = () => {
       // Dispatch custom event for EditModeContext
       window.dispatchEvent(new Event('userLoggedIn'));
       
-      setSuccess('Login successful! Redirecting...');
+      toast.success('✓ Login successful! Redirecting...', { autoClose: 1500 });
       
       // Role-based redirection
       setTimeout(() => {
@@ -76,7 +72,7 @@ const LoginPage = () => {
         }
       }, 500);
     } catch (error) {
-      setError(error.response?.data?.message || 'Invalid username/email or password. Please try again.');
+      toast.error(error.response?.data?.message || 'Invalid username/email or password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -89,23 +85,6 @@ const LoginPage = () => {
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
           Quick Login: <span className="font-semibold text-primary-600 dark:text-primary-400">demo/demo</span> or <span className="font-semibold text-primary-600 dark:text-primary-400">admin/admin</span>
         </p>
-        
-        {/* Error/Success Messages */}
-        {error && (
-          <Alert 
-            type="error" 
-            message={error} 
-            onClose={() => setError('')}
-            className="mb-4"
-          />
-        )}
-        {success && (
-          <Alert 
-            type="success" 
-            message={success}
-            className="mb-4"
-          />
-        )}
         
         {/* Quick Login Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
 import { FiStar } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const WriteReviewPage = () => {
   const navigate = useNavigate();
@@ -14,8 +14,6 @@ const WriteReviewPage = () => {
   const menuItem = location.state?.menuItem || null;
   const orderId = location.state?.orderId || null;
   
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     menuItem: menuItem?._id || '',
@@ -28,32 +26,30 @@ const WriteReviewPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     
     if (!user) {
-      setError('Please login to submit a review');
+      toast.error('Please login to submit a review');
       setTimeout(() => navigate('/login'), 2000);
       return;
     }
 
     if (!formData.menuItem) {
-      setError('Please select a menu item to review');
+      toast.error('Please select a menu item to review');
       return;
     }
 
     if (!formData.title.trim() || !formData.comment.trim()) {
-      setError('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     setSubmitting(true);
     try {
       await api.post('/reviews', formData);
-      setSuccess('Review submitted successfully! Thank you for your feedback.');
+      toast.success('✓ Review submitted! Thank you for your feedback.');
       setTimeout(() => navigate('/customer/orders'), 2000);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to submit review. Please try again.');
+      toast.error(error.response?.data?.message || 'Failed to submit review. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -94,9 +90,6 @@ const WriteReviewPage = () => {
           <h1 className="text-4xl font-serif font-bold mb-2 dark:text-gray-100">Write a Review</h1>
           <p className="text-gray-600 dark:text-gray-400">Share your dining experience with us</p>
         </div>
-
-        {error && <Alert type="error" message={error} onClose={() => setError('')} />}
-        {success && <Alert type="success" message={success} />}
 
         <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">

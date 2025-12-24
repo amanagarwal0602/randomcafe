@@ -602,7 +602,20 @@ export const validateCoupon = async (code) => {
     throw new Error('Coupon usage limit reached');
   }
   
-  return coupon;
+  // Return mapped coupon with camelCase fields for frontend
+  return {
+    ...coupon,
+    _id: coupon.id,
+    discountType: coupon.discount_type,
+    discountValue: parseFloat(coupon.discount_value) || 0,
+    minOrderAmount: parseFloat(coupon.min_order_value) || 0,
+    maxDiscountAmount: parseFloat(coupon.max_discount) || null,
+    validFrom: coupon.valid_from,
+    validUntil: coupon.valid_until,
+    usageLimit: coupon.usage_limit,
+    usedCount: coupon.used_count || coupon.usage_count || 0,
+    isActive: coupon.is_active
+  };
 };
 
 // ============ GALLERY ============
@@ -685,11 +698,18 @@ export const getReviews = async () => {
     ...review,
     _id: review.id,
     userId: review.user_id,
-    userName: review.user_name,
+    userName: review.user_name || review.userName,
     userAvatar: review.user_avatar,
+    user: {
+      name: review.user_name || review.userName || 'Customer',
+      avatar: review.user_avatar || review.userAvatar
+    },
     menuItemId: review.menu_item_id,
     isVerified: review.is_verified,
-    isApproved: review.is_approved
+    isApproved: review.is_approved,
+    isPublished: review.isPublished !== false,
+    showOnHomepage: review.showOnHomepage || false,
+    createdAt: review.created_at || review.createdAt
   }));
 };
 
@@ -713,6 +733,25 @@ export const deleteReview = async (id) => {
   data.reviews = data.reviews.filter(r => r.id !== id);
   saveData(data);
   return true;
+};
+
+export const respondToReview = async (id, response) => {
+  const data = getData();
+  const index = data.reviews.findIndex(r => r.id === id);
+  if (index !== -1) {
+    data.reviews[index] = {
+      ...data.reviews[index],
+      adminResponse: {
+        response: response,
+        respondedAt: getTimestamp(),
+        respondedBy: { name: 'Admin' }
+      },
+      updated_at: getTimestamp()
+    };
+    saveData(data);
+    return data.reviews[index];
+  }
+  throw new Error('Review not found');
 };
 
 // ============ FEATURES (About Section) ============
@@ -993,7 +1032,10 @@ export const updateSiteSettings = async (settings) => {
 // Today's Offers Functions
 export const getTodaysOffers = async () => {
   const data = getData();
-  return data.todaysOffers || [];
+  return (data.todaysOffers || []).map(offer => ({
+    ...offer,
+    _id: offer.id
+  }));
 };
 
 export const createTodaysOffer = async (offerData) => {
@@ -1032,6 +1074,19 @@ export const deleteTodaysOffer = async (id) => {
   data.todaysOffers = data.todaysOffers.filter(o => o.id !== id);
   saveData(data);
   return { message: 'Offer deleted successfully' };
+};
+
+export const toggleTodaysOffer = async (id) => {
+  const data = getData();
+  data.todaysOffers = data.todaysOffers || [];
+  const index = data.todaysOffers.findIndex(o => o.id === id);
+  if (index !== -1) {
+    data.todaysOffers[index].isActive = !data.todaysOffers[index].isActive;
+    data.todaysOffers[index].updated_at = getTimestamp();
+    saveData(data);
+    return data.todaysOffers[index];
+  }
+  throw new Error('Offer not found');
 };
 
 // ============ CONTACT MESSAGES ============

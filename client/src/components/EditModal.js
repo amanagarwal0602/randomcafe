@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import api from '../services/api';
-import Alert from './common/Alert';
+import { toast } from 'react-toastify';
 
 /**
  * Universal Edit Modal for different content types
@@ -15,15 +15,12 @@ const EditModal = ({
 }) => {
   const [formData, setFormData] = useState(data || {});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     
     try {
       let response;
@@ -76,7 +73,7 @@ const EditModal = ({
           break;
         case 'edit-banner':
           // This is just UI text, no backend save needed
-          setSuccess('Banner text updated!');
+          toast.success('✓ Banner text updated!', { autoClose: 2000 });
           setTimeout(() => {
             onSave({ text: formData.text, subtitle: formData.subtitle });
             onClose();
@@ -87,14 +84,13 @@ const EditModal = ({
           throw new Error('Unknown content type');
       }
       
-      setSuccess('Updated successfully!');
+      toast.success('✓ Updated successfully!', { autoClose: 2000 });
       setTimeout(() => {
         onSave(response.data);
         onClose();
       }, 1000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update');
-      setTimeout(() => setError(''), 5000);
+      toast.error(err.response?.data?.message || 'Failed to update');
     } finally {
       setLoading(false);
     }
@@ -926,9 +922,6 @@ const EditModal = ({
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && <Alert type="error" message={error} />}
-          {success && <Alert type="success" message={success} />}
-          
           {renderFields()}
           
           <div className="flex gap-3 pt-4">

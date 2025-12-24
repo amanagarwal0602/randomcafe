@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
 import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 import api from '../../services/api';
 import EditableWrapper from '../../components/EditableWrapper';
 import EditModal from '../../components/EditModal';
+import { toast } from 'react-toastify';
 
 const ContactPage = () => {
   const [contactInfo, setContactInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [editModal, setEditModal] = useState({ isOpen: false, type: '', data: null });
   const [formData, setFormData] = useState({
     name: '',
@@ -34,17 +32,13 @@ const ContactPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     
     try {
       await api.post('/contact-info/send-message', formData);
-      setSuccess('Message sent successfully! We will get back to you soon.');
+      toast.success('✓ Message sent! We will get back to you soon.');
       setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to send message. Please try again.');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Failed to send message. Please try again.');
     }
   };
 
@@ -69,9 +63,6 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen dark:bg-gray-900">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="bg-brown-500 dark:bg-gray-800 text-white dark:text-gray-200 py-16">
         <div className="container-custom text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Contact Us</h1>

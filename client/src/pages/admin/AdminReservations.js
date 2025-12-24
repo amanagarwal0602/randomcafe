@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import Alert from '../../components/common/Alert';
 import { FiCalendar, FiUsers, FiClock } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchReservations();
@@ -20,8 +18,7 @@ const AdminReservations = () => {
       const response = await api.get('/admin/reservations');
       setReservations(response.data.data || response.data || []);
     } catch (error) {
-      setError('Failed to load reservations');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load reservations');
       setReservations([]);
     } finally {
       setLoading(false);
@@ -31,12 +28,10 @@ const AdminReservations = () => {
   const updateStatus = async (id, status) => {
     try {
       await api.put(`/admin/reservations/${id}/status`, { status });
-      setSuccess('Reservation updated');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success(`✓ Reservation ${status}!`, { autoClose: 2000 });
       fetchReservations();
     } catch (error) {
-      setError('Failed to update reservation');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to update reservation');
     }
   };
 
@@ -71,9 +66,6 @@ const AdminReservations = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 md:py-12">
       <div className="container-custom px-4">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-2">Reservation Management</h1>
           <p className="text-gray-600 dark:text-gray-400">{filteredReservations.length} reservations</p>

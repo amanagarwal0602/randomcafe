@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useCart } from '../../context/CartContext';
-import Alert from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -24,16 +22,12 @@ const FavoritesPage = () => {
 
   const handleAddToCart = (item) => {
     addToCart(item);
-    setSuccess('Added to cart!');
-    setTimeout(() => setSuccess(''), 3000);
+    toast.success(`✓ ${item.name} added to cart!`, { autoClose: 2000 });
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
-        {error && <Alert type="error" message={error} />}
-        {success && <Alert type="success" message={success} />}
-        
         <h1 className="text-4xl font-serif font-bold mb-8">My Favorites</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {favorites.map(item => (

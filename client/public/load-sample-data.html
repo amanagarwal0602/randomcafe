@@ -621,6 +621,54 @@
         data.about = sampleData.about || [];
         data.contact = sampleData.contact || [];
         
+        // Add sample Today's Offers
+        data.todaysOffers = [
+          {
+            id: 'offer001',
+            title: 'Morning Coffee Special',
+            description: 'Start your day with our signature brew! Get any coffee with a fresh croissant at a special price.',
+            discount: '20% OFF',
+            image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400',
+            validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'offer002',
+            title: 'Lunch Combo Deal',
+            description: 'Enjoy any main course with a side and drink. Perfect for a quick lunch break!',
+            discount: '₹150 OFF',
+            image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
+            validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'offer003',
+            title: 'Weekend Brunch Bonanza',
+            description: 'Bring your family for our special weekend brunch menu. Kids eat free!',
+            discount: 'Kids Eat Free',
+            image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400',
+            validUntil: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'offer004',
+            title: 'Happy Hour Desserts',
+            description: 'All desserts at half price between 3 PM - 5 PM daily. Sweet treats await!',
+            discount: '50% OFF',
+            image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400',
+            validUntil: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+            isActive: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ];
+        
         progressBar.style.width = '75%';
         progressBar.textContent = '75%';
         
@@ -646,6 +694,7 @@
               <li>⭐ ${data.reviews.length} reviews</li>
               <li>✨ ${data.features.length} features</li>
               <li>👨‍🍳 ${data.team.length} team members</li>
+              <li>🎁 ${data.todaysOffers.length} today's offers</li>
               <li>📖 About & Contact sections loaded</li>
             </ul>
             <p>Redirecting to homepage in 3 seconds...</p>

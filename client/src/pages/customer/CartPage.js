@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { FiTrash2, FiPlus, FiMinus, FiTag } from 'react-icons/fi';
+import { toast } from 'react-toastify';
 import api from '../../services/api';
 
 const CartPage = () => {
@@ -31,10 +32,13 @@ const CartPage = () => {
       setAppliedCoupon(coupon);
       setCouponSuccess(`Coupon applied! You saved ₹${getDiscountAmount(coupon)}`);
       setCouponError('');
+      toast.success(`✓ Coupon applied! You saved ₹${getDiscountAmount(coupon)}`, { autoClose: 2000 });
     } catch (error) {
-      setCouponError(error.response?.data?.message || 'Invalid or expired coupon code');
+      const errorMsg = error.response?.data?.message || 'Invalid or expired coupon code';
+      setCouponError(errorMsg);
       setAppliedCoupon(null);
       setCouponSuccess('');
+      toast.error(errorMsg);
     }
   };
 

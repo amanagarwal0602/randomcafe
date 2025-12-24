@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Alert from '../../components/common/Alert';
 import api from '../../services/api';
+import { toast } from 'react-toastify';
 
 const AdminAbout = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     heading: '',
@@ -33,8 +31,7 @@ const AdminAbout = () => {
       setFormData(data);
     } catch (error) {
       console.error('Fetch about error:', error);
-      setError('Failed to load about section');
-      setTimeout(() => setError(''), 5000);
+      toast.error('Failed to load about section');
     } finally {
       setLoading(false);
     }
@@ -45,12 +42,10 @@ const AdminAbout = () => {
     setSaving(true);
     try {
       await api.put('/about', formData);
-      setSuccess('About section updated successfully!');
-      setTimeout(() => setSuccess(''), 5000);
+      toast.success('✓ About section updated!');
     } catch (error) {
       console.error('Update about error:', error);
-      setError(error.response?.data?.message || 'Failed to update about section');
-      setTimeout(() => setError(''), 5000);
+      toast.error(error.response?.data?.message || 'Failed to update about section');
     } finally {
       setSaving(false);
     }
@@ -74,9 +69,6 @@ const AdminAbout = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {error && <Alert type="error" message={error} />}
-      {success && <Alert type="success" message={success} />}
-      
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">About Section</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your about page content</p>
