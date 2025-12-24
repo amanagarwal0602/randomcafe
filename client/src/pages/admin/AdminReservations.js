@@ -158,6 +158,19 @@ const AdminReservations = () => {
                       </div>
                     )}
                     
+                    {/* Show cancellation reason if cancelled */}
+                    {res.status === 'cancelled' && (res.cancellationReason || res.cancellation_reason) && (
+                      <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-500">
+                        <p className="text-sm font-semibold text-red-900 dark:text-red-300 mb-1">Cancellation Reason:</p>
+                        <p className="text-sm text-red-800 dark:text-red-400">{res.cancellationReason || res.cancellation_reason}</p>
+                        {(res.cancelledAt || res.cancelled_at) && (
+                          <p className="text-xs text-red-600 dark:text-red-500 mt-2">
+                            Cancelled: {new Date(res.cancelledAt || res.cancelled_at).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    
                     {res.order_id && (
                       <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                         <p className="text-sm text-purple-900 dark:text-purple-300">

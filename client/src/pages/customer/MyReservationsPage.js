@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
 import { useAuth } from '../../context/AuthContext';
+import { FiX } from 'react-icons/fi';
 
 const MyReservationsPage = () => {
   const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [cancellationReason, setCancellationReason] = useState('');
 
   useEffect(() => {
     fetchReservations();
@@ -34,13 +38,27 @@ const MyReservationsPage = () => {
   };
 
   const handleCancelReservation = async (reservationId) => {
-    if (!window.confirm('Are you sure you want to cancel this reservation?')) {
+    setSelectedReservation(reservationId);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancellation = async () => {
+    if (!cancellationReason.trim()) {
+      setError('Please provide a cancellation reason');
+      setTimeout(() => setError(''), 3000);
       return;
     }
 
     try {
-      await api.put(`/reservations/${reservationId}/status`, { status: 'cancelled' });
+      await api.put(`/reservations/${selectedReservation}/status`, { 
+        status: 'cancelled',
+        cancellationReason: cancellationReason.trim(),
+        cancelledAt: new Date().toISOString()
+      });
       setSuccess('Reservation cancelled successfully');
+      setShowCancelModal(false);
+      setSelectedReservation(null);
+      setCancellationReason('');
       fetchReservations();
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
@@ -118,8 +136,75 @@ const MyReservationsPage = () => {
                     )}
                   </div>
                 </div>
+                
+                {/* Show cancellation reason if cancelled */}
+                {res.status === 'cancelled' && res.cancellationReason && (
+                  <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-500">
+                    <p className="text-sm font-medium text-red-800 dark:text-red-400">Cancellation Reason:</p>
+                    <p className="text-sm text-red-700 dark:text-red-300 mt-1">{res.cancellationReason}</p>
+                    {res.cancelledAt && (
+                      <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                        Cancelled on: {new Date(res.cancelledAt).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
+          </div>
+        )}
+        
+        {/* Cancellation Modal */}
+        {showCancelModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Cancel Reservation</h3>
+                <button
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setSelectedReservation(null);
+                    setCancellationReason('');
+                  }}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Please provide a reason for cancelling your reservation:
+              </p>
+              
+              <textarea
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                placeholder="e.g., Change of plans, Emergency, Found another venue..."
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                rows="4"
+                required
+              />
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setSelectedReservation(null);
+                    setCancellationReason('');
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Keep Reservation
+                </button>
+                <button
+                  onClick={confirmCancellation}
+                  disabled={!cancellationReason.trim()}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-medium"
+                >
+                  Confirm Cancellation
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

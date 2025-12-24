@@ -504,6 +504,8 @@ export const updateReservation = async (id, updates) => {
       ...data.reservations[index],
       status: updates.status || data.reservations[index].status,
       table_number: updates.tableNumber !== undefined ? updates.tableNumber : data.reservations[index].table_number,
+      cancellation_reason: updates.cancellationReason || data.reservations[index].cancellation_reason,
+      cancelled_at: updates.cancelledAt || data.reservations[index].cancelled_at,
       updated_at: getTimestamp()
     };
     saveData(data);
