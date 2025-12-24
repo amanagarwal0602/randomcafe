@@ -72,60 +72,111 @@ A complete, serverless café website with professional UK café aesthetics, feat
 ## 📦 Installation
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 - Modern web browser with localStorage support
+- (Optional) Docker for containerized deployment
+- (Optional) MongoDB for database storage
 
 ### Quick Start
 
+#### Option 1: Automated Setup (Recommended)
+
+**Windows:**
+```bash
+setup.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+#### Option 2: Manual Setup
+
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/amanagarwal0602/randomcafe.git
-cd randomcafe
+git clone https://github.com/yourusername/lumiere-cafe.git
+cd lumiere-cafe
 ```
 
-2. **Install Dependencies**
+2. **Install All Dependencies**
 ```bash
-cd client
-npm install
+npm run install:all
 ```
 
-3. **Run Development Server**
+3. **Create Environment File**
 ```bash
-npm start
+cp .env.example .env
+# Edit .env with your settings (or leave default for localStorage mode)
 ```
 
-The app will open at `http://localhost:3000`
+4. **Run Development Server**
+```bash
+npm run dev
+```
+
+The app will open at:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:5000`
 
 ## 🚀 Deployment
 
-### Vercel Deployment (Recommended)
+### 🎯 Quick Deploy (Static - No Database)
 
-The project includes `vercel.json` for seamless Vercel deployment:
+Perfect for templates, demos, and MVPs. No backend required!
 
-```bash
-cd client
-vercel --prod
-```
-
-**vercel.json Features:**
-- Client-side routing support (all routes → index.html)
-- Static asset caching (1 year max-age)
-- Optimized for SPA deployment
-
-### Manual Build
-
+**Build & Deploy:**
 ```bash
 cd client
 npm run build
 ```
 
-Deploy the `build` folder to any static hosting service:
-- Netlify
-- Vercel
-- GitHub Pages
-- AWS S3 + CloudFront
-- Firebase Hosting
+Deploy the `build` folder to any static host:
+- **Netlify**: Drag & drop to [Netlify Drop](https://app.netlify.com/drop)
+- **Vercel**: `vercel --prod`
+- **GitHub Pages**: Enable in repository settings
+- **Surge**: `surge build/`
+
+### 🐳 Docker Deployment (Full Stack)
+
+Complete setup with MongoDB in containers:
+
+```bash
+# Build and start
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+Access at: `http://localhost:5000`
+
+### 📚 Detailed Deployment Guides
+
+For comprehensive deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**:
+- Netlify deployment
+- Vercel deployment  
+- Heroku deployment
+- VPS deployment (DigitalOcean, AWS)
+- Docker deployment
+- MongoDB setup
+- Environment configuration
+- SSL/HTTPS setup
+- Troubleshooting
+
+**Deployment Commands:**
+```bash
+npm run build              # Build frontend for production
+npm run docker:build       # Build Docker image
+npm run docker:run         # Start with Docker Compose
+npm run deploy:vercel      # Deploy to Vercel
+npm run deploy:netlify     # Deploy to Netlify
+```
 
 ## 💾 Data Management
 
@@ -161,19 +212,27 @@ All CRUD operations are abstracted in service files for easy migration.
 
 ## 👤 Default Login Credentials
 
-**Admin Account:**
-- **Email**: admin@lumierecafe.com
-- **Password**: Admin@123
+### 🔐 Hardcoded Logins (Always Available)
 
-**Chef Account:**
-- **Email**: chef@lumierecafe.com
-- **Password**: Chef@123
+These credentials are **hardcoded** and work even after clearing all data:
 
-**Waiter Account:**
-- **Email**: waiter@lumierecafe.com
-- **Password**: Waiter@123
+**Admin Account (Full Access):**
+- **Email/Username**: `admin@admin.com` or `admin`
+- **Password**: `admin`
+- **Role**: Administrator (All permissions)
+- ✅ Cannot be deleted, always works
 
-**⚠️ Change these credentials in production!**
+**Demo Customer Account:**
+- **Email/Username**: `demo@demo.com` or `demo`
+- **Password**: `demo`
+- **Role**: Customer (Read-only)
+- ✅ Cannot be deleted, always works
+
+### 📄 Credentials Reference
+
+Visit `/show-admin.html` to see all login credentials with one-click copy functionality.
+
+**⚠️ Security Notice**: Change these credentials or add authentication before production deployment if using with real customer data.
 
 ## 📁 Project Structure
 

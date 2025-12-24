@@ -42,6 +42,7 @@ import MyReservationsPage from './pages/customer/MyReservationsPage';
 import CartPage from './pages/customer/CartPage';
 import CheckoutPage from './pages/customer/CheckoutPage';
 import PaymentPage from './pages/customer/PaymentPage';
+import WriteReviewPage from './pages/customer/WriteReviewPage';
 
 // Admin Panel
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -68,7 +69,7 @@ function App() {
   // Initialize site settings (favicon, title, colors, analytics)
   useSiteSettings();
   
-  // Load data from sampleDataFull.json only on first load
+  // Initialize empty data structure - NO AUTO-LOADING of sample data
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -76,52 +77,32 @@ function App() {
         const dataVersion = localStorage.getItem('cafe_data_version');
         const currentVersion = '2.2'; // Version with dynamic data
         
-        // Load if no data exists OR version is outdated OR data is empty
-        const shouldLoad = !existingData || 
-                          dataVersion !== currentVersion || 
-                          (existingData && JSON.parse(existingData).menuItems?.length === 0);
+        // ONLY initialize if no data exists - NEVER auto-load sample data
+        const shouldLoad = !existingData;
         
         if (shouldLoad) {
-          console.log('Loading data from sampleDataFull.json...');
-          const response = await fetch('/sampleDataFull.json');
-          const data = await response.json();
-          
-          console.log('Sample data loaded:', {
-            customers: data.customers?.length,
-            menuItems: data.menuItems?.length,
-            orders: data.orders?.length,
-            reservations: data.reservations?.length,
-            reviews: data.reviews?.length,
-            gallery: data.gallery?.length,
-            team: data.team?.length,
-            features: data.features?.length
-          });
-          
-          // Always inject demo and admin users at the beginning
-          const demoUser = {
-            id: 'demo001',
-            table_type: 'user',
-            name: 'Demo User',
-            email: 'demo@demo.com',
-            username: 'demo',
-            password: 'demo',
-            phone: '+91-98765-43210',
-            role: 'customer',
-            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
-            address_street: '456 Demo Street',
-            address_city: 'Mumbai',
-            address_state: 'Maharashtra',
-            address_zipcode: '400001',
-            address_country: 'India',
-            favorite_items: [],
-            permissions: ['view_dashboard', 'view_orders', 'view_menu', 'view_reservations'],
-            refresh_token: '',
-            is_active: true,
-            email_verified: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          console.log('Initializing empty data structure...');
+          // Create empty data structure instead of loading from sampleDataFull.json
+          const data = {
+            customers: [],
+            menuItems: [],
+            orders: [],
+            reservations: [],
+            reviews: [],
+            gallery: [],
+            team: [],
+            features: [],
+            coupons: [],
+            todaysOffers: [],
+            heroSections: [],
+            aboutSections: [],
+            contactInfo: [],
+            seo: []
           };
           
+          console.log('Empty structure initialized - ready for admin data entry!');
+          
+          // Only add demo admin user - NO customer data
           const adminUser = {
             id: 'admin000',
             table_type: 'user',
@@ -146,53 +127,26 @@ function App() {
             updated_at: new Date().toISOString()
           };
           
-          // Remove any existing demo/admin users to avoid duplicates
-          const customers = data.customers || [];
-          const filteredCustomers = customers.filter(u => 
-            u.username !== 'demo' && 
-            u.username !== 'admin' && 
-            u.email !== 'demo@demo.com' && 
-            u.email !== 'admin@admin.com'
-          );
-          
-          // Add demo and admin at the beginning
-          filteredCustomers.unshift(demoUser, adminUser);
-          
-          // Normalize field names for localStorage compatibility
+          // CLEAN TEMPLATE: Only admin user, all other arrays empty
           const normalizedData = {
-            users: filteredCustomers,  // customers → users
-            menu: data.menuItems || data.menu || [],
-            orders: data.orders || [],
-            reservations: data.reservations || [],
-            coupons: data.coupons || [],
-            gallery: data.gallery || [],
-            reviews: data.reviews || [],
-            features: data.features || [],
-            team: data.team || [],
-            about: data.about || [],
-            contact: data.contact || [],
+            users: [adminUser],  // Only admin
+            menu: [],  // Empty - add through admin
+            orders: [],
+            reservations: [],
+            coupons: [],
+            gallery: [],  // Empty - add through admin
+            reviews: [],  // Empty - add through admin
+            features: [],  // Empty - add through admin
+            team: [],  // Empty - add through admin
+            about: [],
+            contact: [],
             version: currentVersion
           };
           
           localStorage.setItem('cafe_data', JSON.stringify(normalizedData));
           localStorage.setItem('cafe_data_version', currentVersion);
-          console.log('✅ Data loaded with demo/admin users!');
-          console.log('Loaded:', {
-            users: normalizedData.users.length,
-            menu: normalizedData.menu.length,
-            orders: normalizedData.orders.length,
-            reservations: normalizedData.reservations.length,
-            reviews: normalizedData.reviews.length,
-            gallery: normalizedData.gallery.length,
-            team: normalizedData.team.length,
-            features: normalizedData.features.length
-          });
-          
-          // Only reload once after initial data load
-          if (existingData && dataVersion !== currentVersion) {
-            console.log('🔄 Data updated! Reloading page once...');
-            window.location.reload();
-          }
+          console.log('✅ Clean template initialized with admin user only!');
+          console.log('🛒 Template ready - Add content through admin panel');
         }
       } catch (error) {
         console.error('❌ Error loading data:', error);
@@ -232,6 +186,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
             <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+            <Route path="/write-review" element={<ProtectedRoute><WriteReviewPage /></ProtectedRoute>} />
             {/* Admin Panel */}
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={["admin", "staff"]} permissions={["view_dashboard", "view_analytics"]}><AdminDashboard /></ProtectedRoute>} />

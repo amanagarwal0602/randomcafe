@@ -114,10 +114,12 @@ app.get('/api/health', (req, res) => {
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  const buildPath = path.join(__dirname, '../client/build');
+  app.use(express.static(buildPath));
   
+  // Handle client-side routing
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    res.sendFile(path.join(buildPath, 'index.html'));
   });
 }
 
@@ -146,7 +148,7 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Environment: ${process.env.NODE_ENV}`);
 }).on('error', (err) => {
-  console.error('❌ Server failed to start:',err);
+  console.error('❌ Server failed to start:', err);
   if (err.code === 'EADDRINUSE') {
     console.error(`Port ${PORT} is already in use`);
   }

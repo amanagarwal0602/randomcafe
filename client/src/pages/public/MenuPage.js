@@ -227,6 +227,17 @@ const MenuPage = () => {
       </div>
 
       <div className="container-custom py-12">
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="text-xl text-gray-600 dark:text-gray-400">Loading menu...</div>
+          </div>
+        ) : menuItems.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-3xl font-serif font-bold mb-4 text-gray-800 dark:text-gray-200">No Menu Items Yet</div>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">Check back soon for our delicious offerings!</p>
+          </div>
+        ) : (
+          <>
         {/* Search, Category, Veg Only Toggle */}
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between w-full">
           <div className="w-full md:flex-1 relative">
@@ -322,6 +333,8 @@ const MenuPage = () => {
             )}
           </>
         )}
+        </>
+      )}
       </div>
 
       {/* Edit Modal */}

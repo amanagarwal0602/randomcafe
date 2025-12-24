@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -7,8 +7,14 @@ import Alert from '../../components/common/Alert';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { cartItems, getCartTotal, clearCart } = useCart();
+  
+  // Get coupon from cart page
+  const appliedCoupon = location.state?.appliedCoupon || null;
+  const discount = location.state?.discount || 0;
+  
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
@@ -61,7 +67,8 @@ const CheckoutPage = () => {
       }
     }
 
-    const totalAmount = getCartTotal();
+    const subtotal = getCartTotal();
+    const finalTotal = subtotal - discount;
     
     // Prepare order details
     const orderDetails = {
@@ -80,9 +87,11 @@ const CheckoutPage = () => {
       reservationDate: formData.hasReservation ? formData.reservationDate : null,
       reservationTime: formData.hasReservation ? formData.reservationTime : null,
       numberOfGuests: formData.hasReservation ? formData.numberOfGuests : null,
-      total: totalAmount,
-      totalPrice: totalAmount,
-      subtotal: totalAmount,
+      subtotal: subtotal,
+      discount: discount,
+      couponCode: appliedCoupon?.code || null,
+      total: finalTotal,
+      totalPrice: finalTotal,
       userId: user?.id || user?._id,
       userName: user?.name,
       userEmail: user?.email,
@@ -95,7 +104,9 @@ const CheckoutPage = () => {
       navigate('/payment', { 
         state: { 
           orderDetails,
-          totalAmount 
+          totalAmount: finalTotal,
+          appliedCoupon,
+          discount
         } 
       });
       return;
@@ -274,9 +285,29 @@ const CheckoutPage = () => {
                   <span>₹{Math.round(item.price * item.quantity)}</span>
                 </div>
               ))}
-              <div className="border-t pt-2 mt-2 flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span>₹{Math.round(getCartTotal())}</span>
+              <div className="border-t pt-2 mt-2">
+                <div className="flex justify-between mb-2">
+                  <span>Subtotal</span>
+                  <span>₹{Math.round(getCartTotal())}</span>
+                </div>
+                {appliedCoupon && discount > 0 && (
+                  <>
+                    <div className="flex justify-between text-green-600 mb-2">
+                      <span>Discount ({appliedCoupon.code})</span>
+                      <span>-₹{Math.round(discount)}</span>
+                    </div>
+                    <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                      <span>Final Total</span>
+                      <span>₹{Math.round(getCartTotal() - discount)}</span>
+                    </div>
+                  </>
+                )}
+                {(!appliedCoupon || discount === 0) && (
+                  <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>₹{Math.round(getCartTotal())}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

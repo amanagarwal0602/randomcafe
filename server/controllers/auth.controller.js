@@ -82,6 +82,81 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     console.log('Login attempt for:', email);
 
+    // Hardcoded demo accounts for easier access
+    if ((email === 'demo' || email === 'demo@demo.com') && password === 'demo') {
+      // Find or create demo user
+      let user = await User.findOne({ email: 'demo@demo.com' });
+      if (!user) {
+        const hashedPassword = await bcrypt.hash('demo', 10);
+        user = await User.create({
+          name: 'Demo User',
+          email: 'demo@demo.com',
+          password: hashedPassword,
+          role: 'customer',
+          isActive: true
+        });
+      }
+      
+      const accessToken = generateToken(user._id);
+      const refreshToken = generateRefreshToken(user._id);
+      user.refreshToken = refreshToken;
+      user.lastLogin = new Date();
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar
+          },
+          accessToken,
+          refreshToken
+        }
+      });
+    }
+
+    if ((email === 'admin' || email === 'admin@admin.com') && password === 'admin') {
+      // Find or create admin user
+      let user = await User.findOne({ email: 'admin@admin.com' });
+      if (!user) {
+        const hashedPassword = await bcrypt.hash('admin', 10);
+        user = await User.create({
+          name: 'Admin User',
+          email: 'admin@admin.com',
+          password: hashedPassword,
+          role: 'admin',
+          isActive: true
+        });
+      }
+      
+      const accessToken = generateToken(user._id);
+      const refreshToken = generateRefreshToken(user._id);
+      user.refreshToken = refreshToken;
+      user.lastLogin = new Date();
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar
+          },
+          accessToken,
+          refreshToken
+        }
+      });
+    }
+
     // Check for user
     const user = await User.findOne({ email }).select('+password');
     if (!user) {

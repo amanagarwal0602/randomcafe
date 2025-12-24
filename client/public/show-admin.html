@@ -209,145 +209,63 @@
 </head>
 <body>
   <div class="container">
-    <h1>🔑 Admin Credentials Reference</h1>
-    <p class="subtitle">System access credentials for all user roles</p>
+    <h1>🔑 Hardcoded Login Credentials</h1>
+    <p class="subtitle">These credentials always work, even after clearing all data</p>
     
     <div class="warning">
-      <strong>⚠️ Security Notice</strong>
-      Keep this page private and secure. Never share these credentials publicly.
-      Change default passwords in production environments.
+      <strong>⚠️ Important Notice</strong>
+      These are hardcoded credentials that cannot be deleted. They will work even if localStorage is cleared.
+      Perfect for template demonstration and admin access.
     </div>
 
     <div class="cards-grid">
-      <!-- Admin Card -->
+      <!-- Admin Card - HARDCODED LOGIN -->
       <div class="role-card admin">
         <div class="role-header">
           <div class="role-icon">👑</div>
           <div class="role-title">Admin</div>
         </div>
         <div class="credential-item">
-          <div class="credential-label">Email</div>
+          <div class="credential-label">Email / Username</div>
           <div class="credential-value">
-            <span>admin@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('admin@lumierecafe.com')">Copy</button>
+            <span>admin@admin.com or admin</span>
+            <button class="copy-btn" onclick="copyText('admin@admin.com')">Copy</button>
           </div>
         </div>
         <div class="credential-item">
           <div class="credential-label">Password</div>
           <div class="credential-value">
-            <span>Admin@123</span>
-            <button class="copy-btn" onclick="copyText('Admin@123')">Copy</button>
+            <span>admin</span>
+            <button class="copy-btn" onclick="copyText('admin')">Copy</button>
           </div>
+        </div>
+        <div style="margin-top: 15px; padding: 10px; background: #d1fae5; border-radius: 8px; font-size: 13px; color: #059669;">
+          ✓ Hardcoded - Always works, even after clearing data
         </div>
       </div>
 
-      <!-- Manager Card -->
-      <div class="role-card manager">
-        <div class="role-header">
-          <div class="role-icon">💼</div>
-          <div class="role-title">Manager</div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Email</div>
-          <div class="credential-value">
-            <span>manager@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('manager@lumierecafe.com')">Copy</button>
-          </div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Password</div>
-          <div class="credential-value">
-            <span>Manager@123</span>
-            <button class="copy-btn" onclick="copyText('Manager@123')">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Chef Card -->
-      <div class="role-card chef">
-        <div class="role-header">
-          <div class="role-icon">👨‍🍳</div>
-          <div class="role-title">Chef</div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Email</div>
-          <div class="credential-value">
-            <span>chef@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('chef@lumierecafe.com')">Copy</button>
-          </div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Password</div>
-          <div class="credential-value">
-            <span>Chef@123</span>
-            <button class="copy-btn" onclick="copyText('Chef@123')">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Waiter Card -->
-      <div class="role-card waiter">
-        <div class="role-header">
-          <div class="role-icon">🍽️</div>
-          <div class="role-title">Waiter</div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Email</div>
-          <div class="credential-value">
-            <span>waiter@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('waiter@lumierecafe.com')">Copy</button>
-          </div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Password</div>
-          <div class="credential-value">
-            <span>Waiter@123</span>
-            <button class="copy-btn" onclick="copyText('Waiter@123')">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Content Editor Card -->
-      <div class="role-card content_editor">
-        <div class="role-header">
-          <div class="role-icon">✏️</div>
-          <div class="role-title">Content Editor</div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Email</div>
-          <div class="credential-value">
-            <span>editor@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('editor@lumierecafe.com')">Copy</button>
-          </div>
-        </div>
-        <div class="credential-item">
-          <div class="credential-label">Password</div>
-          <div class="credential-value">
-            <span>Editor@123</span>
-            <button class="copy-btn" onclick="copyText('Editor@123')">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Viewer Card -->
+      <!-- Demo User Card - HARDCODED LOGIN -->
       <div class="role-card viewer">
         <div class="role-header">
           <div class="role-icon">👁️</div>
-          <div class="role-title">Viewer</div>
+          <div class="role-title">Demo Customer</div>
         </div>
         <div class="credential-item">
-          <div class="credential-label">Email</div>
+          <div class="credential-label">Email / Username</div>
           <div class="credential-value">
-            <span>viewer@lumierecafe.com</span>
-            <button class="copy-btn" onclick="copyText('viewer@lumierecafe.com')">Copy</button>
+            <span>demo@demo.com or demo</span>
+            <button class="copy-btn" onclick="copyText('demo@demo.com')">Copy</button>
           </div>
         </div>
         <div class="credential-item">
           <div class="credential-label">Password</div>
           <div class="credential-value">
-            <span>Viewer@123</span>
-            <button class="copy-btn" onclick="copyText('Viewer@123')">Copy</button>
+            <span>demo</span>
+            <button class="copy-btn" onclick="copyText('demo')">Copy</button>
           </div>
+        </div>
+        <div style="margin-top: 15px; padding: 10px; background: #d1fae5; border-radius: 8px; font-size: 13px; color: #059669;">
+          ✓ Hardcoded - Always works, even after clearing data
         </div>
       </div>
     </div>

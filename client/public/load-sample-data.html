@@ -111,8 +111,24 @@
           <div class="stat-label">Orders</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">~25/day</div>
-          <div class="stat-label">Avg Orders</div>
+          <div class="stat-number">8</div>
+          <div class="stat-label">Gallery Images</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Team Members</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">Active Coupons</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">Full</div>
+          <div class="stat-label">Contact Info</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">Complete</div>
+          <div class="stat-label">About Section</div>
         </div>
       </div>
     </div>
@@ -592,10 +608,18 @@
           }
         ];
         
-        // Merge data
+        // Merge data - Load EVERYTHING from sample data
         data.users = [...staffUsers, ...sampleData.customers];
         data.menu = sampleData.menuItems;
         data.orders = sampleData.orders;
+        data.reservations = sampleData.reservations || [];
+        data.coupons = sampleData.coupons || [];
+        data.gallery = sampleData.gallery || [];
+        data.reviews = sampleData.reviews || [];
+        data.features = sampleData.features || [];
+        data.team = sampleData.team || [];
+        data.about = sampleData.about || [];
+        data.contact = sampleData.contact || [];
         
         progressBar.style.width = '75%';
         progressBar.textContent = '75%';
@@ -616,6 +640,13 @@
               <li>👥 ${data.users.length} users (including ${staffUsers.length} staff)</li>
               <li>🍕 ${data.menu.length} menu items</li>
               <li>📦 ${data.orders.length} orders</li>
+              <li>📅 ${data.reservations.length} reservations</li>
+              <li>🎫 ${data.coupons.length} coupons</li>
+              <li>🖼️ ${data.gallery.length} gallery images</li>
+              <li>⭐ ${data.reviews.length} reviews</li>
+              <li>✨ ${data.features.length} features</li>
+              <li>👨‍🍳 ${data.team.length} team members</li>
+              <li>📖 About & Contact sections loaded</li>
             </ul>
             <p>Redirecting to homepage in 3 seconds...</p>
           </div>

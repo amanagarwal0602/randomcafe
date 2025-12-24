@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import { FiPackage, FiClock, FiCheckCircle, FiTruck, FiCalendar } from 'react-icons/fi';
+import { FiPackage, FiClock, FiCheckCircle, FiTruck, FiCalendar, FiStar } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 const OrdersPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -227,9 +229,30 @@ const OrdersPage = () => {
                                 </span>
                               </div>
                             </div>
-                            <p className="font-bold text-lg bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                              ₹{Math.round((item.price || item.itemPrice || 0) * (item.quantity || 1)).toLocaleString()}
-                            </p>
+                            <div className="flex items-center gap-3">
+                              <p className="font-bold text-lg bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                ₹{Math.round((item.price || item.itemPrice || 0) * (item.quantity || 1)).toLocaleString()}
+                              </p>
+                              {(order.status?.toLowerCase() === 'delivered' || order.status?.toLowerCase() === 'completed') && (
+                                <button
+                                  onClick={() => navigate('/write-review', { 
+                                    state: { 
+                                      menuItem: { 
+                                        _id: item.menuItem || item._id,
+                                        name: item.name || item.itemName,
+                                        price: item.price || item.itemPrice,
+                                        image: item.image
+                                      },
+                                      orderId: order._id 
+                                    } 
+                                  })}
+                                  className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition flex items-center gap-1"
+                                >
+                                  <FiStar size={14} />
+                                  Review
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>

@@ -40,6 +40,12 @@ const GalleryPage = () => {
       </div>
       
       <div className="container-custom py-12">
+        {images.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-3xl font-serif font-bold mb-4 text-gray-800 dark:text-gray-200">No Images Yet</div>
+            <p className="text-gray-600 dark:text-gray-400">Gallery is empty. Add photos through admin panel.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((image) => (
             <EditableWrapper 
@@ -60,6 +66,7 @@ const GalleryPage = () => {
             </EditableWrapper>
           ))}
         </div>
+        )}
       </div>
 
       {selectedImage && (

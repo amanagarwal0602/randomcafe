@@ -55,15 +55,36 @@ const Footer = () => {
                 {about?.description || 'Experience the perfect blend of artisan coffee, fresh pastries, and warm hospitality in an elegant atmosphere.'}
               </p>
               <div className="flex space-x-4">
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-300">
-                  <FiFacebook className="w-5 h-5" />
-                </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-300">
-                  <FiInstagram className="w-5 h-5" />
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-300">
-                  <FiTwitter className="w-5 h-5" />
-                </a>
+                {contact?.socialFacebook || contact?.socialMedia?.facebook ? (
+                  <a 
+                    href={contact.socialFacebook || contact.socialMedia.facebook} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-primary-300"
+                  >
+                    <FiFacebook className="w-5 h-5" />
+                  </a>
+                ) : null}
+                {contact?.socialInstagram || contact?.socialMedia?.instagram ? (
+                  <a 
+                    href={contact.socialInstagram || contact.socialMedia.instagram} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-primary-300"
+                  >
+                    <FiInstagram className="w-5 h-5" />
+                  </a>
+                ) : null}
+                {contact?.socialTwitter || contact?.socialMedia?.twitter ? (
+                  <a 
+                    href={contact.socialTwitter || contact.socialMedia.twitter} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-primary-300"
+                  >
+                    <FiTwitter className="w-5 h-5" />
+                  </a>
+                ) : null}
               </div>
             </div>
           </EditableWrapper>

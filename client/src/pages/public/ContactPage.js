@@ -32,11 +32,20 @@ const ContactPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess('Message sent successfully!');
-    setTimeout(() => setSuccess(''), 5000);
-    setFormData({ name: '', email: '', message: '' });
+    setError('');
+    setSuccess('');
+    
+    try {
+      await api.post('/contact-info/send-message', formData);
+      setSuccess('Message sent successfully! We will get back to you soon.');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to send message. Please try again.');
+      setTimeout(() => setError(''), 5000);
+    }
   };
 
   const handleEdit = (type, data) => {

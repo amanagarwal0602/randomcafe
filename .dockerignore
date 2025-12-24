@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Development files
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build files
+client/build/
+dist/
+
+# Testing
+coverage/
+*.test.js
+*.spec.js
+
+# Uploads (will be created in container)
+server/uploads/*
+
+# Documentation
+docs/
+design.txt
+details.txt
+SYSTEM_HEALTH.txt

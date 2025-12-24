@@ -108,6 +108,7 @@ const AboutPage = () => {
       </section>
 
       {/* Values */}
+      {values.length > 0 && (
       <section className="section-padding bg-primary-50 dark:bg-gray-800">
         <div className="container-custom">
           <h2 className="text-4xl font-serif font-bold text-center mb-12 dark:text-gray-100">Our Values</h2>
@@ -131,8 +132,10 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Team */}
+      {team.length > 0 && (
       <section className="section-padding">
         <div className="container-custom">
           <h2 className="text-4xl font-serif font-bold text-center mb-12 dark:text-gray-100">Meet Our Team</h2>
@@ -160,6 +163,7 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Edit Modal */}
       <EditModal
