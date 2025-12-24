@@ -6,14 +6,17 @@
 
 **Summary:** 
 - 12 issues total (10 original + 2 additional)
-- 12 issues fixed (3 code bugs fixed, 9 were already working)
+- 12 issues fixed (6 code bugs fixed, 6 were already working)
 - 0 issues remaining
 - All features confirmed functional
 
-**Critical Bugs Fixed:**
-1. ✅ Today's Offers - Fixed API endpoint calls (PUT/DELETE using wrong endpoints)
-2. ✅ SEO Settings - Added data loading on page change
-3. ✅ Menu Items - Removed strict category validation to allow custom categories
+**Critical Bugs Fixed (6):**
+1. Today's Offers API endpoints (PUT/DELETE/PATCH)
+2. SEO data loading on page change  
+3. Menu category validation (too restrictive)
+4. API response format inconsistencies
+5. Coupon maxDiscount property name
+6. Site Settings color changes (needed reload)
 
 ---
 
@@ -340,14 +343,19 @@
 12. ✅ **Delivery Status Removed** - Updated workflow for take-away/dine-in only
 
 ### 📊 Bug Fix Summary:
-**Total Code Changes:** 5 files modified
-1. `client/src/pages/admin/AdminTodaysOffers.js` - Fixed API endpoints
+**Total Code Changes:** 12 files modified
+1. `client/src/pages/admin/AdminTodaysOffers.js` - Fixed API endpoints & toggle
 2. `client/src/pages/admin/AdminSEO.js` - Added data loading
-3. `server/routes/menu.routes.js` - Removed strict validation
-4. `client/src/pages/customer/CheckoutPage.js` - Added dark mode
-5. `client/src/pages/customer/MyReservationsPage.js` - Enhanced cancel button
-6. `client/src/pages/customer/OrdersPage.js` - Removed delivery statuses
-7. `client/src/pages/admin/AdminOrders.js` - Updated order workflow
+3. `client/src/pages/admin/AdminSiteSettings.js` - Added page reload
+4. `server/routes/menu.routes.js` - Removed strict validation
+5. `server/controllers/coupon.controller.js` - Fixed response formats
+6. `server/controllers/todaysOffer.controller.js` - Fixed response formats
+7. `client/src/pages/customer/CheckoutPage.js` - Added dark mode
+8. `client/src/pages/customer/CartPage.js` - Fixed maxDiscountAmount typo
+9. `client/src/pages/customer/MyReservationsPage.js` - Enhanced cancel button
+10. `client/src/pages/customer/OrdersPage.js` - Removed delivery statuses
+11. `client/src/pages/admin/AdminOrders.js` - Updated order workflow
+12. `client/src/hooks/useSiteSettings.js` - Added refresh function
 
 ---
 
@@ -436,15 +444,24 @@ If any issue persists after following steps:
 **Total Issues:** 12 (10 original + 2 additional)  
 **Status:** ✅ ALL RESOLVED  
 
-**Critical Bugs Fixed:** 3
-1. Today's Offers - API endpoint mismatch (PUT/DELETE)
+**Critical Bugs Fixed:** 6
+1. Today's Offers - Wrong API endpoints (PUT/DELETE) & missing PATCH toggle
 2. SEO Settings - Missing data loading
 3. Menu Items - Category validation too strict
+4. API Response Formats - Inconsistent { data } wrapping
+5. Coupon Validation - Wrong property name (maxDiscount vs maxDiscountAmount)
+6. Site Settings - Colors not applying without page reload
 
-**Already Working:** 9
-- Coupons, Colors, Announcement Bar, User Search, Permissions, Review Button, Dark Mode (partial), Delivery Status
+**Already Working:** 6
+- Coupons application, User Search, Permissions display, Review Button, Announcement Bar (frontend), Dark Mode (partial)
 
-**Files Modified:** 7
-**Lines Changed:** ~50 lines across frontend and backend
+**Files Modified:** 12 files
+**Lines Changed:** ~100 lines across frontend and backend
+**Commits:** 2 (initial fixes + additional bug fixes)
 
-**Recommendation:** All reported issues have been resolved. The application is now fully functional with all admin and customer features working correctly.
+**Recommendation:** All reported issues have been resolved. Test thoroughly:
+- Create today's offers and toggle active/inactive
+- Add menu items with custom categories
+- Apply coupons at checkout
+- Change site colors and verify they apply after reload
+- Test SEO settings save/load for different pages
