@@ -140,14 +140,14 @@ const AdminContactInfo = () => {
       {success && <Alert type="success" message={success} />}
       
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Contact Information</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Contact Information</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage all contact details</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Basic Information</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -157,7 +157,7 @@ const AdminContactInfo = () => {
                 name="businessName"
                 value={formData.businessName}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 required
               />
             </div>
@@ -169,7 +169,7 @@ const AdminContactInfo = () => {
                 name="tagline"
                 value={formData.tagline}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -180,7 +180,7 @@ const AdminContactInfo = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 required
               />
             </div>
@@ -192,7 +192,7 @@ const AdminContactInfo = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 required
               />
             </div>
@@ -201,7 +201,7 @@ const AdminContactInfo = () => {
 
         {/* Address */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Address</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Address</h2>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street</label>
@@ -210,7 +210,7 @@ const AdminContactInfo = () => {
               name="street"
               value={formData.address.street}
               onChange={(e) => handleChange(e, 'address')}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -222,7 +222,7 @@ const AdminContactInfo = () => {
                 name="city"
                 value={formData.address.city}
                 onChange={(e) => handleChange(e, 'address')}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -233,7 +233,7 @@ const AdminContactInfo = () => {
                 name="state"
                 value={formData.address.state}
                 onChange={(e) => handleChange(e, 'address')}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -244,7 +244,7 @@ const AdminContactInfo = () => {
                 name="zipCode"
                 value={formData.address.zipCode}
                 onChange={(e) => handleChange(e, 'address')}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -256,14 +256,14 @@ const AdminContactInfo = () => {
               name="country"
               value={formData.address.country}
               onChange={(e) => handleChange(e, 'address')}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
         </div>
 
         {/* Business Hours */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Business Hours</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Business Hours</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(day => (
@@ -274,7 +274,7 @@ const AdminContactInfo = () => {
                   name={day}
                   value={formData.hours[day]}
                   onChange={(e) => handleChange(e, 'hours')}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="9:00 AM - 5:00 PM"
                 />
               </div>
@@ -284,7 +284,7 @@ const AdminContactInfo = () => {
 
         {/* Social Media */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Social Media</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Social Media</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'].map(platform => (
@@ -295,7 +295,7 @@ const AdminContactInfo = () => {
                   name={platform}
                   value={formData.socialMedia[platform]}
                   onChange={(e) => handleChange(e, 'socialMedia')}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder={`https://${platform}.com/yourpage`}
                 />
               </div>
@@ -305,7 +305,7 @@ const AdminContactInfo = () => {
 
         {/* Map Embed */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Google Maps Embed</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Google Maps Embed</h2>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -317,7 +317,7 @@ const AdminContactInfo = () => {
               name="mapEmbedUrl"
               value={formData.mapEmbedUrl}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="https://www.google.com/maps/embed?pb=..."
             />
           </div>

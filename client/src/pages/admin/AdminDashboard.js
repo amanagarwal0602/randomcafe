@@ -256,8 +256,8 @@ const AdminDashboard = () => {
               onClick={() => setActiveTab('overview')}
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'overview'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
               Quick Links
@@ -266,8 +266,8 @@ const AdminDashboard = () => {
               onClick={() => setActiveTab('dateWise')}
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'dateWise'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
               Date-wise Sales
@@ -276,8 +276,8 @@ const AdminDashboard = () => {
               onClick={() => setActiveTab('products')}
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'products'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
               Product-wise Sales
@@ -286,8 +286,8 @@ const AdminDashboard = () => {
               onClick={() => setActiveTab('customers')}
               className={`px-6 py-3 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'customers'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
               }`}
             >
               Customer-wise Sales
@@ -299,7 +299,7 @@ const AdminDashboard = () => {
           {/* Quick Links Tab */}
           {activeTab === 'overview' && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">📊 Management</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">📊 Management</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 {[
                   { title: 'Orders', path: '/admin/orders', color: 'bg-blue-500', desc: 'Manage customer orders' },
@@ -311,6 +311,7 @@ const AdminDashboard = () => {
                   { title: 'Reviews', path: '/admin/reviews', color: 'bg-pink-500', desc: 'Customer feedback' },
                   { title: 'Coupons', path: '/admin/coupons', color: 'bg-emerald-500', desc: 'Discount codes' },
                   { title: 'Roles & Permissions', path: '/admin/roles', color: 'bg-indigo-600', desc: 'Access control' },
+                  { title: 'Contact Messages', path: '/admin/contact-messages', color: 'bg-blue-600', desc: 'Customer inquiries' },
                 ].map((link, i) => (
                   <Link key={i} to={link.path} className={`${link.color} text-white p-5 rounded-lg shadow hover:opacity-90 transition`}>
                     <h3 className="text-lg font-bold mb-1">{link.title}</h3>
@@ -319,7 +320,7 @@ const AdminDashboard = () => {
                 ))}
               </div>
 
-              <h2 className="text-xl font-bold text-gray-800 mb-4">🎨 Website Content (CMS)</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">🎨 Website Content (CMS)</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
                   { title: 'Hero Section', path: '/admin/hero', color: 'bg-indigo-500', desc: 'Homepage banner' },
@@ -345,21 +346,21 @@ const AdminDashboard = () => {
             <div>
               <div className="flex flex-wrap gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Date</label>
                   <input
                     type="date"
                     value={dateFilter.startDate}
                     onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="px-4 py-2 border rounded-lg"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">End Date</label>
                   <input
                     type="date"
                     value={dateFilter.endDate}
                     onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="px-4 py-2 border rounded-lg"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -376,17 +377,17 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                     {dateWiseSales.map((day) => (
-                      <tr key={day.date} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                      <tr key={day.date} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                           {new Date(day.date).toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-200 shadow-sm">
+                          <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold border border-purple-200 dark:border-purple-700 shadow-sm">
                             {day.count}
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm font-bold border border-green-200 shadow-sm">
+                          <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm font-bold border border-green-200 dark:border-green-700 shadow-sm">
                             ₹{Math.round(day.total).toLocaleString()}
                           </span>
                         </td>
@@ -420,16 +421,16 @@ const AdminDashboard = () => {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                   {productWiseSales.map((product, index) => (
-                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">{product.name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">₹{Math.round(product.price).toLocaleString()}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-200 shadow-sm">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-bold border border-blue-200 dark:border-blue-700 shadow-sm">
                           {product.quantity}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm font-bold border border-green-200 shadow-sm">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm font-bold border border-green-200 dark:border-green-700 shadow-sm">
                           ₹{Math.round(product.revenue).toLocaleString()}
                         </span>
                       </td>
@@ -460,16 +461,16 @@ const AdminDashboard = () => {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                   {customerWiseSales.map((customer, index) => (
-                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                    <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">{customer.name}</td>
                       <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{customer.email}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-200 shadow-sm">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold border border-purple-200 dark:border-purple-700 shadow-sm">
                           {customer.orderCount}
                         </span>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm font-bold border border-green-200 shadow-sm">
+                        <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm font-bold border border-green-200 dark:border-green-700 shadow-sm">
                           ₹{Math.round(customer.totalSpent).toLocaleString()}
                         </span>
                       </td>

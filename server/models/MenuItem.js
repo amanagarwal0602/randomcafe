@@ -26,7 +26,8 @@ const menuItemSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, 'Image is required']
+    required: false,
+    default: ''
   },
   ingredients: [{
     type: String
@@ -68,6 +69,10 @@ const menuItemSchema = new mongoose.Schema({
   popularity: {
     type: Number,
     default: 0
+  },
+  showOnHomepage: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

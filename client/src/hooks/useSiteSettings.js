@@ -25,10 +25,6 @@ export const useSiteSettings = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   const fetchSettings = async () => {
     try {
       const { data } = await api.get('/site-settings');
@@ -46,9 +42,10 @@ export const useSiteSettings = () => {
     }
   };
 
-  const refreshSettings = () => {
+  useEffect(() => {
     fetchSettings();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const applyBrandColors = (data) => {
     if (data.primaryColor) {

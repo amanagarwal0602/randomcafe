@@ -46,6 +46,10 @@ const reviewSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  showOnHomepage: {
+    type: Boolean,
+    default: false
+  },
   isVerifiedPurchase: {
     type: Boolean,
     default: false

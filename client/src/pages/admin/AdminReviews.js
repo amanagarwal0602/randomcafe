@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
-import { FiTrash2, FiMessageSquare, FiX } from 'react-icons/fi';
+import { FiTrash2, FiMessageSquare, FiX, FiHome } from 'react-icons/fi';
 
 const AdminReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -35,6 +35,18 @@ const AdminReviews = () => {
       fetchReviews();
     } catch (error) {
       setError('Failed to update review');
+      setTimeout(() => setError(''), 5000);
+    }
+  };
+
+  const toggleHomepage = async (reviewId) => {
+    try {
+      await api.put(`/reviews/${reviewId}/toggle-homepage`);
+      setSuccess('Homepage display updated');
+      setTimeout(() => setSuccess(''), 3000);
+      fetchReviews();
+    } catch (error) {
+      setError('Failed to update homepage display');
       setTimeout(() => setError(''), 5000);
     }
   };
@@ -86,7 +98,7 @@ const AdminReviews = () => {
         {success && <Alert type="success" message={success} />}
         
         <div className="mb-8">
-          <h1 className="text-4xl font-serif font-bold mb-2">Review Management</h1>
+          <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100 mb-2">Review Management</h1>
           <p className="text-gray-600 dark:text-gray-400">{reviews.length} total reviews</p>
         </div>
 
@@ -141,6 +153,16 @@ const AdminReviews = () => {
                     {review.isPublished ? 'Published' : 'Unpublished'}
                   </button>
                   <button
+                    onClick={() => toggleHomepage(review._id)}
+                    className={`px-4 py-2 rounded-lg font-medium flex items-center gap-1 ${
+                      review.showOnHomepage ? 'bg-purple-500 text-white hover:bg-purple-600' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    }`}
+                    title={review.showOnHomepage ? 'Remove from homepage' : 'Show on homepage'}
+                  >
+                    <FiHome className="w-4 h-4" />
+                    {review.showOnHomepage ? 'On Homepage' : 'Add to Home'}
+                  </button>
+                  <button
                     onClick={() => { setSelectedReview(review); setResponseText(review.adminResponse?.response || ''); setShowResponseModal(true); }}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   >
@@ -157,10 +179,10 @@ const AdminReviews = () => {
               <p className="text-gray-700 dark:text-gray-300 mb-4">{review.comment}</p>
               
               {review.adminResponse && (
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
-                  <p className="text-sm font-semibold text-blue-900 mb-1">Admin Response:</p>
-                  <p className="text-sm text-blue-800">{review.adminResponse.response}</p>
-                  <p className="text-xs text-blue-600 mt-2">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mt-4">
+                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">Admin Response:</p>
+                  <p className="text-sm text-blue-800 dark:text-blue-400">{review.adminResponse.response}</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-500 mt-2">
                     {new Date(review.adminResponse.respondedAt).toLocaleDateString()} by {review.adminResponse.respondedBy?.name || 'Admin'}
                   </p>
                 </div>
@@ -174,17 +196,17 @@ const AdminReviews = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full">
               <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Respond to Review</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Respond to Review</h2>
                 <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="text-gray-500 hover:text-gray-700 dark:text-gray-300">
                   <FiX size={24} />
                 </button>
               </div>
               <div className="p-6">
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
-                  <p className="font-semibold mb-2">{selectedReview?.title}</p>
+                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                  <p className="font-semibold mb-2 text-gray-900 dark:text-gray-100">{selectedReview?.title}</p>
                   <p className="text-gray-700 dark:text-gray-300 text-sm">{selectedReview?.comment}</p>
                 </div>
-                <label className="block text-sm font-medium mb-2">Your Response</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Response</label>
                 <textarea
                   value={responseText}
                   onChange={(e) => setResponseText(e.target.value)}
@@ -193,7 +215,7 @@ const AdminReviews = () => {
                   placeholder="Thank you for your feedback..."
                 />
                 <div className="flex gap-3 mt-4">
-                  <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50">
+                  <button onClick={() => { setShowResponseModal(false); setSelectedReview(null); setResponseText(''); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
                     Cancel
                   </button>
                   <button onClick={handleResponse} className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">

@@ -382,7 +382,6 @@ export const getOrders = async () => {
     let deliveryAddress = order.delivery_address;
     if (typeof deliveryAddress === 'string') {
       // Keep as string for display
-      deliveryAddress = deliveryAddress;
     } else if (deliveryAddress) {
       // If it's an object, format it
       deliveryAddress = `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}, ${deliveryAddress.state || ''} ${deliveryAddress.zipCode || ''}`.trim();

@@ -60,3 +60,26 @@ exports.deleteTeamMember = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+// Toggle show in about section
+exports.toggleShowInAbout = async (req, res) => {
+  try {
+    const member = await TeamMember.findById(req.params.id);
+    
+    if (!member) {
+      return res.status(404).json({ message: 'Team member not found' });
+    }
+    
+    member.showInAbout = !member.showInAbout;
+    await member.save();
+    
+    res.json({
+      success: true,
+      message: `Team member ${member.showInAbout ? 'added to' : 'removed from'} about section`,
+      data: member
+    });
+  } catch (error) {
+    console.error('Toggle show in about error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

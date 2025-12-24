@@ -89,7 +89,7 @@ const AdminHero = () => {
       
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h1 className="text-3xl font-bold text-gray-800">Hero Section</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Hero Section</h1>
           <InfoTooltip 
             title="Hero Section"
             content="This is the first thing visitors see on your homepage - the large banner at the top. Make it eye-catching with a great image and compelling text to welcome customers."
@@ -111,7 +111,7 @@ const AdminHero = () => {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             required
           />
         </div>
@@ -128,7 +128,7 @@ const AdminHero = () => {
             name="subtitle"
             value={formData.subtitle}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             required
           />
         </div>
@@ -145,7 +145,7 @@ const AdminHero = () => {
             value={formData.description}
             onChange={handleChange}
             rows="3"
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           />
         </div>
 
@@ -164,7 +164,7 @@ const AdminHero = () => {
             name="backgroundImage"
             value={formData.backgroundImage}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             placeholder="https://images.unsplash.com/..."
           />
           {formData.backgroundImage && (
@@ -190,7 +190,7 @@ const AdminHero = () => {
               name="primaryButtonText"
               value={formData.primaryButtonText}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -206,7 +206,7 @@ const AdminHero = () => {
               name="primaryButtonLink"
               value={formData.primaryButtonLink}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="/menu"
             />
           </div>
@@ -223,7 +223,7 @@ const AdminHero = () => {
               name="secondaryButtonText"
               value={formData.secondaryButtonText}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -239,7 +239,7 @@ const AdminHero = () => {
               name="secondaryButtonLink"
               value={formData.secondaryButtonLink}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="/reservations"
             />
           </div>
@@ -251,7 +251,7 @@ const AdminHero = () => {
             name="isActive"
             checked={formData.isActive}
             onChange={handleChange}
-            className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
+            className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
           />
           <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             Active (Show hero section on homepage)

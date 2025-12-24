@@ -13,10 +13,6 @@ const OrdersPage = () => {
   const [activeTab, setActiveTab] = useState('orders'); // orders or reservations
   const [filter, setFilter] = useState('all'); // all, pending, completed, cancelled
 
-  useEffect(() => {
-    fetchOrdersAndReservations();
-  }, []);
-
   const fetchOrdersAndReservations = async () => {
     try {
       setLoading(true);
@@ -54,6 +50,11 @@ const OrdersPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchOrdersAndReservations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {

@@ -61,6 +61,7 @@ export const canAccessPage = (user, page) => {
     '/admin/features': ['view_cms', 'edit_features'],
     '/admin/team': ['view_cms', 'edit_team'],
     '/admin/contact-info': ['view_cms', 'edit_contact'],
+    '/admin/contact-messages': ['view_cms', 'edit_contact'],
     '/admin/site-settings': ['view_cms', 'edit_settings'],
     '/admin/seo': ['view_cms', 'edit_seo'],
     '/admin/roles': ['manage_roles']
@@ -83,6 +84,7 @@ export const filterMenuByPermissions = (user) => {
     { path: '/admin/users', label: 'Users', permission: 'view_users', icon: '👥' },
     { path: '/admin/coupons', label: 'Coupons', permission: 'view_coupons', icon: '🎟️' },
     { path: '/admin/reviews', label: 'Reviews', permission: 'view_reviews', icon: '⭐' },
+    { path: '/admin/contact-messages', label: 'Contact Messages', permission: 'edit_contact', icon: '📧' },
     { path: '/admin/roles', label: 'Roles & Permissions', permission: 'manage_roles', icon: '🔐' },
     { 
       label: 'CMS Content', 

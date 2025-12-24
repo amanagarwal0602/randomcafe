@@ -107,7 +107,7 @@ const AdminGallery = () => {
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-serif font-bold">Gallery Management</h1>
+            <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Gallery Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{images.length} images in gallery</p>
           </div>
           <button onClick={() => { setEditImage(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
@@ -120,7 +120,7 @@ const AdminGallery = () => {
             <div key={img._id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition group">
               <div className="relative">
                 <img src={img.image} alt={img.title} loading="lazy" className="w-full h-48 object-cover" />
-                <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${img.isPublished ? 'bg-green-500 text-white' : 'bg-gray-50 dark:bg-gray-8000 text-white'}`}>
+                <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${img.isPublished ? 'bg-green-500 text-white' : 'bg-gray-500 dark:bg-gray-600 text-white'}`}>
                   {img.isPublished ? 'Published' : 'Draft'}
                 </div>
               </div>
@@ -129,7 +129,7 @@ const AdminGallery = () => {
                 <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">{img.description}</p>
                 <span className="inline-block px-2 py-1 bg-primary-100 text-primary-600 text-xs rounded mb-3">{img.category}</span>
                 <div className="flex gap-1">
-                  <button onClick={() => togglePublish(img)} className="flex-1 px-2 py-1 bg-gray-100 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 text-xs">
+                  <button onClick={() => togglePublish(img)} className="flex-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
                     Toggle
                   </button>
                   <button onClick={() => { setEditImage(img); setShowModal(true); }} className="flex-1 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
@@ -149,14 +149,14 @@ const AdminGallery = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-xl w-full">
               <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-2xl font-bold">{editImage ? 'Edit Image' : 'Upload New Image'}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editImage ? 'Edit Image' : 'Upload New Image'}</h2>
                 <button onClick={() => { setShowModal(false); setEditImage(null); }} className="text-gray-500 hover:text-gray-700 dark:text-gray-300">
                   <FiX size={24} />
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Title *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                   <input
                     type="text"
                     value={formData.title}
@@ -166,7 +166,7 @@ const AdminGallery = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -175,7 +175,7 @@ const AdminGallery = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Category *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
@@ -190,7 +190,7 @@ const AdminGallery = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Image URL *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image URL *</label>
                   <input
                     type="url"
                     value={formData.image}
@@ -209,12 +209,12 @@ const AdminGallery = () => {
                     id="isPublished"
                     checked={formData.isPublished}
                     onChange={(e) => setFormData({...formData, isPublished: e.target.checked})}
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="isPublished" className="text-sm font-medium">Publish immediately</label>
+                  <label htmlFor="isPublished" className="text-sm font-medium text-gray-700 dark:text-gray-300">Publish immediately</label>
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => { setShowModal(false); setEditImage(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50">
+                  <button type="button" onClick={() => { setShowModal(false); setEditImage(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
                     Cancel
                   </button>
                   <button type="submit" className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">

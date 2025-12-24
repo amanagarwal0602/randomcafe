@@ -278,3 +278,33 @@ exports.respondToReview = async (req, res) => {
     });
   }
 };
+
+// @desc    Toggle show on homepage
+// @route   PUT /api/reviews/:id/toggle-homepage
+// @access  Private/Admin
+exports.toggleShowOnHomepage = async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.id);
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: 'Review not found'
+      });
+    }
+
+    review.showOnHomepage = !review.showOnHomepage;
+    await review.save();
+
+    res.json({
+      success: true,
+      message: `Review ${review.showOnHomepage ? 'added to' : 'removed from'} homepage`,
+      data: review
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

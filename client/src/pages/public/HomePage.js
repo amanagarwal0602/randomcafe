@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiCoffee, FiAward, FiHeart, FiArrowRight } from 'react-icons/fi';
 import api from '../../services/api';
+import Avatar from '../../components/Avatar';
 import EditableWrapper from '../../components/EditableWrapper';
 import EditModal from '../../components/EditModal';
 
@@ -32,13 +33,15 @@ const HomePage = () => {
       setHero(heroRes.data);
       setFeatures(featuresRes.data.filter(f => f.isActive).slice(0, 3));
       
-      // Get top 3 menu items for "Customer Favorites"
+      // Get menu items marked for homepage display
       const items = menuRes.data.data?.items || menuRes.data.data || [];
-      setMenuItems(items.slice(0, 3));
+      const homepageItems = items.filter(item => item.showOnHomepage && item.isAvailable).slice(0, 6);
+      setMenuItems(homepageItems);
       
-      // Get approved reviews
-      const approvedReviews = (reviewsRes.data.data || []).filter(r => r.status === 'approved').slice(0, 3);
-      setReviews(approvedReviews);
+      // Get reviews marked for homepage display
+      const allReviews = reviewsRes.data.data?.reviews || reviewsRes.data.data || [];
+      const homepageReviews = allReviews.filter(r => r.showOnHomepage && r.isPublished).slice(0, 6);
+      setReviews(homepageReviews);
       
       // Get today's offers
       const offers = offersRes.data?.data || offersRes.data || [];
@@ -189,11 +192,17 @@ const HomePage = () => {
                       className="card group cursor-pointer hover:shadow-2xl transition-all"
                     >
                       <div className="relative overflow-hidden h-48 md:h-64">
-                        <img
-                          src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200 dark:from-gray-700 dark:to-gray-600">
+                            <Avatar name={item.name} size="2xl" shape="square" />
+                          </div>
+                        )}
                       </div>
                       <div className="p-4 md:p-6">
                         <h3 className="text-lg md:text-xl font-semibold mb-2">{item.name}</h3>
@@ -243,12 +252,16 @@ const HomePage = () => {
                             transition={{ delay: index * 0.1 }}
                             className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all border border-primary-100 dark:border-gray-600"
                           >
-                            {offer.image && (
+                            {offer.image ? (
                               <img
                                 src={offer.image}
                                 alt={offer.title}
                                 className="w-full h-32 object-cover rounded-lg mb-3"
                               />
+                            ) : (
+                              <div className="w-full h-32 flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100 dark:from-gray-700 dark:to-gray-600 rounded-lg mb-3">
+                                <Avatar name={offer.title} size="xl" shape="square" />
+                              </div>
                             )}
                             <h4 className="font-bold text-lg text-gray-800 dark:text-white mb-2">{offer.title}</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{offer.description}</p>
@@ -292,9 +305,9 @@ const HomePage = () => {
 
       {/* Reviews Section - DYNAMIC */}
       {reviews.length > 0 && (
-        <section className="section-padding">
+        <section className="section-padding bg-gray-50 dark:bg-gray-800">
           <div className="container-custom">
-            <h2 className="text-4xl font-serif font-bold text-center mb-12">What Our Guests Say</h2>
+            <h2 className="text-4xl font-serif font-bold text-center mb-12 text-gray-900 dark:text-gray-100">What Our Guests Say</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {reviews.map((review) => (
@@ -302,21 +315,33 @@ const HomePage = () => {
                   key={review._id || review.id}
                   onEdit={() => handleEdit('review', review)}
                 >
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                  <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
                     <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-primary-200 rounded-full mr-4 flex items-center justify-center text-primary-600 font-bold text-lg">
-                        {review.userName?.charAt(0).toUpperCase() || 'U'}
-                      </div>
+                      <Avatar 
+                        src={review.user?.avatar}
+                        name={review.user?.name || review.userName || 'Customer'}
+                        size="md"
+                        className="mr-4"
+                      />
                       <div>
-                        <h4 className="font-semibold">{review.userName || 'Customer'}</h4>
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-100">{review.user?.name || review.userName || 'Customer'}</h4>
                         <div className="text-yellow-400">
                           {'★'.repeat(review.rating || 5)}{'☆'.repeat(5 - (review.rating || 5))}
                         </div>
                       </div>
                     </div>
+                    <p className="text-gray-700 dark:text-gray-300 mb-2 font-medium">{review.title}</p>
                     <p className="text-gray-600 dark:text-gray-400 italic">
                       "{review.comment || review.review}"
                     </p>
+                    {review.isVerifiedPurchase && (
+                      <div className="mt-3 flex items-center text-green-600 dark:text-green-400 text-sm">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Verified Purchase
+                      </div>
+                    )}
                   </div>
                 </EditableWrapper>
               ))}

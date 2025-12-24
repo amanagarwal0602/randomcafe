@@ -9,7 +9,8 @@ const {
   getMyReviews,
   updateReview,
   deleteReview,
-  respondToReview
+  respondToReview,
+  toggleShowOnHomepage
 } = require('../controllers/review.controller');
 
 // Validation
@@ -38,6 +39,12 @@ router.put(
   '/:id/respond',
   authorize('admin', 'staff'),
   respondToReview
+);
+
+router.put(
+  '/:id/toggle-homepage',
+  authorize('admin', 'staff'),
+  toggleShowOnHomepage
 );
 
 module.exports = router;

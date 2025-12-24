@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
+import ImageUpload from '../../components/ImageUpload';
+import Avatar from '../../components/Avatar';
 import { FiEdit2, FiTrash2, FiPlus, FiX, FiCalendar, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 
 const AdminTodaysOffers = () => {
@@ -130,7 +132,7 @@ const AdminTodaysOffers = () => {
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-serif font-bold">Today's Offers Management</h1>
+            <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Today's Offers Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{offers.length} offers configured</p>
           </div>
           <button 
@@ -161,12 +163,18 @@ const AdminTodaysOffers = () => {
                 }`}
               >
                 <div className="relative">
-                  <img 
-                    src={offer.image || 'https://via.placeholder.com/400'} 
-                    alt={offer.title} 
-                    loading="lazy"
-                    className="w-full h-48 object-cover" 
-                  />
+                  {offer.image ? (
+                    <img 
+                      src={offer.image} 
+                      alt={offer.title} 
+                      loading="lazy"
+                      className="w-full h-48 object-cover" 
+                    />
+                  ) : (
+                    <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100 dark:from-gray-700 dark:to-gray-600">
+                      <Avatar name={offer.title} size="2xl" shape="square" />
+                    </div>
+                  )}
                   <div className="absolute top-2 right-2 flex flex-col gap-2">
                     <span 
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -188,7 +196,7 @@ const AdminTodaysOffers = () => {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{offer.title}</h3>
+                  <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">{offer.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
                     {offer.description}
                   </p>
@@ -231,7 +239,7 @@ const AdminTodaysOffers = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {editOffer ? 'Edit Offer' : 'Add New Offer'}
                 </h2>
                 <button 
@@ -243,7 +251,7 @@ const AdminTodaysOffers = () => {
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Offer Title *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Offer Title *</label>
                   <input
                     type="text"
                     value={formData.title}
@@ -254,7 +262,7 @@ const AdminTodaysOffers = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Description *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -266,7 +274,7 @@ const AdminTodaysOffers = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Discount Text *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Discount Text *</label>
                     <input
                       type="text"
                       value={formData.discount}
@@ -277,7 +285,7 @@ const AdminTodaysOffers = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Valid Until *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Valid Until *</label>
                     <input
                       type="date"
                       value={formData.validUntil}
@@ -287,36 +295,20 @@ const AdminTodaysOffers = () => {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Image URL *</label>
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    className="input-field"
-                    placeholder="https://example.com/offer-image.jpg"
-                    required
-                  />
-                  {formData.image && (
-                    <div className="mt-2">
-                      <img 
-                        src={formData.image} 
-                        alt="Preview" 
-                        className="w-full h-40 object-cover rounded-lg"
-                        onError={(e) => e.target.src = 'https://via.placeholder.com/400'}
-                      />
-                    </div>
-                  )}
-                </div>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData({...formData, image: url})}
+                  label="Offer Image"
+                />
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="isActive"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="isActive" className="text-sm font-medium">
+                  <label htmlFor="isActive" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Active (visible to customers)
                   </label>
                 </div>
@@ -324,7 +316,7 @@ const AdminTodaysOffers = () => {
                   <button 
                     type="button" 
                     onClick={() => { setShowModal(false); setEditOffer(null); }} 
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                   >
                     Cancel
                   </button>

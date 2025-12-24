@@ -15,7 +15,8 @@ const teamMemberSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'
+    required: false,
+    default: ''
   },
   email: {
     type: String,
@@ -38,6 +39,10 @@ const teamMemberSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  showInAbout: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

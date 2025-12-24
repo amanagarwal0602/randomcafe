@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
 import { useAuth } from '../../context/AuthContext';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiStar } from 'react-icons/fi';
 
 const MyReservationsPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [cancellationReason, setCancellationReason] = useState('');
-
-  useEffect(() => {
-    fetchReservations();
-  }, []);
 
   const fetchReservations = async () => {
     try {
@@ -36,6 +34,11 @@ const MyReservationsPage = () => {
       setReservations([]);
     }
   };
+
+  useEffect(() => {
+    fetchReservations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCancelReservation = async (reservationId) => {
     setSelectedReservation(reservationId);
@@ -119,11 +122,28 @@ const MyReservationsPage = () => {
                   <div className="flex flex-col items-end gap-3">
                     <span className={`px-4 py-2 rounded-full text-sm font-medium ${
                       res.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
+                      res.status === 'completed' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 
                       res.status === 'cancelled' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
                       'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                     }`}>
                       {res.status?.charAt(0).toUpperCase() + res.status?.slice(1)}
                     </span>
+                    
+                    {/* Write Review button for completed reservations */}
+                    {res.status?.toLowerCase() === 'completed' && (
+                      <button
+                        onClick={() => navigate('/write-review', { 
+                          state: { 
+                            reservationId: res._id,
+                            isReservationReview: true
+                          } 
+                        })}
+                        className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition font-medium text-sm shadow-md flex items-center gap-2"
+                      >
+                        <FiStar size={16} />
+                        Write Review
+                      </button>
+                    )}
                     
                     {/* Cancel button - only show for confirmed or pending reservations */}
                     {(res.status?.toLowerCase() === 'confirmed' || res.status?.toLowerCase() === 'pending') && (

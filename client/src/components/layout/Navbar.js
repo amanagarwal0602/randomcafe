@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiShoppingCart, FiUser, FiLogOut, FiPackage, FiMoon, FiSun } from 'react-icons/fi';
@@ -6,13 +6,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useDarkMode } from '../../context/DarkModeContext';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import api from '../../services/api';
 import EditableWrapper from '../EditableWrapper';
 import EditModal from '../EditModal';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout, isAdmin, isStaff } = useAuth();
+  const { user, logout, isStaff } = useAuth();
   const { getItemCount } = useCart();
   const { darkMode, toggleDarkMode } = useDarkMode();
   const { settings } = useSiteSettings();

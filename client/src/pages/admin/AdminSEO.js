@@ -14,10 +14,6 @@ const AdminSEO = () => {
     keywords: []
   });
 
-  useEffect(() => {
-    fetchSEOData();
-  }, [page]);
-
   const fetchSEOData = async () => {
     try {
       setLoading(true);
@@ -42,6 +38,11 @@ const AdminSEO = () => {
     }
   };
 
+  useEffect(() => {
+    fetchSEOData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
   const handleSave = async () => {
     try {
       await api.put(`/seo/${page}`, seoData);
@@ -61,7 +62,7 @@ const AdminSEO = () => {
         
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <h1 className="text-4xl font-serif font-bold">SEO Management</h1>
+            <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">SEO Management</h1>
             <InfoTooltip 
               title="What is SEO?"
               content="SEO (Search Engine Optimization) helps your website rank higher on Google and other search engines. Better SEO means more people will find your café when searching online."
@@ -73,7 +74,7 @@ const AdminSEO = () => {
         <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow">
           <div className="mb-6">
             <div className="flex items-center mb-2">
-              <label className="block text-sm font-medium">Select Page</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Page</label>
               <InfoTooltip content="Choose which page you want to optimize. Each page needs its own SEO settings for best results." />
             </div>
             <select value={page} onChange={(e) => setPage(e.target.value)} className="input-field">
@@ -89,7 +90,7 @@ const AdminSEO = () => {
           <div className="space-y-6">
             <div className="border-b pb-6">
               <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium">Page Title</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Page Title</label>
                 <InfoTooltip 
                   title="Page Title"
                   content="This appears in Google search results and browser tabs. Keep it under 60 characters. Example: 'Lumière Café - Best Coffee in Downtown Mumbai'"
@@ -110,7 +111,7 @@ const AdminSEO = () => {
             
             <div className="border-b pb-6">
               <div className="flex items-center mb-2">
-                <label className="block text-sm font-medium">Meta Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta Description</label>
                 <InfoTooltip 
                   title="Meta Description"
                   content="This text appears below your title in Google search results. Describe what makes your café special. Keep it under 160 characters to avoid truncation."

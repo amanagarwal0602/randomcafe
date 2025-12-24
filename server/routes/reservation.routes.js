@@ -34,6 +34,7 @@ router.post('/', reservationValidation, validate, createReservation);
 router.get('/', getMyReservations);
 router.get('/:id', getReservation);
 router.put('/:id', updateReservation);
+router.put('/:id/status', updateReservation);
 router.put('/:id/cancel', cancelReservation);
 
 module.exports = router;

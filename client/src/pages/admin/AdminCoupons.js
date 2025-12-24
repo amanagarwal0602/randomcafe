@@ -146,7 +146,7 @@ const AdminCoupons = () => {
       
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Coupon Codes</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Coupon Codes</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">Manage discount coupons for customers</p>
         </div>
         <button
@@ -183,7 +183,7 @@ const AdminCoupons = () => {
                     <div className="text-sm text-gray-700 dark:text-gray-300">{coupon.description}</div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm font-bold border border-green-200 shadow-sm">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-400 rounded-lg text-sm font-bold border border-green-200 dark:border-green-800 shadow-sm">
                       {coupon.discountType === 'percentage' 
                         ? `${coupon.discountValue}%` 
                         : `₹${coupon.discountValue}`}
@@ -201,7 +201,7 @@ const AdminCoupons = () => {
                     )}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-200 shadow-sm">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-400 rounded-lg text-xs font-bold border border-purple-200 dark:border-purple-800 shadow-sm">
                       {coupon.usedCount} {coupon.usageLimit ? `/ ${coupon.usageLimit}` : ''}
                     </span>
                   </td>
@@ -210,8 +210,8 @@ const AdminCoupons = () => {
                       onClick={() => handleToggleStatus(coupon._id)}
                       className={`inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg shadow-sm ${
                         coupon.isActive 
-                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
-                          : 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200'
+                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800' 
+                          : 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
                       }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
@@ -252,7 +252,7 @@ const AdminCoupons = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
               {editingCoupon ? 'Edit Coupon' : 'Create Coupon'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -263,7 +263,7 @@ const AdminCoupons = () => {
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                    className="w-full px-4 py-2 border rounded-lg font-mono uppercase"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-mono uppercase"
                     placeholder="SUMMER2024"
                     required
                   />
@@ -274,7 +274,7 @@ const AdminCoupons = () => {
                   <select
                     value={formData.discountType}
                     onChange={(e) => setFormData(prev => ({ ...prev, discountType: e.target.value }))}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     <option value="percentage">Percentage (%)</option>
                     <option value="fixed">Fixed Amount ($)</option>
@@ -288,7 +288,7 @@ const AdminCoupons = () => {
                   type="text"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Get 20% off on all orders"
                   required
                 />
@@ -305,7 +305,7 @@ const AdminCoupons = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, discountValue: parseFloat(e.target.value) || 0 }))}
                     min="0"
                     step="0.01"
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -318,7 +318,7 @@ const AdminCoupons = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, minOrderAmount: parseFloat(e.target.value) || 0 }))}
                     min="0"
                     step="0.01"
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
@@ -330,7 +330,7 @@ const AdminCoupons = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, maxDiscountAmount: e.target.value }))}
                     min="0"
                     step="0.01"
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="Unlimited"
                   />
                 </div>
@@ -343,7 +343,7 @@ const AdminCoupons = () => {
                     type="datetime-local"
                     value={formData.validFrom}
                     onChange={(e) => setFormData(prev => ({ ...prev, validFrom: e.target.value }))}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -354,7 +354,7 @@ const AdminCoupons = () => {
                     type="datetime-local"
                     value={formData.validUntil}
                     onChange={(e) => setFormData(prev => ({ ...prev, validUntil: e.target.value }))}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     required
                   />
                 </div>
@@ -367,7 +367,7 @@ const AdminCoupons = () => {
                   value={formData.usageLimit}
                   onChange={(e) => setFormData(prev => ({ ...prev, usageLimit: e.target.value }))}
                   min="0"
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Unlimited"
                 />
               </div>
@@ -377,7 +377,7 @@ const AdminCoupons = () => {
                   type="checkbox"
                   checked={formData.isActive}
                   onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="w-4 h-4 text-blue-600"
+                  className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                 />
                 <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
               </div>

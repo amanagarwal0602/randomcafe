@@ -84,6 +84,18 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'paid', 'failed', 'refunded'],
     default: 'pending'
   },
+  transactionId: {
+    type: String,
+    default: null
+  },
+  utrNumber: {
+    type: String,
+    default: null
+  },
+  paymentProof: {
+    type: String,
+    default: null
+  },
   estimatedTime: {
     type: Date
   },

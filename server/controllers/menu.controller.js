@@ -243,3 +243,33 @@ exports.getCategories = async (req, res) => {
     });
   }
 };
+
+// @desc    Toggle menu item homepage display
+// @route   PUT /api/menu/:id/toggle-homepage
+// @access  Private/Admin
+exports.toggleShowOnHomepage = async (req, res) => {
+  try {
+    const item = await MenuItem.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: 'Menu item not found'
+      });
+    }
+
+    item.showOnHomepage = !item.showOnHomepage;
+    await item.save();
+
+    res.json({
+      success: true,
+      message: `Menu item ${item.showOnHomepage ? 'added to' : 'removed from'} homepage`,
+      data: item
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

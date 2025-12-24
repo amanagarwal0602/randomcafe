@@ -10,7 +10,8 @@ const {
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
-  getCategories
+  getCategories,
+  toggleShowOnHomepage
 } = require('../controllers/menu.controller');
 
 // Validation
@@ -64,6 +65,13 @@ router.delete(
   protect,
   authorize('admin', 'staff'),
   deleteMenuItem
+);
+
+router.put(
+  '/:id/toggle-homepage',
+  protect,
+  authorize('admin', 'staff'),
+  toggleShowOnHomepage
 );
 
 module.exports = router;

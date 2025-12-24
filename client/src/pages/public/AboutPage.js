@@ -27,7 +27,8 @@ const AboutPage = () => {
       
       setAbout(aboutRes.data);
       setValues(featuresRes.data.filter(f => f.is_active));
-      setTeam(teamRes.data.filter(t => t.is_active));
+      // Filter team members that are active AND marked to show in about section
+      setTeam(teamRes.data.filter(t => (t.is_active || t.isActive) && t.showInAbout));
     } catch (error) {
       console.error('Failed to load about page content:', error);
     } finally {

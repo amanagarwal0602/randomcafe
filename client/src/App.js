@@ -58,6 +58,7 @@ import AdminAbout from './pages/admin/AdminAbout';
 import AdminFeatures from './pages/admin/AdminFeatures';
 import AdminTeam from './pages/admin/AdminTeam';
 import AdminContactInfo from './pages/admin/AdminContactInfo';
+import AdminContactMessages from './pages/admin/AdminContactMessages';
 import AdminSiteSettings from './pages/admin/AdminSiteSettings';
 import AdminCoupons from './pages/admin/AdminCoupons';
 import AdminRoles from './pages/admin/AdminRoles';
@@ -74,7 +75,6 @@ function App() {
     const initializeData = async () => {
       try {
         const existingData = localStorage.getItem('cafe_data');
-        const dataVersion = localStorage.getItem('cafe_data_version');
         const currentVersion = '2.2'; // Version with dynamic data
         
         // ONLY initialize if no data exists - NEVER auto-load sample data
@@ -83,7 +83,7 @@ function App() {
         if (shouldLoad) {
           console.log('Initializing empty data structure...');
           // Create empty data structure instead of loading from sampleDataFull.json
-          const data = {
+          const initialData = {
             customers: [],
             menuItems: [],
             orders: [],
@@ -202,6 +202,7 @@ function App() {
             <Route path="/admin/features" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_features"]}><AdminFeatures /></ProtectedRoute>} />
             <Route path="/admin/team" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_team"]}><AdminTeam /></ProtectedRoute>} />
             <Route path="/admin/contact-info" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_contact"]}><AdminContactInfo /></ProtectedRoute>} />
+            <Route path="/admin/contact-messages" element={<ProtectedRoute roles={["admin", "staff"]} permissions={["view_cms"]}><AdminContactMessages /></ProtectedRoute>} />
             <Route path="/admin/site-settings" element={<ProtectedRoute roles={["admin"]} permissions={["view_cms", "edit_settings"]}><AdminSiteSettings /></ProtectedRoute>} />
             <Route path="/admin/storage-config" element={<ProtectedRoute roles={["admin"]}><StorageConfigPage /></ProtectedRoute>} />
             <Route path="/admin/coupons" element={<ProtectedRoute roles={["admin"]} permissions={["view_coupons", "add_coupons", "edit_coupons", "delete_coupons"]}><AdminCoupons /></ProtectedRoute>} />

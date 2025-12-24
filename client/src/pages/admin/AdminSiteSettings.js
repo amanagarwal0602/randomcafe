@@ -110,7 +110,7 @@ const AdminSiteSettings = () => {
       
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h1 className="text-3xl font-bold text-gray-800">Site Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">Site Settings</h1>
           <InfoTooltip 
             title="Site Settings"
             content="Control the overall look, branding, and functionality of your entire website. These settings apply to every page."
@@ -123,7 +123,7 @@ const AdminSiteSettings = () => {
         {/* Basic Settings */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Basic Settings</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Basic Settings</h2>
             <InfoTooltip content="Essential branding elements that identify your café across the website" />
           </div>
           
@@ -137,7 +137,7 @@ const AdminSiteSettings = () => {
               name="siteName"
               value={formData.siteName}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -156,7 +156,7 @@ const AdminSiteSettings = () => {
                 name="logo"
                 value={formData.logo}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="https://..."
               />
             </div>
@@ -174,7 +174,7 @@ const AdminSiteSettings = () => {
                 name="favicon"
                 value={formData.favicon}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="https://..."
               />
             </div>
@@ -190,7 +190,7 @@ const AdminSiteSettings = () => {
               name="footerText"
               value={formData.footerText}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
         </div>
@@ -198,7 +198,7 @@ const AdminSiteSettings = () => {
         {/* Brand Colors */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Brand Colors</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Brand Colors</h2>
             <InfoTooltip 
               title="Brand Colors"
               content="Choose colors that match your café's personality. Primary: main buttons & links. Secondary: headings & highlights. Accent: special elements & CTAs."
@@ -217,13 +217,13 @@ const AdminSiteSettings = () => {
                   name="primaryColor"
                   value={formData.primaryColor}
                   onChange={handleChange}
-                  className="h-10 w-20 border rounded"
+                  className="h-10 w-20 border-2 border-gray-300 dark:border-gray-500 rounded cursor-pointer bg-white dark:bg-gray-700 p-1"
                 />
                 <input
                   type="text"
                   value={formData.primaryColor}
                   onChange={(e) => setFormData(prev => ({ ...prev, primaryColor: e.target.value }))}
-                  className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                 />
               </div>
             </div>
@@ -239,13 +239,13 @@ const AdminSiteSettings = () => {
                   name="secondaryColor"
                   value={formData.secondaryColor}
                   onChange={handleChange}
-                  className="h-10 w-20 border rounded"
+                  className="h-10 w-20 border-2 border-gray-300 dark:border-gray-500 rounded cursor-pointer bg-white dark:bg-gray-700 p-1"
                 />
                 <input
                   type="text"
                   value={formData.secondaryColor}
                   onChange={(e) => setFormData(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                  className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                 />
               </div>
             </div>
@@ -261,13 +261,13 @@ const AdminSiteSettings = () => {
                   name="accentColor"
                   value={formData.accentColor}
                   onChange={handleChange}
-                  className="h-10 w-20 border rounded"
+                  className="h-10 w-20 border-2 border-gray-300 dark:border-gray-500 rounded cursor-pointer bg-white dark:bg-gray-700 p-1"
                 />
                 <input
                   type="text"
                   value={formData.accentColor}
                   onChange={(e) => setFormData(prev => ({ ...prev, accentColor: e.target.value }))}
-                  className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
                 />
               </div>
             </div>
@@ -278,19 +278,19 @@ const AdminSiteSettings = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold text-gray-800">Announcement Bar</h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Announcement Bar</h2>
               <InfoTooltip 
                 title="Announcement Bar"
                 content="A colorful banner at the top of your website to display important messages like 'Free delivery on orders over ₹500' or 'New seasonal menu available!'"
               />
             </div>
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 name="enabled"
                 checked={formData.announcementBar.enabled}
                 onChange={(e) => handleChange(e, 'announcementBar')}
-                className="w-4 h-4 text-blue-600"
+                className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
               />
               <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Enable</span>
             </label>
@@ -308,7 +308,7 @@ const AdminSiteSettings = () => {
                   name="message"
                   value={formData.announcementBar.message}
                   onChange={(e) => handleChange(e, 'announcementBar')}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="🎉 Grand Opening Special: 20% off all orders this week!"
                 />
               </div>
@@ -324,7 +324,7 @@ const AdminSiteSettings = () => {
                     name="backgroundColor"
                     value={formData.announcementBar.backgroundColor}
                     onChange={(e) => handleChange(e, 'announcementBar')}
-                    className="h-10 w-full border rounded"
+                    className="h-10 w-full border-2 border-gray-300 dark:border-gray-500 rounded cursor-pointer bg-white dark:bg-gray-700 p-1"
                   />
                 </div>
 
@@ -338,7 +338,7 @@ const AdminSiteSettings = () => {
                     name="textColor"
                     value={formData.announcementBar.textColor}
                     onChange={(e) => handleChange(e, 'announcementBar')}
-                    className="h-10 w-full border rounded"
+                    className="h-10 w-full border-2 border-gray-300 dark:border-gray-500 rounded cursor-pointer bg-white dark:bg-gray-700 p-1"
                   />
                 </div>
               </div>
@@ -350,19 +350,19 @@ const AdminSiteSettings = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold text-gray-800">Maintenance Mode</h2>
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Maintenance Mode</h2>
               <InfoTooltip 
                 title="Maintenance Mode"
                 content="Temporarily disable your website and show a maintenance message. Use this when making major updates or repairs. Only admins can access the site when enabled."
               />
             </div>
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 name="enabled"
                 checked={formData.maintenanceMode.enabled}
                 onChange={(e) => handleChange(e, 'maintenanceMode')}
-                className="w-4 h-4 text-blue-600"
+                className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
               />
               <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Enable</span>
             </label>
@@ -379,7 +379,7 @@ const AdminSiteSettings = () => {
                 value={formData.maintenanceMode.message}
                 onChange={(e) => handleChange(e, 'maintenanceMode')}
                 rows="3"
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="We're making improvements! Check back soon."
               />
             </div>
@@ -389,7 +389,7 @@ const AdminSiteSettings = () => {
         {/* Analytics */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
           <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Analytics & Tracking</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Analytics & Tracking</h2>
             <InfoTooltip 
               title="Analytics"
               content="Track visitor behavior and measure marketing success. Google Analytics shows website traffic. Facebook Pixel tracks ad performance."
@@ -409,7 +409,7 @@ const AdminSiteSettings = () => {
               name="googleAnalyticsId"
               value={formData.googleAnalyticsId}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="G-XXXXXXXXXX"
             />
           </div>
@@ -427,7 +427,7 @@ const AdminSiteSettings = () => {
               name="facebookPixelId"
               value={formData.facebookPixelId}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="123456789012345"
             />
           </div>

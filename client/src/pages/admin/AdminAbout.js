@@ -78,14 +78,14 @@ const AdminAbout = () => {
       {success && <Alert type="success" message={success} />}
       
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">About Section</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">About Section</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your about page content</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Basic Information</h2>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -96,7 +96,7 @@ const AdminAbout = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -110,7 +110,7 @@ const AdminAbout = () => {
               name="heading"
               value={formData.heading}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -124,7 +124,7 @@ const AdminAbout = () => {
               value={formData.description}
               onChange={handleChange}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -138,7 +138,7 @@ const AdminAbout = () => {
               value={formData.content}
               onChange={handleChange}
               rows="5"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               required
             />
           </div>
@@ -152,7 +152,7 @@ const AdminAbout = () => {
               name="image"
               value={formData.image}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="https://images.unsplash.com/..."
             />
             {formData.image && (
@@ -168,7 +168,7 @@ const AdminAbout = () => {
 
         {/* Mission & Vision */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Mission & Vision</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Mission & Vision</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -180,7 +180,7 @@ const AdminAbout = () => {
                 name="missionTitle"
                 value={formData.missionTitle}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -193,7 +193,7 @@ const AdminAbout = () => {
                 name="visionTitle"
                 value={formData.visionTitle}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ const AdminAbout = () => {
               value={formData.missionText}
               onChange={handleChange}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -220,14 +220,14 @@ const AdminAbout = () => {
               value={formData.visionText}
               onChange={handleChange}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
         </div>
 
         {/* Statistics */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Statistics</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Statistics</h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -240,7 +240,7 @@ const AdminAbout = () => {
                 value={formData.yearsInBusiness}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -254,7 +254,7 @@ const AdminAbout = () => {
                 value={formData.happyCustomers}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -268,7 +268,7 @@ const AdminAbout = () => {
                 value={formData.menuItems}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -282,7 +282,7 @@ const AdminAbout = () => {
                 value={formData.awards}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>

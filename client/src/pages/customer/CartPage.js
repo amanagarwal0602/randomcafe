@@ -62,9 +62,9 @@ const CartPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <h2 className="text-3xl font-serif font-bold mb-4">Your cart is empty</h2>
+          <h2 className="text-3xl font-serif font-bold mb-4 text-gray-800 dark:text-gray-100">Your cart is empty</h2>
           <button onClick={() => navigate('/menu')} className="btn-primary">Browse Menu</button>
         </div>
       </div>
@@ -80,19 +80,19 @@ const CartPage = () => {
             <div key={item._id} className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex items-center gap-4">
               <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} loading="lazy" className="w-24 h-24 object-cover rounded" />
               <div className="flex-1">
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600">₹{Math.round(item.price)}</p>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100">{item.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400">₹{Math.round(item.price)}</p>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="p-2 hover:bg-gray-100 rounded">
+                <button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-700 dark:text-gray-300">
                   <FiMinus />
                 </button>
-                <span className="w-8 text-center">{item.quantity}</span>
-                <button onClick={() => updateQuantity(item._id, item.quantity + 1)} className="p-2 hover:bg-gray-100 rounded">
+                <span className="w-8 text-center text-gray-800 dark:text-gray-200">{item.quantity}</span>
+                <button onClick={() => updateQuantity(item._id, item.quantity + 1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-700 dark:text-gray-300">
                   <FiPlus />
                 </button>
               </div>
-              <button onClick={() => removeFromCart(item._id)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+              <button onClick={() => removeFromCart(item._id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded">
                 <FiTrash2 />
               </button>
             </div>
@@ -101,16 +101,16 @@ const CartPage = () => {
 
         {/* Coupon Section */}
         <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-gray-100">
             <FiTag className="text-primary-600" />
             Apply Coupon Code
           </h3>
           
           {appliedCoupon ? (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-green-800">{appliedCoupon.code}</p>
-                <p className="text-sm text-green-600">{couponSuccess}</p>
+                <p className="font-semibold text-green-800 dark:text-green-300">{appliedCoupon.code}</p>
+                <p className="text-sm text-green-600 dark:text-green-400">{couponSuccess}</p>
               </div>
               <button 
                 onClick={removeCoupon}
@@ -147,22 +147,22 @@ const CartPage = () => {
 
         {/* Order Summary */}
         <div className="mt-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Order Summary</h3>
           
           <div className="space-y-3">
-            <div className="flex justify-between text-gray-600">
+            <div className="flex justify-between text-gray-600 dark:text-gray-400">
               <span>Subtotal:</span>
               <span>₹{Math.round(getCartTotal())}</span>
             </div>
             
             {appliedCoupon && (
-              <div className="flex justify-between text-green-600">
+              <div className="flex justify-between text-green-600 dark:text-green-400">
                 <span>Discount ({appliedCoupon.code}):</span>
                 <span>- ₹{Math.round(getDiscountAmount(appliedCoupon))}</span>
               </div>
             )}
             
-            <div className="border-t pt-3 flex justify-between text-2xl font-bold">
+            <div className="border-t dark:border-gray-700 pt-3 flex justify-between text-2xl font-bold text-gray-900 dark:text-gray-100">
               <span>Total:</span>
               <span>₹{Math.round(getFinalTotal())}</span>
             </div>

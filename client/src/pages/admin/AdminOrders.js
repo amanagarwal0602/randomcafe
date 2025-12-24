@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
-import { FiPrinter, FiEye, FiX, FiCalendar, FiDollarSign, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiPrinter, FiEye, FiX, FiCalendar, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const AdminOrders = () => {
     const [error, setError] = useState('');
@@ -115,14 +115,14 @@ const AdminOrders = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      confirmed: 'bg-blue-100 text-blue-800',
-      preparing: 'bg-purple-100 text-purple-800',
-      ready: 'bg-green-100 text-green-800',
-      delivered: 'bg-gray-100 text-gray-800',
-      cancelled: 'bg-red-100 text-red-800'
+      pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+      confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+      preparing: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+      ready: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+      delivered: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+      cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
     };
-    return colors[status?.toLowerCase()] || 'bg-gray-100 text-gray-800';
+    return colors[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
   };
 
   // Filter orders by search term, status filter, and date filter
@@ -207,7 +207,7 @@ const AdminOrders = () => {
             </button>
           </div>
           <div>
-            <h1 className="text-4xl font-serif font-bold">Order Management</h1>
+            <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Order Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{filteredOrders.length} orders</p>
           </div>
           {dateFilter && (
@@ -230,7 +230,7 @@ const AdminOrders = () => {
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     filter === status
                       ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -244,7 +244,7 @@ const AdminOrders = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === 'list'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 List View
@@ -254,7 +254,7 @@ const AdminOrders = () => {
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   viewMode === 'dateWise'
                     ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 Date-wise View
@@ -275,7 +275,7 @@ const AdminOrders = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Search Orders</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Orders</label>
               <input
                 type="text"
                 value={searchTerm}
@@ -306,14 +306,14 @@ const AdminOrders = () => {
               return (
                 <div key={date} className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
                   <div 
-                    className="p-6 bg-gradient-to-r from-primary-50 to-primary-100 cursor-pointer hover:from-primary-100 hover:to-primary-200 transition"
+                    className="p-6 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-gray-700 dark:to-gray-600 cursor-pointer hover:from-primary-100 hover:to-primary-200 dark:hover:from-gray-600 dark:hover:to-gray-500 transition"
                     onClick={() => toggleDateExpansion(date)}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-4">
-                        <FiCalendar size={24} className="text-primary-600" />
+                        <FiCalendar size={24} className="text-primary-600 dark:text-primary-400" />
                         <div>
-                          <h3 className="font-bold text-xl text-gray-800">
+                          <h3 className="font-bold text-xl text-gray-800 dark:text-gray-100">
                             {new Date(date).toLocaleDateString('en-IN', {
                               weekday: 'long',
                               year: 'numeric',
@@ -327,17 +327,17 @@ const AdminOrders = () => {
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-sm text-gray-600 dark:text-gray-400">Daily Total</p>
-                          <p className="text-2xl font-bold text-primary-600">₹{dateTotal.toFixed(2)}</p>
+                          <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">₹{dateTotal.toFixed(2)}</p>
                         </div>
-                        {isExpanded ? <FiChevronUp size={24} /> : <FiChevronDown size={24} />}
+                        {isExpanded ? <FiChevronUp size={24} className="text-gray-700 dark:text-gray-300" /> : <FiChevronDown size={24} className="text-gray-700 dark:text-gray-300" />}
                       </div>
                     </div>
                   </div>
                   
                   {isExpanded && (
-                    <div className="p-6 space-y-4 border-t">
+                    <div className="p-6 space-y-4 border-t border-gray-200 dark:border-gray-700">
                       {dateOrders.map(order => (
-                        <div key={order._id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition">
+                        <div key={order._id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg hover:shadow-md transition">
                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                             <div className="flex-1 min-w-[200px]">
                               <div className="flex items-center gap-3 mb-2">
@@ -369,7 +369,7 @@ const AdminOrders = () => {
                               <select
                                 value={order.status || 'pending'}
                                 onChange={(e) => updateStatus(order.id, e.target.value)}
-                                className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
+                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium mb-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                               >
                                 <option value="pending">Pending</option>
                                 <option value="confirmed">Confirmed</option>
@@ -453,7 +453,7 @@ const AdminOrders = () => {
                     <select
                       value={order.status || 'pending'}
                       onChange={(e) => updateStatus(order.id, e.target.value)}
-                      className="px-3 py-2 border rounded-lg text-sm font-medium mb-2 w-full"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium mb-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -532,7 +532,7 @@ const AdminOrders = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   Order #{selectedOrder.dailyBillNumber} - {new Date(selectedOrder.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </h2>
                 <div className="flex gap-2">
@@ -574,6 +574,31 @@ const AdminOrders = () => {
                       </span></p>
                     </div>
                   </div>
+                  {(selectedOrder.utrNumber || selectedOrder.transactionId || selectedOrder.paymentProof) && (
+                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Payment Details (UPI)</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {selectedOrder.utrNumber && (
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">UTR Number:</span>
+                            <span className="ml-2 font-mono font-semibold text-blue-700 dark:text-blue-300">{selectedOrder.utrNumber}</span>
+                          </div>
+                        )}
+                        {selectedOrder.transactionId && (
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                            <span className="ml-2 font-mono font-semibold text-blue-700 dark:text-blue-300">{selectedOrder.transactionId}</span>
+                          </div>
+                        )}
+                        {selectedOrder.paymentProof && (
+                          <div className="col-span-2">
+                            <span className="text-gray-600 dark:text-gray-400">Payment Proof:</span>
+                            <a href={selectedOrder.paymentProof} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 hover:text-blue-800 underline">View Screenshot</a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <table>

@@ -9,6 +9,9 @@ const {
   getAllUsers,
   updateUserRole,
   toggleUserActive,
+  updateUser,
+  updateUserPassword,
+  createUser,
   getAllReviews,
   toggleReviewPublish
 } = require('../controllers/admin.controller');
@@ -29,6 +32,9 @@ router.put('/reservations/:id/status', updateReservationStatus);
 
 // Users management (admin only)
 router.get('/users', authorize('admin'), getAllUsers);
+router.post('/users', authorize('admin'), createUser);
+router.put('/users/:id', authorize('admin'), updateUser);
+router.put('/users/:id/password', authorize('admin'), updateUserPassword);
 router.put('/users/:id/role', authorize('admin'), updateUserRole);
 router.put('/users/:id/toggle-active', authorize('admin'), toggleUserActive);
 

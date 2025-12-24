@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Alert from '../../components/common/Alert';
-import { FiEdit2, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
+import ImageUpload from '../../components/ImageUpload';
+import Avatar from '../../components/Avatar';
+import { FiEdit2, FiTrash2, FiPlus, FiX, FiHome } from 'react-icons/fi';
 
 const AdminMenu = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -161,6 +163,18 @@ const AdminMenu = () => {
     }
   };
 
+  const toggleHomepage = async (item) => {
+    try {
+      await api.put(`/menu/${item._id}/toggle-homepage`);
+      setSuccess(`Menu item ${item.showOnHomepage ? 'removed from' : 'added to'} homepage`);
+      setTimeout(() => setSuccess(''), 5000);
+      fetchMenuItems();
+    } catch (error) {
+      setError('Failed to update homepage display');
+      setTimeout(() => setError(''), 5000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
@@ -169,7 +183,7 @@ const AdminMenu = () => {
         
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-serif font-bold">Menu Management</h1>
+            <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-gray-100">Menu Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{menuItems.length} items in menu</p>
           </div>
           <button onClick={() => { setEditItem(null); setShowModal(true); }} className="btn-primary flex items-center gap-2">
@@ -192,7 +206,13 @@ const AdminMenu = () => {
           {menuItems.map(item => (
             <div key={item._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
               <div className="relative">
-                <img src={item.image || 'https://via.placeholder.com/400'} alt={item.name} loading="lazy" className="w-full h-48 object-cover" />
+                {item.image ? (
+                  <img src={item.image} alt={item.name} loading="lazy" className="w-full h-48 object-cover" />
+                ) : (
+                  <div className="w-full h-48 flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200 dark:from-gray-700 dark:to-gray-600">
+                    <Avatar name={item.name} size="2xl" shape="square" />
+                  </div>
+                )}
                 <div className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold ${item.isAvailable ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
                   {item.isAvailable ? 'Available' : 'Unavailable'}
                 </div>
@@ -209,8 +229,22 @@ const AdminMenu = () => {
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
                 <p className="text-primary-600 font-bold text-xl mb-4">₹{Math.round(item.price)}</p>
+                <div className="flex items-center justify-between mb-3">
+                  <button
+                    onClick={() => toggleHomepage(item)}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-semibold transition ${
+                      item.showOnHomepage
+                        ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                    title={item.showOnHomepage ? 'Remove from homepage' : 'Show on homepage'}
+                  >
+                    <FiHome />
+                    {item.showOnHomepage ? 'On Homepage' : 'Add to Home'}
+                  </button>
+                </div>
                 <div className="flex gap-2">
-                  <button onClick={() => toggleAvailability(item)} className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 text-sm">
+                  <button onClick={() => toggleAvailability(item)} className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-sm">
                     Toggle
                   </button>
                   <button onClick={() => { setEditItem(item); setShowModal(true); }} className="flex-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">
@@ -231,14 +265,14 @@ const AdminMenu = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b flex justify-between items-center">
-                <h2 className="text-2xl font-bold">{editItem ? 'Edit Menu Item' : 'Add New Menu Item'}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{editItem ? 'Edit Menu Item' : 'Add New Menu Item'}</h2>
                 <button onClick={() => { setShowModal(false); setEditItem(null); }} className="text-gray-500 hover:text-gray-700 dark:text-gray-300">
                   <FiX size={24} />
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Item Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Name *</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -248,7 +282,7 @@ const AdminMenu = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Description *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -259,7 +293,7 @@ const AdminMenu = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Price (₹) *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price (₹) *</label>
                     <input
                       type="number"
                       step="1"
@@ -270,7 +304,7 @@ const AdminMenu = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Category *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
                     {!showNewCategory ? (
                       <div className="space-y-2">
                         <select
@@ -316,26 +350,20 @@ const AdminMenu = () => {
                     )}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Image URL *</label>
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    className="input-field"
-                    placeholder="https://example.com/image.jpg"
-                    required
-                  />
-                </div>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData({...formData, image: url})}
+                  label="Item Image"
+                />
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="isVeg"
                     checked={formData.isVeg}
                     onChange={(e) => setFormData({...formData, isVeg: e.target.checked})}
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-green-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500"
                   />
-                  <label htmlFor="isVeg" className="text-sm font-medium">
+                  <label htmlFor="isVeg" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     <span className="inline-flex items-center">
                       <span className="mr-2">🌱</span> Vegetarian
                     </span>
@@ -347,12 +375,12 @@ const AdminMenu = () => {
                     id="isAvailable"
                     checked={formData.isAvailable}
                     onChange={(e) => setFormData({...formData, isAvailable: e.target.checked})}
-                    className="w-4 h-4"
+                    className="w-5 h-5 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="isAvailable" className="text-sm font-medium">Available for order</label>
+                  <label htmlFor="isAvailable" className="text-sm font-medium text-gray-700 dark:text-gray-300">Available for order</label>
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => { setShowModal(false); setEditItem(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50">
+                  <button type="button" onClick={() => { setShowModal(false); setEditItem(null); }} className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
                     Cancel
                   </button>
                   <button type="submit" className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">

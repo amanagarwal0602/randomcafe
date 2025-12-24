@@ -390,3 +390,122 @@ exports.toggleReviewPublish = async (req, res) => {
     });
   }
 };
+
+// @desc    Update user details
+// @route   PUT /api/admin/users/:id
+// @access  Private/Admin
+exports.updateUser = async (req, res) => {
+  try {
+    const { name, email, phone, permissions } = req.body;
+    
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (permissions) user.permissions = permissions;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'User updated successfully',
+      data: user
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Update user password
+// @route   PUT /api/admin/users/:id/password
+// @access  Private/Admin
+exports.updateUserPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters'
+      });
+    }
+
+    const user = await User.findById(req.params.id).select('+password');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.password = password;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Create new user
+// @route   POST /api/admin/users
+// @access  Private/Admin
+exports.createUser = async (req, res) => {
+  try {
+    const { name, email, password, phone, role = 'customer' } = req.body;
+    
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and password are required'
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      phone,
+      role
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: user
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
