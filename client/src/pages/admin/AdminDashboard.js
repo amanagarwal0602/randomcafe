@@ -26,7 +26,6 @@ const AdminDashboard = () => {
         api.get('/orders'),
         api.get('/menu')
       ]);
-      console.log('Dashboard data:', { ordersRes, menuRes });
       setOrders(ordersRes.data.data || []);
       setMenuItems(menuRes.data.data?.items || menuRes.data.data || []);
     } catch (error) {

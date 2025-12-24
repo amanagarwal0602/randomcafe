@@ -27,8 +27,6 @@ const AdminHero = () => {
   const fetchHero = async () => {
     try {
       const { data } = await api.get('/hero');
-      console.log('Hero data received:', data);
-      
       // Map the data to formData structure
       setFormData({
         title: data.title || '',

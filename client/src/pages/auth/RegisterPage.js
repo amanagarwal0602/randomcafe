@@ -102,11 +102,6 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      console.log('Attempting registration with:', { 
-        name: formData.name, 
-        username: formData.username, 
-        email: formData.email 
-      });
       await register(formData);
       setSuccess('Registration successful! Redirecting...');
       setTimeout(() => navigate('/'), 1000);

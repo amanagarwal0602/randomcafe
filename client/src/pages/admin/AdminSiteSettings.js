@@ -37,7 +37,6 @@ const AdminSiteSettings = () => {
   const fetchSettings = async () => {
     try {
       const { data } = await api.get('/site-settings');
-      console.log('Site settings data:', data);
       setFormData({
         siteName: data.siteName || 'Lumiere Cafe',
         logo: data.logo || '',

@@ -59,7 +59,6 @@ const AdminMenu = () => {
     try {
       setLoading(true);
       const response = await api.get('/menu');
-      console.log('Menu API Response:', response.data);
       if (response.data && response.data.data && response.data.data.items) {
         const items = response.data.data.items;
         setMenuItems(items);
@@ -93,17 +92,12 @@ const AdminMenu = () => {
     }
     
     try {
-      console.log('Submitting form data:', submitData);
-      console.log('Auth token:', localStorage.getItem('accessToken') ? 'Present' : 'Missing');
-      
       if (editItem) {
-        const response = await api.put(`/menu/${editItem._id}`, submitData);
-        console.log('Update response:', response.data);
+        await api.put(`/menu/${editItem._id}`, submitData);
         setSuccess('Menu item updated successfully');
         setTimeout(() => setSuccess(''), 5000);
       } else {
-        const response = await api.post('/menu', submitData);
-        console.log('Create response:', response.data);
+        await api.post('/menu', submitData);
         setSuccess('Menu item added successfully');
         setTimeout(() => setSuccess(''), 5000);
       }

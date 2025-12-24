@@ -45,7 +45,6 @@ const AdminContactInfo = () => {
   const fetchContactInfo = async () => {
     try {
       const { data } = await api.get('/contact-info');
-      console.log('Contact info data:', data);
       setFormData({
         businessName: data.businessName || 'Lumiere Cafe',
         tagline: data.tagline || '',

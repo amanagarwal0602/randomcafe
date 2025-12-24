@@ -1034,5 +1034,114 @@ export const deleteTodaysOffer = async (id) => {
   return { message: 'Offer deleted successfully' };
 };
 
+// ============ CONTACT MESSAGES ============
+export const getContactMessages = async () => {
+  const data = getData();
+  return (data.contactMessages || []).map(msg => ({
+    ...msg,
+    _id: msg.id
+  }));
+};
+
+export const createContactMessage = async (messageData) => {
+  const data = getData();
+  data.contactMessages = data.contactMessages || [];
+  const newMessage = {
+    id: generateId(),
+    name: messageData.name,
+    email: messageData.email,
+    message: messageData.message,
+    status: 'unread',
+    replied: false,
+    replyMessage: null,
+    repliedAt: null,
+    createdAt: getTimestamp(),
+    updatedAt: getTimestamp()
+  };
+  data.contactMessages.unshift(newMessage);
+  saveData(data);
+  return newMessage;
+};
+
+export const updateContactMessage = async (id, updates) => {
+  const data = getData();
+  data.contactMessages = data.contactMessages || [];
+  const index = data.contactMessages.findIndex(m => m.id === id);
+  if (index !== -1) {
+    data.contactMessages[index] = {
+      ...data.contactMessages[index],
+      ...updates,
+      updatedAt: getTimestamp()
+    };
+    if (updates.status === 'replied' && updates.replyMessage) {
+      data.contactMessages[index].replied = true;
+      data.contactMessages[index].repliedAt = getTimestamp();
+    }
+    saveData(data);
+    return data.contactMessages[index];
+  }
+  throw new Error('Message not found');
+};
+
+export const deleteContactMessage = async (id) => {
+  const data = getData();
+  data.contactMessages = data.contactMessages || [];
+  data.contactMessages = data.contactMessages.filter(m => m.id !== id);
+  saveData(data);
+  return { message: 'Message deleted successfully' };
+};
+
+// ============ TOGGLE FUNCTIONS ============
+export const toggleMenuItemHomepage = async (id) => {
+  const data = getData();
+  const index = data.menu.findIndex(item => item.id === id);
+  if (index !== -1) {
+    data.menu[index].showOnHomepage = !data.menu[index].showOnHomepage;
+    data.menu[index].updated_at = getTimestamp();
+    saveData(data);
+    return data.menu[index];
+  }
+  throw new Error('Menu item not found');
+};
+
+export const toggleReviewHomepage = async (id) => {
+  const data = getData();
+  data.reviews = data.reviews || [];
+  const index = data.reviews.findIndex(review => review.id === id);
+  if (index !== -1) {
+    data.reviews[index].showOnHomepage = !data.reviews[index].showOnHomepage;
+    data.reviews[index].updated_at = getTimestamp();
+    saveData(data);
+    return data.reviews[index];
+  }
+  throw new Error('Review not found');
+};
+
+export const toggleReviewPublish = async (id) => {
+  const data = getData();
+  data.reviews = data.reviews || [];
+  const index = data.reviews.findIndex(review => review.id === id);
+  if (index !== -1) {
+    data.reviews[index].isPublished = !data.reviews[index].isPublished;
+    data.reviews[index].updated_at = getTimestamp();
+    saveData(data);
+    return data.reviews[index];
+  }
+  throw new Error('Review not found');
+};
+
+export const toggleTeamMemberAbout = async (id) => {
+  const data = getData();
+  data.team = data.team || [];
+  const index = data.team.findIndex(member => member.id === id);
+  if (index !== -1) {
+    data.team[index].showInAbout = !data.team[index].showInAbout;
+    data.team[index].updated_at = getTimestamp();
+    saveData(data);
+    return data.team[index];
+  }
+  throw new Error('Team member not found');
+};
+
 // Initialize on module load
 initializeData();

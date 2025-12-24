@@ -24,17 +24,25 @@ const api = {
       
       if (parts[0] === 'orders') return { data: { data: await db.getOrders() } };
       if (parts[0] === 'admin' && parts[1] === 'orders') return { data: { data: await db.getOrders() } };
+      if (parts[0] === 'admin' && parts[1] === 'users') return { data: { data: { users: await db.getUsers() } } };
+      if (parts[0] === 'admin' && parts[1] === 'reviews') return { data: { data: await db.getReviews() } };
       if (parts[0] === 'reservations') return { data: { data: await db.getReservations() } };
       if (parts[0] === 'admin' && parts[1] === 'reservations') return { data: { data: await db.getReservations() } };
       if (parts[0] === 'coupons') return { data: { data: await db.getCoupons() } };
       if (parts[0] === 'gallery') return { data: { data: await db.getGalleryImages() } };
-      if (parts[0] === 'reviews') return { data: { data: await db.getReviews() } };
-      if (parts[0] === 'users') return { data: await db.getUsers() };
+      if (parts[0] === 'reviews') return { data: { data: { reviews: await db.getReviews() } } };
+      if (parts[0] === 'users') return { data: { data: { users: await db.getUsers() } } };
       if (parts[0] === 'features') return { data: await db.getFeatures() };
-      if (parts[0] === 'team') return { data: await db.getTeamMembers() };
+      if (parts[0] === 'team') {
+        if (parts[1] === 'all') return { data: await db.getTeamMembers() };
+        return { data: await db.getTeamMembers() };
+      }
       if (parts[0] === 'hero') return { data: await db.getAboutContent() };
       if (parts[0] === 'about') return { data: await db.getAboutContent() };
-      if (parts[0] === 'contact-info') return { data: await db.getContactInfo() };
+      if (parts[0] === 'contact-info') {
+        if (parts[1] === 'messages') return { data: { data: { messages: await db.getContactMessages() } } };
+        return { data: await db.getContactInfo() };
+      }
       if (parts[0] === 'site-settings') return { data: await db.getSiteSettings() };
       if (parts[0] === 'todays-offers') return { data: { data: await db.getTodaysOffers() } };
       if (parts[0] === 'seo') return { data: {} };
@@ -62,6 +70,10 @@ const api = {
       if (parts[0] === 'features') return { data: { data: await db.createFeature(data) } };
       if (parts[0] === 'team') return { data: { data: await db.createTeamMember(data) } };
       if (parts[0] === 'todays-offers') return { data: { data: await db.createTodaysOffer(data) } };
+      if (parts[0] === 'admin' && parts[1] === 'users') return { data: { data: await db.createUser(data) } };
+      if (parts[0] === 'contact-info' && parts[1] === 'send-message') {
+        return { data: { success: true, data: await db.createContactMessage(data), message: 'Thank you for your message! We will get back to you soon.' } };
+      }
       
       return { data: { data: {} } };
     } catch (error) {
@@ -100,6 +112,25 @@ const api = {
       if (parts[0] === 'site-settings') return { data: { data: await db.updateSiteSettings(data) } };
       if (parts[0] === 'todays-offers') return { data: { data: await db.updateTodaysOffer(id, data) } };
       if (parts[0] === 'seo') return { data: { data: {} } };
+      
+      // Toggle endpoints
+      if (parts[0] === 'menu' && parts[2] === 'toggle-homepage') {
+        return { data: { data: await db.toggleMenuItemHomepage(parts[1]) } };
+      }
+      if (parts[0] === 'reviews' && parts[2] === 'toggle-homepage') {
+        return { data: { data: await db.toggleReviewHomepage(parts[1]) } };
+      }
+      if (parts[0] === 'admin' && parts[1] === 'reviews' && parts[3] === 'toggle-publish') {
+        return { data: { data: await db.toggleReviewPublish(parts[2]) } };
+      }
+      if (parts[0] === 'team' && parts[2] === 'toggle-about') {
+        return { data: { data: await db.toggleTeamMemberAbout(parts[1]) } };
+      }
+      
+      // Contact message updates
+      if (parts[0] === 'contact-info' && parts[1] === 'messages') {
+        return { data: { data: await db.updateContactMessage(parts[2], data) } };
+      }
       
       return { data: { data: {} } };
     } catch (error) {
@@ -145,6 +176,9 @@ api.delete = async (url) => {
     if (parts[0] === 'features') return { data: { data: await db.deleteFeature(id) } };
     if (parts[0] === 'team') return { data: { data: await db.deleteTeamMember(id) } };
     if (parts[0] === 'todays-offers') return { data: { data: await db.deleteTodaysOffer(id) } };
+    if (parts[0] === 'contact-info' && parts[1] === 'messages') {
+      return { data: { data: await db.deleteContactMessage(parts[2]) } };
+    }
     
     return { data: { data: {} } };
   } catch (error) {
