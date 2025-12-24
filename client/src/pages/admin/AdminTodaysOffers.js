@@ -50,9 +50,10 @@ const AdminTodaysOffers = () => {
   const fetchOffers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/todays-offers');
-      if (response.data && response.data.data) {
-        setOffers(response.data.data);
+      const response = await api.get('/todays-offers/all');
+      if (response.data) {
+        // Handle both array and object responses
+        setOffers(Array.isArray(response.data) ? response.data : (response.data.data || []));
       }
     } catch (error) {
       console.error('Failed to load offers:', error);
@@ -68,7 +69,7 @@ const AdminTodaysOffers = () => {
     
     try {
       if (editOffer) {
-        await api.put('/todays-offers', { id: editOffer.id, ...formData });
+        await api.put(`/todays-offers/${editOffer._id || editOffer.id}`, formData);
         setSuccess('Offer updated successfully');
       } else {
         await api.post('/todays-offers', formData);
@@ -87,7 +88,7 @@ const AdminTodaysOffers = () => {
   const deleteOffer = async (id) => {
     if (window.confirm('Are you sure you want to delete this offer?')) {
       try {
-        await api.delete('/todays-offers', { data: { id } });
+        await api.delete(`/todays-offers/${id}`);
         setSuccess('Offer deleted successfully');
         setTimeout(() => setSuccess(''), 5000);
         fetchOffers();

@@ -18,9 +18,7 @@ const menuItemValidation = [
   body('name').trim().notEmpty().withMessage('Item name is required'),
   body('description').trim().notEmpty().withMessage('Description is required'),
   body('price').isFloat({ min: 0 }).withMessage('Valid price is required'),
-  body('category')
-    .isIn(['breakfast', 'lunch', 'dinner', 'drinks', 'desserts', 'appetizers'])
-    .withMessage('Invalid category')
+  body('category').trim().notEmpty().withMessage('Category is required')
 ];
 
 // Public routes

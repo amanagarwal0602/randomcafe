@@ -126,10 +126,10 @@ const MyReservationsPage = () => {
                     </span>
                     
                     {/* Cancel button - only show for confirmed or pending reservations */}
-                    {(res.status === 'confirmed' || res.status === 'pending') && (
+                    {(res.status?.toLowerCase() === 'confirmed' || res.status?.toLowerCase() === 'pending') && (
                       <button
                         onClick={() => handleCancelReservation(res._id)}
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition font-medium text-sm"
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 transition font-medium text-sm shadow-md"
                       >
                         Cancel Reservation
                       </button>

@@ -223,7 +223,7 @@ const AdminOrders = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-2 flex-wrap">
               <span className="font-semibold text-gray-700 dark:text-gray-300 flex items-center">Status:</span>
-              {['all', 'pending', 'confirmed', 'preparing', 'ready', 'cancelled'].map(status => (
+              {['all', 'pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'].map(status => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
@@ -374,7 +374,8 @@ const AdminOrders = () => {
                                 <option value="pending">Pending</option>
                                 <option value="confirmed">Confirmed</option>
                                 <option value="preparing">Preparing</option>
-                                <option value="ready">Ready</option>
+                                <option value="ready">Ready (Pickup/Dine-in)</option>
+                                <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
                               </select>
                               <button
@@ -457,7 +458,8 @@ const AdminOrders = () => {
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="preparing">Preparing</option>
-                      <option value="ready">Ready</option>
+                      <option value="ready">Ready (Pickup/Dine-in)</option>
+                      <option value="completed">Completed</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
                     <button

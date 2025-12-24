@@ -65,6 +65,36 @@ const ProfilePage = () => {
             <button type="submit" className="btn-primary w-full">Update Profile</button>
           </form>
         </div>
+
+        {/* User Permissions Display */}
+        {user && (user.role === 'admin' || user.role === 'staff' || (user.permissions && user.permissions.length > 0)) && (
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg mt-6">
+            <h2 className="text-2xl font-serif font-bold mb-4">Your Role & Permissions</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Role</label>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium capitalize bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                  {user.role || 'customer'}
+                </span>
+              </div>
+              {user.permissions && user.permissions.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Permissions</label>
+                  <div className="flex flex-wrap gap-2">
+                    {user.permissions.map(perm => (
+                      <span key={perm} className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        {perm.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {(!user.permissions || user.permissions.length === 0) && user.role === 'customer' && (
+                <p className="text-gray-600 dark:text-gray-400 text-sm">You have standard customer access to browse menu, place orders, make reservations, and write reviews.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

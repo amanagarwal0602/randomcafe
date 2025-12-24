@@ -147,7 +147,7 @@ const CheckoutPage = () => {
         )}
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
             <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
             <div className="space-y-4">
               <div>
@@ -276,7 +276,7 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
             <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-2">
               {cartItems.map(item => (

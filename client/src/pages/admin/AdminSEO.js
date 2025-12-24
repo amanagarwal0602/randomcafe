@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Alert from '../../components/common/Alert';
 import api from '../../services/api';
 import InfoTooltip from '../../components/InfoTooltip';
@@ -7,11 +7,40 @@ const AdminSEO = () => {
   const [page, setPage] = useState('home');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
   const [seoData, setSeoData] = useState({
     title: '',
     description: '',
     keywords: []
   });
+
+  useEffect(() => {
+    fetchSEOData();
+  }, [page]);
+
+  const fetchSEOData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/seo/${page}`);
+      if (response.data) {
+        setSeoData({
+          title: response.data.title || '',
+          description: response.data.description || '',
+          keywords: response.data.keywords || []
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load SEO data:', error);
+      // Reset to empty if not found
+      setSeoData({
+        title: '',
+        description: '',
+        keywords: []
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     try {

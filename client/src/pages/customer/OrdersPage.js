@@ -63,9 +63,8 @@ const OrdersPage = () => {
       case 'processing':
       case 'preparing':
         return <FiClock className="text-yellow-600" />;
-      case 'out_for_delivery':
-      case 'shipping':
-        return <FiTruck className="text-blue-600" />;
+      case 'ready':
+        return <FiCheckCircle className="text-blue-600" />;
       default:
         return <FiPackage className="text-gray-600 dark:text-gray-400" />;
     }
@@ -79,8 +78,7 @@ const OrdersPage = () => {
       case 'processing':
       case 'preparing':
         return 'bg-yellow-100 text-yellow-800';
-      case 'out_for_delivery':
-      case 'shipping':
+      case 'ready':
         return 'bg-blue-100 text-blue-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
@@ -91,7 +89,7 @@ const OrdersPage = () => {
 
   const filteredOrders = orders.filter(order => {
     if (filter === 'all') return true;
-    if (filter === 'pending') return ['pending', 'processing', 'preparing', 'out_for_delivery'].includes(order.status?.toLowerCase());
+    if (filter === 'pending') return ['pending', 'confirmed', 'processing', 'preparing', 'ready'].includes(order.status?.toLowerCase());
     if (filter === 'completed') return ['delivered', 'completed'].includes(order.status?.toLowerCase());
     if (filter === 'cancelled') return order.status?.toLowerCase() === 'cancelled';
     return true;
