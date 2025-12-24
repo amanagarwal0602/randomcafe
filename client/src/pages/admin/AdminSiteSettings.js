@@ -73,8 +73,10 @@ const AdminSiteSettings = () => {
     setSaving(true);
     try {
       await api.put('/site-settings', formData);
-      setSuccess('Settings updated!');
-      setTimeout(() => setSuccess(''), 5000);
+      setSuccess('Settings updated! Page will reload to apply changes...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to update');
       setTimeout(() => setError(''), 5000);

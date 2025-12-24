@@ -10,7 +10,7 @@ exports.getActiveOffers = async (req, res) => {
       validUntil: { $gte: new Date() }
     }).sort('-createdAt');
     
-    res.json(offers);
+    res.json({ data: offers });
   } catch (error) {
     console.error('Error fetching active offers:', error);
     res.status(500).json({ 
@@ -26,7 +26,7 @@ exports.getActiveOffers = async (req, res) => {
 exports.getAllOffers = async (req, res) => {
   try {
     const offers = await TodaysOffer.find().sort('-createdAt');
-    res.json(offers);
+    res.json({ data: offers });
   } catch (error) {
     console.error('Error fetching all offers:', error);
     res.status(500).json({ 

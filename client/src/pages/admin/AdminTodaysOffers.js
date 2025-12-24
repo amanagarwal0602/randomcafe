@@ -101,10 +101,7 @@ const AdminTodaysOffers = () => {
 
   const toggleActive = async (offer) => {
     try {
-      await api.put('/todays-offers', { 
-        id: offer.id, 
-        isActive: !offer.isActive 
-      });
+      await api.patch(`/todays-offers/${offer._id || offer.id}/toggle`);
       setSuccess('Offer status updated');
       setTimeout(() => setSuccess(''), 5000);
       fetchOffers();

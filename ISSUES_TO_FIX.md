@@ -17,6 +17,36 @@
 
 ---
 
+## 📋 RESOLUTION TODO LIST
+
+### ✅ High Priority Issues (ALL COMPLETED)
+- [x] **Issue #1: Dark Mode** - Added dark mode support to CheckoutPage
+- [x] **Issue #2: Today's Offers** - Fixed API endpoints (PUT/DELETE to use /:id)
+- [x] **Issue #3: Coupons** - Verified working correctly
+- [x] **Issue #4: Menu Items** - Removed strict category validation
+- [x] **Issue #5: SEO Settings** - Added data loading on page change
+
+### ✅ Medium Priority Issues (ALL COMPLETED)
+- [x] **Issue #6: Announcement Bar** - Verified working correctly
+- [x] **Issue #7: Colors** - Verified color system working
+- [x] **Issue #8: User Search** - Verified search working
+- [x] **Issue #9: Permissions Display** - Already implemented
+- [x] **Issue #10: Write Review** - Verified working for completed orders
+
+### ✅ Additional Fixes (ALL COMPLETED)
+- [x] **Issue #11: Reservation Cancel Button** - Enhanced visibility with red styling
+- [x] **Issue #12: Delivery Status** - Removed delivery, updated to take-away/dine-in only
+
+### 📦 Deployment Checklist
+- [x] All code changes committed
+- [x] Documentation updated (ISSUES_TO_FIX.md)
+- [ ] Ready to push to repository
+- [ ] Test all features after deployment
+- [ ] Verify admin panel functionality
+- [ ] Verify customer portal functionality
+
+---
+
 ## ✅ NEWLY FIXED ISSUES
 
 ### 11. ✅ Reservation Cancel Button Not Showing

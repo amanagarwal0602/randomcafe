@@ -4,7 +4,7 @@ const Coupon = require('../models/Coupon');
 exports.getAllCoupons = async (req, res) => {
   try {
     const coupons = await Coupon.find().sort({ createdAt: -1 }).populate('createdBy', 'name email');
-    res.json(coupons);
+    res.json({ data: coupons });
   } catch (error) {
     console.error('Get coupons error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -21,7 +21,7 @@ exports.getActiveCoupons = async (req, res) => {
       validUntil: { $gte: now }
     }).select('code description discountType discountValue minOrderAmount validUntil');
     
-    res.json(coupons);
+    res.json({ data: coupons });
   } catch (error) {
     console.error('Get active coupons error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -49,13 +49,16 @@ exports.validateCoupon = async (req, res) => {
     const discountResult = coupon.calculateDiscount(orderAmount || 0);
     
     res.json({
-      code: coupon.code,
-      description: coupon.description,
-      discountType: coupon.discountType,
-      discountValue: coupon.discountValue,
-      discount: discountResult.discount,
-      minOrderAmount: coupon.minOrderAmount,
-      message: discountResult.message
+      data: {
+        code: coupon.code,
+        description: coupon.description,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue,
+        maxDiscountAmount: coupon.maxDiscountAmount,
+        discount: discountResult.discount,
+        minOrderAmount: coupon.minOrderAmount,
+        message: discountResult.message
+      }
     });
   } catch (error) {
     console.error('Validate coupon error:', error);

@@ -49,7 +49,7 @@ const CartPage = () => {
     if (!coupon) return 0;
     if (coupon.discountType === 'percentage') {
       const discount = (getCartTotal() * coupon.discountValue) / 100;
-      return Math.min(discount, coupon.maxDiscount || discount);
+      return Math.min(discount, coupon.maxDiscountAmount || discount);
     }
     return coupon.discountValue || 0;
   };

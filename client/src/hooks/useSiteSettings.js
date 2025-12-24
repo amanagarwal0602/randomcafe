@@ -46,6 +46,10 @@ export const useSiteSettings = () => {
     }
   };
 
+  const refreshSettings = () => {
+    fetchSettings();
+  };
+
   const applyBrandColors = (data) => {
     if (data.primaryColor) {
       const primaryShades = generateColorShades(data.primaryColor);
